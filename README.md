@@ -1,6 +1,6 @@
-# Nuxt 3 构建的jihau_top版本
+# Nuxt 3 构建的jihau_top版本模板
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
 ## Setup
 
