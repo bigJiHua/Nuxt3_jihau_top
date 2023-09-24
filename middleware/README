@@ -1,0 +1,10 @@
+## 中间键文件夹
+
+```
+加上 **.global.ts 为全局中间件
+如果不想设置为全局
+则在页面中引入
+definePageMeta({
+  middleware: "auth",
+}) 即可
+```
