@@ -1,11 +1,20 @@
 <template>
-  <div class="DefaultLayout h-screen text-white bg-slate-900">
-    <p>DefaultLayout</p>
-    <slot/>
+  <div class="DefaultLayout">
+    <Header></Header>
+    <div class="body flex">
+      <slot/>
+    </div>
   </div>
+  <Backtop></Backtop>
 </template>
 
 <script setup lang="ts">
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.body{
+  width: 90vw;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+</style>

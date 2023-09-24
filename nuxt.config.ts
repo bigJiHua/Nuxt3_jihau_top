@@ -1,6 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 // 基本配置都在这，相当于main.ts
-import { resolve } from "path"
 export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
@@ -14,7 +13,8 @@ export default defineNuxtConfig({
           // 自动引入 `defineStore()` 并重命名为 `definePiniaStore()`
           ['defineStore', 'definePiniaStore'],
         ],
-      },]
+      },],
+    '@element-plus/nuxt',
   ],
   buildModules: [
     "@nuxtjs/axios"
@@ -27,10 +27,11 @@ export default defineNuxtConfig({
     '@/assets/css/main.css',
     '@/assets/css/index.css',
     '@/assets/css/typeface.css',
+    'element-plus/dist/index.css'
   ],
   // tailwindcss默认配置
-  postcss:{
-    plugins:{
+  postcss: {
+    plugins: {
       tailwindcss: {},
       autoprefixer: {},
     }
@@ -42,6 +43,10 @@ export default defineNuxtConfig({
       title: 'JiHua的Web和JS开发数据',
       link: [
         { rel: 'icon', type: 'image/x-icon', href: 'https://jihau.top/favicon.ico' },
+        {
+          rel: 'stylesheet',
+          href: 'https://unpkg.com/element-plus/lib/theme-chalk/index.css'
+        },
         // { rel: 'stylesheet', href: 'https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css' },
       ],
       script: [
@@ -58,7 +63,7 @@ export default defineNuxtConfig({
         {
           name: 'description',
           content:
-          'jihua的Web和js开发数据，一个神奇的个人网站，里面展现个人魅力，程序设计语言站点导航，以及软件使用方法和事件处理方法，包括但不限于C语言、C语言程序设计书籍、题型、作品等，网页逐渐搭建，不断更新中。一个神奇的个人网站！里面将有超多的内容知识。',
+            'jihua的Web和js开发数据，一个神奇的个人网站，里面展现个人魅力，程序设计语言站点导航，以及软件使用方法和事件处理方法，包括但不限于C语言、C语言程序设计书籍、题型、作品等，网页逐渐搭建，不断更新中。一个神奇的个人网站！里面将有超多的内容知识。',
         },
         {
           name: 'robots',
@@ -95,4 +100,8 @@ export default defineNuxtConfig({
   },
   components: true,
   ssr: true,
+  serve: {
+    host: '0.0.0.0',
+    port: 8080
+  }
 })
