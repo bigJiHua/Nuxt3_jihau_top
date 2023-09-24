@@ -1,0 +1,32 @@
+/*全局属性*/
+* {
+	margin: 0;
+	padding: 0;
+}
+body,
+html {
+	scroll-behavior: smooth;
+}
+.article_span_time {
+	bottom: 2px;
+	right: 8px;
+	color: rgb(40, 109, 212);
+	font-style: italic;
+	font-weight: bolder;
+	font-size: 1rem;
+}
+/* 消息弹窗 */
+.popup {
+  padding: 20px 10px;
+}
+
+@media only screen and (max-width: 755px) {
+}
+@media only screen and (min-width: 755px) {
+}
+
+.none-box{
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
