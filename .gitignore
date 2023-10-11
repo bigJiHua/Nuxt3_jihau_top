@@ -25,3 +25,4 @@ logs
 !.env.example
 assets/font
 public/ckeditor
+public/html

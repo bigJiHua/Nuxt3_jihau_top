@@ -1,8 +1,8 @@
 <template>
   <div class="DefaultLayout">
     <Header></Header>
-    <div class="body flex">
-      <slot/>
+    <div class="body">
+      <slot />
     </div>
   </div>
   <Backtop></Backtop>
@@ -12,9 +12,10 @@
 </script>
 
 <style lang="less" scoped>
-.body{
-  width: 90vw;
-  max-width: 1200px;
-  margin: 0 auto;
+.DefaultLayout {
+  background-color: #edf1f5;
+}
+.body {
+  padding: 60px 0 0 0;
 }
 </style>
