@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Menu } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
 import GetUserData from '@/api/User'
 import { useUserDataStore } from "@/stores/useUserData"
 import { Search } from '@element-plus/icons-vue'
@@ -8,6 +9,8 @@ const drawer = ref(false)
 const store = useUserDataStore()
 const isSHow = ref(false)
 const userData: any = reactive(store.Userdata.Users)
+const key: any = ref('')
+const router = useRouter()
 const LoginOut = () => {
   if (process.client) {
     localStorage.removeItem('token')
@@ -23,6 +26,13 @@ const getUserData = async () => {
     const { data: res } = await GetUserData.GetUserData()
     store.setUserData(res.data)
   }
+}
+const SearchFunc = () => {
+  router.push('/Search/' + key.value)
+  if (isSHow) {
+    drawer.value = false
+  }
+  key.value = ''
 }
 onMounted(() => {
   if (process.client) {
@@ -85,11 +95,13 @@ onMounted(() => {
         </el-menu>
       </client-only>
       <div class="LoginBtn">
-        <nuxt-link to="/Search" class="SearchBtn">
-          <el-icon>
-            <Search />
-          </el-icon>
-        </nuxt-link>
+        <div class="SearchBox">
+          <el-input v-model="key" placeholder="搜搜搜~" class="input-with-select">
+            <template #append>
+              <el-button :icon="Search" @click="SearchFunc" />
+            </template>
+          </el-input>
+        </div>
         <div class="User" v-if="store.Userdata.Users.user_pic != ''">
           <NuxtLink to="/CtrlView"><img :src="store.Userdata.Users.user_pic" alt="Logo" class="userLogo"></NuxtLink>
           <NuxtLink to="/CtrlView"><span class="Username">{{ store.Userdata.Users.username }}</span></NuxtLink>
@@ -110,46 +122,46 @@ onMounted(() => {
       </div>
       <!-- 抽屉面板 -->
       <client-only>
-        <el-drawer v-model="drawer" :with-header="false" :append-to-body="true" size="70vw" style="padding: 0;"
-          @click="drawer = false">
+        <el-drawer v-model="drawer" :with-header="false" :append-to-body="true" size="70vw" style="padding: 0;">
           <template #default>
-            <div class="MenuItem">
+            <div class="MenuItem" @click="drawer = false">
               <NuxtLink to="/Notify" class="text-x2">通知</NuxtLink>
             </div>
-            <div class="MenuItem">
+            <div class="MenuItem" @click="drawer = false">
               <NuxtLink to="/DevProcess" class="text-x2">发展历程</NuxtLink>
             </div>
-            <div class="MenuItem">
+            <div class="MenuItem" @click="drawer = false">
               <NuxtLink to="/SpsList" class="text-x2">友链</NuxtLink>
             </div>
-            <div class="MenuItem">
+            <div class="MenuItem" @click="drawer = false">
               <NuxtLink to="/checkver" class="text-x2 ">激活账户</NuxtLink>
             </div>
-            <div class="MenuItem">
+            <div class="MenuItem" @click="drawer = false">
               <a href="https://www.jihau.com" class="text-x2 ">主站博客页面</a>
             </div>
-            <div class="MenuItem">
+            <div class="MenuItem" @click="drawer = false">
               <NuxtLink to="/page/YSZC" class="text-x2 ">隐私政策</NuxtLink>
             </div>
-            <div class="MenuItem">
+            <div class="MenuItem" @click="drawer = false">
               <NuxtLink to="/html/goods/10010.html" class="text-x2">物品寻求页面</NuxtLink>
             </div>
-            <div class="MenuItem">
+            <div class="MenuItem" @click="drawer = false">
               <NuxtLink to="/error/type-phone">错误页面测试-phone</NuxtLink>
             </div>
-            <div class="MenuItem">
+            <div class="MenuItem" @click="drawer = false">
               <NuxtLink to="/error/type-window">错误页面测试-Windows</NuxtLink>
             </div>
-            <div class="MenuItem">
+            <div class="MenuItem" @click="drawer = false">
               <a href="https://jihau.com/POP/" class="text-x2">测试</a>
             </div>
             <div class="MenuItem">
-              <nuxt-link to="/Search" class="SearchBtn">
-                搜索
-                <el-icon>
-                  <Search />
-                </el-icon>
-              </nuxt-link>
+              <div class="SearchBox">
+                <el-input v-model="key" placeholder="搜搜搜~" class="input-with-select">
+                  <template #append>
+                    <el-button :icon="Search" @click="SearchFunc" />
+                  </template>
+                </el-input>
+              </div>
             </div>
             <div class="LoginBtn">
               <div class="User" v-if="store.Userdata.Users.username != ''">
@@ -243,14 +255,8 @@ a {
   justify-content: space-between;
 }
 
-.SearchBtn {
-  display: inline-block;
+.SearchBox {
   margin-right: 10px;
-
-  >.el-icon {
-    font-size: 1.2rem;
-    font-weight: bolder;
-  }
 }
 
 .User {

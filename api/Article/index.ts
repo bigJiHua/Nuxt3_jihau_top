@@ -1,6 +1,6 @@
 import request from "../request"
 // 首页获取文章
-const getArticleList = function (page: number) {
+const getArticleList = function (page: number | string) {
   return request.get('/data/list?page=' + page)
 }
 
@@ -49,11 +49,20 @@ const UpdatedReadNum = function (id: string) {
   return request.get('/data/UpreadNum', { params })
 }
 
+// 搜索接口
+const SearchApi = function (key: string,type:string) { 
+  const params = new URLSearchParams()
+  params.append('key', key)
+  params.append('type', type)
+  return request.get('/data/search', { params })
+}
+
 export default {
   getArchives,
   UpdatedReadNum,
   getPageData,
   getArticleList,
   getArchive,
-  getNotifyList
+  getNotifyList,
+  SearchApi
 }
