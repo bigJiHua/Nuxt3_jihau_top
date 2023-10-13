@@ -287,7 +287,9 @@ onMounted(() => {
       </div>
     </div>
     <div class="ArticleRightPanel">
-      <RightMArticle></RightMArticle>
+      <KeepAlive>
+        <RightMArticle></RightMArticle>
+      </KeepAlive>
     </div>
     <ArticleLoginBox @closePanel="closePanel" v-if="showLogin"></ArticleLoginBox>
   </div>
@@ -353,6 +355,10 @@ onMounted(() => {
     border-radius: 12px;
     margin-bottom: 30px;
   }
+
+  #comtext {
+    width: 95%;
+  }
 }
 
 .tabmenu {
@@ -406,7 +412,6 @@ onMounted(() => {
     border-radius: 8px;
     border: 2px rgba(243, 245, 248, 0.8) solid;
     padding: 5px;
-    width: 100%;
     height: 80px;
     resize: none;
   }

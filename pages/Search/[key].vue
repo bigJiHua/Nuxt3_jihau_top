@@ -77,7 +77,7 @@ useHead({
 
     p:first-child {
       text-align: center;
-      font-size: 10rem;
+      font-size: 6rem;
       letter-spacing: 4rem;
     }
   }

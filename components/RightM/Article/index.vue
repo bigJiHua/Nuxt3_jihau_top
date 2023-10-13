@@ -41,7 +41,6 @@ onMounted(() => {
 
 .RightMoudle {
   background-color: #fff;
-  ;
   box-shadow: rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 10%) 0px 10px 15px -3px, rgb(0 0 0 / 5%) 0px 4px 6px -2px;
   border-radius: 5px;
 }

@@ -1,32 +1,15 @@
 <script setup lang="ts">
 import { Menu } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
-import GetUserData from '@/api/User'
 import { useUserDataStore } from "@/stores/useUserData"
 import { Search } from '@element-plus/icons-vue'
-const isLogin = ref(false)
 const drawer = ref(false)
 const store = useUserDataStore()
 const isSHow = ref(false)
-const userData: any = reactive(store.Userdata.Users)
 const key: any = ref('')
 const router = useRouter()
-const LoginOut = () => {
-  if (process.client) {
-    localStorage.removeItem('token')
-    localStorage.removeItem('Username')
-    localStorage.removeItem('Useridentity')
-    localStorage.removeItem('UserData')
-    store.setUserData([])
-    location.reload()
-  }
-}
-const getUserData = async () => {
-  if (localStorage.getItem('Username') !== null) {
-    const { data: res } = await GetUserData.GetUserData()
-    store.setUserData(res.data)
-  }
-}
+const isLogin = ref(false)
+
 const SearchFunc = () => {
   router.push('/Search/' + key.value)
   if (isSHow) {
@@ -37,6 +20,8 @@ const SearchFunc = () => {
 onMounted(() => {
   if (process.client) {
     isLogin.value = localStorage.getItem('token') ? true : false;
+  }
+  if (process.client) {
     if (window.innerWidth > 756) {
       isSHow.value = true
     }
@@ -47,9 +32,6 @@ onMounted(() => {
         // location.reload()
       }
     }
-  }
-  if (!userData.username && !store.Userdata.Users.username) {
-    getUserData()
   }
 })
 </script>
@@ -102,13 +84,11 @@ onMounted(() => {
             </template>
           </el-input>
         </div>
-        <div class="User" v-if="store.Userdata.Users.user_pic != ''">
-          <NuxtLink to="/CtrlView"><img :src="store.Userdata.Users.user_pic" alt="Logo" class="userLogo"></NuxtLink>
-          <NuxtLink to="/CtrlView"><span class="Username">{{ store.Userdata.Users.username }}</span></NuxtLink>
-        </div>
-        <div class="Loginbox">
-          <el-button type="primary" plain v-if="isLogin" @click="LoginOut">注销</el-button>
-          <nuxt-link to="/Login" v-else><el-button type="primary" plain>登录</el-button></nuxt-link>
+        <div class="User">
+          <HeaderLogoMenu></HeaderLogoMenu>
+          <div class="User" v-if="!isLogin">
+            <nuxt-link to="/Login"><el-button type="primary" plain>登录</el-button></nuxt-link>
+          </div>
         </div>
       </div>
     </div>
@@ -164,13 +144,9 @@ onMounted(() => {
               </div>
             </div>
             <div class="LoginBtn">
-              <div class="User" v-if="store.Userdata.Users.username != ''">
-                <NuxtLink to="/CtrlView"><img :src="store.Userdata.Users.user_pic" alt="Logo" class="userLogo"></NuxtLink>
-                <NuxtLink to="/CtrlView"><span class="Username">{{ store.Userdata.Users.username }}</span></NuxtLink>
-              </div>
-              <div class="Loginbox">
-                <el-button type="primary" plain v-if="isLogin" @click="LoginOut">注销</el-button>
-                <nuxt-link to="/Login" v-else><el-button type="primary" plain>登录</el-button></nuxt-link>
+              <HeaderLogoMenu></HeaderLogoMenu>
+              <div class="User" v-if="!isLogin">
+                <nuxt-link to="/Login"><el-button type="primary" plain>登录</el-button></nuxt-link>
               </div>
             </div>
           </template>
@@ -257,18 +233,6 @@ a {
 
 .SearchBox {
   margin-right: 10px;
-}
-
-.User {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 10px;
-
-  >a>.userLogo {
-    width: 30px;
-    height: 30px;
-  }
 }
 
 @media screen and (max-width: 768px) {

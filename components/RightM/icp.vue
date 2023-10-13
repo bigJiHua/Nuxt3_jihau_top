@@ -6,7 +6,7 @@
         ICP备案号:<a href="https://beian.miit.gov.cn">桂ICP备123456</a>
       </p>
       <p class="icp_alt">
-        Power By <a href="http://github.com/bigjihua">BigJiHua</a> | <NuxtLink to="/page/YSZC">隐私政策</NuxtLink>
+        Power By <a href="http://github.com/bigjihua">BigJiHua</a> | <NuxtLink to="/Notify/YSZC">隐私政策</NuxtLink>
       </p>
     </div>
   </div>

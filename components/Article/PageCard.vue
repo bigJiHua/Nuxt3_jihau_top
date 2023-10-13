@@ -7,6 +7,8 @@ const props = defineProps({
     }
   }
 })
+const id = ref(props.item.article_id ? props.item.article_id : props.item.notify_id)
+const link = ref(props.item.article_id ? `/article/${id.value}  ` : `/Notify/${id.value}`)
 const isUser = ref(props.item.user_id ? true : false)
 onMounted(() => {
   props.item.keyword = props.item.keyword.split('、')
@@ -53,12 +55,12 @@ onMounted(() => {
           <nuxt-link :to="{ path: '/space/' + item.username }"> {{ item.username }}</nuxt-link>
           <span>发布于{{ item.pub_date }}</span>
         </div>
-        <nuxt-link :to="{ path: '/article/' + item.article_id }">
+        <nuxt-link :to="link">
           <h3>{{ item.title }}</h3>
         </nuxt-link>
       </div>
       <article>
-        <nuxt-link :to="{ path: '/article/' + item.article_id }">
+        <nuxt-link :to="link">
           {{ item.content }}...
         </nuxt-link>
       </article>
@@ -78,6 +80,7 @@ onMounted(() => {
     rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
   overflow: scroll;
 }
+
 .itemarea::-webkit-scrollbar {
   display: none;
 }

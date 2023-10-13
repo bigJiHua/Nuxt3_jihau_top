@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import GetNotifyData from '@/api/Article'
 import { useRoute } from 'vue-router'
+import { useAuthorDataStore } from '@/stores/useUserData'
 const router = useRoute()
+const store = useAuthorDataStore()
 
 const NotifyData: any = reactive({
   title: '',
@@ -10,14 +12,17 @@ const NotifyData: any = reactive({
   content: ''
 })
 const goodpage = ref(true)
+const loading = ref(true)
 const getNotify = async (id: string) => {
   const { data: res } = await GetNotifyData.getPageData(id)
   if (res.status !== 404) {
     goodpage.value = false
+    loading.value = false
     NotifyData.title = res.data.title
     NotifyData.username = res.data.username
     NotifyData.pub_date = res.data.pub_date
     NotifyData.content = res.data.content
+    store.setArticleAuthor(res.data.username)
   } else {
     goodpage.value = true
   }
@@ -51,8 +56,14 @@ onMounted(() => {
 <template>
   <div id="" class="article">
     <div class="leftContent">
-      <h1 v-show="goodpage" style="text-align: center">很抱歉，您没有查看的权限</h1>
-      <div v-show="!goodpage">
+      <div v-if="goodpage" style="text-align: center">
+        <el-empty description="加载中" v-if="loading" />
+        <div v-else>
+          <h1>404 NOT FOUNT</h1>
+          <nuxt-link to="/">返回主页</nuxt-link>
+        </div>
+      </div>
+      <div v-else>
         <div class="content st">
           <header class="headerText">
             <h1>{{ NotifyData.title }}</h1>
@@ -173,57 +184,5 @@ onMounted(() => {
 .selc,
 .selg {
   color: red;
-}
-
-.commentArea {
-  padding: 10px 0 20px 0;
-  border-radius: 5px;
-
-  p {
-    font-size: 1.5rem;
-    font-weight: bolder;
-    margin: 10px;
-  }
-
-  #comtext {
-    border-radius: 8px;
-    border: 2px rgba(243, 245, 248, 0.8) solid;
-    padding: 5px;
-    width: 100%;
-    height: 80px;
-    resize: none;
-  }
-
-  .comment {
-    background-color: rgba(201, 227, 243, 0.4);
-    border-radius: 4px;
-    padding: 5px;
-    margin-bottom: 10px;
-
-    p {
-      margin: 0;
-      color: rgba(6, 52, 122, 0.8);
-    }
-
-    .comment_user {
-      font-size: 1.2rem;
-    }
-
-    .comment_text {
-      font-size: 1.2rem;
-      margin: 2px;
-    }
-
-    .comment_time {
-      font-size: 0.8rem;
-      text-align: right;
-    }
-  }
-}
-
-.textarea {
-  >button {
-    float: right;
-  }
 }
 </style>

@@ -31,7 +31,7 @@ useHead({
       <div class="Tree_dome" v-for="(item, index) in notifyList[0]" :key="index">
         <div class="Tree_Area">
           <span class="set_title">通知:</span>
-          <nuxt-link :to="'/page/' + item.notify_id">{{ item.title }}</nuxt-link>
+          <nuxt-link :to="'/Notify/' + item.notify_id">{{ item.title }}</nuxt-link>
           <span class="set_time">发布日期：{{ item.pub_date }}</span>
         </div>
       </div>

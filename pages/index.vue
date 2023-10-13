@@ -1,7 +1,11 @@
 <template>
   <div id="" class="center_box">
+    <KeepAlive>
     <LeftM class="left"></LeftM>
-    <RightM class="right" :isOpen="true"></RightM>
+    </KeepAlive>
+    <KeepAlive>
+      <RightM class="right" :isOpen="true"></RightM>
+    </KeepAlive>
   </div>
 </template>
 

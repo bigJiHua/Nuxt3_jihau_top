@@ -1,6 +1,8 @@
 <template>
   <div class="DefaultLayout">
-    <Header></Header>
+    <keepAlive>
+      <Header></Header>
+    </keepAlive>
     <div class="body">
       <slot />
     </div>
@@ -15,6 +17,7 @@
 .DefaultLayout {
   background-color: #edf1f5;
 }
+
 .body {
   padding: 60px 0 0 0;
 }

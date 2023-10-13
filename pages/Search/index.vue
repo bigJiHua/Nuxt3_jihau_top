@@ -51,10 +51,12 @@ useHead({
 <style lang="less" scoped>
 .value_area {
   overflow: scroll;
-  background-color: red;
   >ul {
     list-style: none;
   }
+}
+.value_area::-webkit-scrollbar {
+  display: none;
 }
 @media only screen and (min-width: 755px) {
   .search {
@@ -68,7 +70,7 @@ useHead({
 
     p:first-child {
       text-align: center;
-      font-size: 10rem;
+      font-size: 6rem;
       letter-spacing: 4rem;
     }
   }

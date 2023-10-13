@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import getNotifyAPI from '@/api/Article'
 import { Notification } from '@element-plus/icons-vue'
-const notifyList = ref([])
+const notifyList: any = ref([])
 const getNotifyData = async () => {
   const { data: res } = await getNotifyAPI.getNotifyList()
   notifyList.value = res.data
@@ -22,7 +22,7 @@ onMounted(() => {
       </el-icon>
       <el-carousel height="25px" pause-on-hover class="Noticelist" :interval="5000" direction="vertical" hide-scrollbar>
         <el-carousel-item v-for="(data, index) in notifyList" :key="index">
-          <nuxt-link :to="'/page/' + data.notify_id">{{ data.title }}</nuxt-link>
+          <nuxt-link :to="'/Notify/' + data.notify_id">{{ data.title }}</nuxt-link>
         </el-carousel-item>
       </el-carousel>
     </div>

@@ -1,8 +1,18 @@
 <script lang="ts" setup>
 import { useAuthorDataStore } from '@/stores/useUserData'
 import getAuthorApi from '@/api/User'
+const props = defineProps({
+  user: {
+    type: String,
+    default: '',
+  },
+  isCtrl: {
+    type: Boolean,
+    default: false,
+  }
+})
 const store = useAuthorDataStore()
-const author: any = ref(store.ArticleAuthor)
+const author: any = ref(store.ArticleAuthor ? store.ArticleAuthor : props.user)
 const isLoding = ref(true)
 const Users: any = reactive({
   fans: 0,
@@ -34,7 +44,8 @@ const getauthData = async () => {
 }
 onMounted(() => {
   const getUserData = setInterval(() => {
-    author.value = store.ArticleAuthor
+    if (props.user) author.value = props.user
+    else author.value = store.ArticleAuthor
     if (author.value) {
       clearInterval(getUserData)
       getauthData()
@@ -76,8 +87,14 @@ onMounted(() => {
     <!-- 用户操作区域 -->
     <div class="UserActionArea">
       <!-- TODO待开发事件 -->
-      <el-button color="#76A9F5" plain>关注我</el-button>
-      <el-button color="#76A9F5" plain>发私信</el-button>
+      <div v-if="!isCtrl">
+        <el-button color="#76A9F5" plain>关注我</el-button>
+        <el-button color="#76A9F5" plain>发私信</el-button>
+      </div>
+      <div v-else>
+
+        <el-button color="#76A9F5" plain>编辑个人资料</el-button>
+      </div>
     </div>
     <!-- 未来开发区域 -->
   </div>
@@ -87,24 +104,22 @@ onMounted(() => {
 .UserArea {
   background-color: #fff;
   border-radius: 5px;
-  padding: 0px 0 15px 0;
 }
 
 .background {
-  height: 300px;
+  height: 250px;
   width: 100%;
   position: relative;
 }
 
 .image {
   height: 50%;
-  width: 100%;
   border-radius: 5px 5px 0 0;
   background-color: #ECF4FD;
   color: #1c1c1c;
   text-align: center;
   white-space: break-spaces;
-  padding: 15px 0px;
+  padding: 15px;
 }
 
 .image::after {
@@ -130,10 +145,8 @@ onMounted(() => {
 }
 
 .username {
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
+  text-align: center;
+  margin-top: 40px;
   font-size: 2.5rem;
 
   >a {
@@ -165,10 +178,13 @@ onMounted(() => {
 
 .UserActionArea {
   display: flex;
-  width: 80%;
-  margin: 10px auto;
-  justify-content: space-between;
+  width: 100%;
+  justify-content: center;
   align-items: center;
   flex-wrap: nowrap;
+
+  >div>button {
+    margin: 25px;
+  }
 }
 </style>

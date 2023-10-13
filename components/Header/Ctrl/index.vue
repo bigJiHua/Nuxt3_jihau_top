@@ -3,28 +3,11 @@ import { Menu } from '@element-plus/icons-vue'
 import { useUserDataStore } from "@/stores/useUserData"
 import { useRouter } from '#vue-router';
 const router = useRouter()
-const isLogin = ref(false)
 const drawer = ref(false)
 const store = useUserDataStore()
 const isSHow = ref(false)
-const LoginOut = () => {
-  if (process.client) {
-    localStorage.removeItem('token')
-    localStorage.removeItem('Username')
-    localStorage.removeItem('Useridentity')
-    localStorage.removeItem('UserData')
-    store.setUserData([])
-  }
-  ElMessage({
-    message: '退出成功',
-    type: 'success',
-    duration: 2500
-  })
-  router.push('/')
-}
 onMounted(() => {
   if (process.client) {
-    isLogin.value = localStorage.getItem('token') ? true : false;
     if (window.innerWidth > 756) {
       isSHow.value = true
     }
@@ -32,7 +15,6 @@ onMounted(() => {
       if (window.innerWidth > 756) {
         isSHow.value = true
       }
-      location.reload()
     }
   }
 })
@@ -48,11 +30,6 @@ onMounted(() => {
           </el-menu-item>
         </el-menu>
       </client-only>
-      <div class="LoginBtn">
-        <nuxt-link to="/">主页</nuxt-link>
-        <el-button type="primary" plain v-if="isLogin" @click="LoginOut">注销</el-button>
-        <nuxt-link to="/Login" v-else><el-button type="primary" plain>登录</el-button></nuxt-link>
-      </div>
     </div>
     <div class="Header " v-else>
       <div class="HeaderLeft">
@@ -93,15 +70,6 @@ onMounted(() => {
 </template>
 
 <style lang="less" scoped>
-#HeaderBox {
-  width: 100vw;
-  height: 60px;
-  overflow: hidden;
-  position: fixed;
-  top: 0;
-  z-index: 999;
-}
-
 a {
   text-decoration: none;
   color: gray;
@@ -113,17 +81,12 @@ a {
 }
 
 .Header {
-  height: 40px;
-  width: 75vw;
-  border-radius: 5px;
-  padding: 5px;
+  padding: 5px 20px;
   display: flex;
-  margin: 0 auto;
   background-color: #fff;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  border-radius: 0 0 5px 5px;
 }
 
 .HeaderTitle {
@@ -160,14 +123,6 @@ a {
   background-color: #f9fafbe5;
 }
 
-.LoginBtn {
-  float: right;
-  width: 10vw;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 @media screen and (max-width: 768px) {
   .HeaderTitle {
     font-size: 1.5rem;
@@ -183,11 +138,7 @@ a {
   }
 
   .Header {
-    width: 95vw;
-  }
-
-  .LoginBtn {
-    margin-top: 20px;
+    padding: 0;
   }
 
 }

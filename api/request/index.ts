@@ -29,7 +29,7 @@ request.interceptors.request.use(config => {
 request.interceptors.response.use(response => {
   const { data: res } = response
   // 选择性展示通知
-  if (!res.ismessage) return response
+  if (res.ismessage === false) return response
   if (res.status !== 200) {
     // 在需要显示通知的地方调用函数
     ElNotification({
@@ -46,7 +46,6 @@ request.interceptors.response.use(response => {
   }
   return response
 }, error => {
-  console.log(error);
   const errorCode: number = error.response.status ? error.response.status : 200
   const message = error.response.data.message ? error.response.data.message : error.message
   // 在需要显示通知的地方调用函数
