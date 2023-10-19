@@ -59,23 +59,25 @@ const login = async () => {
   if (validata('username') && validata('password')) {
     // 发起请求
     const { data: res } = await Login.LoginMenu(username.value, password.value)
-    if (res.token) { loading.value = false } else {
+    if (res.token) {
+      // 打开开关
+      loading.value = false
+      // 判断返回状态码是否成功
+      localStorage.setItem('token', res.token)
+      localStorage.setItem('Username', res.data.Users.username)
+      localStorage.setItem('Useridentity', res.data.Users.useridentity)
+      store.setUserData(res.data)
+      setTimeout(() => {
+        show.value = false
+        loading.value = false
+        localStorage.removeItem('VerCode')
+        router.push('/CtrlView')
+      }, setTime.value)
+    } else {
       setTimeout(() => {
         loading.value = false
       }, 2000)
     }
-    // 打开开关
-    // 判断返回状态码是否成功
-    localStorage.setItem('token', res.token)
-    localStorage.setItem('Username', res.data.Users.username)
-    localStorage.setItem('Useridentity', res.data.Users.useridentity)
-    store.setUserData(res.data)
-    setTimeout(() => {
-      show.value = false
-      loading.value = false
-      localStorage.removeItem('VerCode')
-      router.push('/CtrlView')
-    }, setTime.value)
   }
 }
 
@@ -105,7 +107,7 @@ useHead({
             <el-input v-model="username" />
           </el-form-item>
           <el-form-item label="密码">
-            <el-input v-model="password" type="password" placeholder="Please input password" show-password />
+            <el-input v-model="password" type="password" placeholder="请输入密码" show-password />
           </el-form-item>
         </el-form>
         <div class="btnmenu">

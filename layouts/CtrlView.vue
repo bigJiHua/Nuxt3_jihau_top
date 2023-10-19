@@ -48,7 +48,9 @@ onMounted(() => {
   height: 100%;
   width: 100%;
 }
-
+.main {
+  padding: 0;
+}
 .menu {
   position: relative;
 }

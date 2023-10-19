@@ -43,11 +43,11 @@ const getauthData = async () => {
   isLoding.value = false
 }
 onMounted(() => {
-  const getUserData = setInterval(() => {
+  const getAuthData = setInterval(() => {
     if (props.user) author.value = props.user
     else author.value = store.ArticleAuthor
     if (author.value) {
-      clearInterval(getUserData)
+      clearInterval(getAuthData)
       getauthData()
     }
   }, 200)
@@ -89,10 +89,8 @@ onMounted(() => {
       <!-- TODO待开发事件 -->
       <div v-if="!isCtrl">
         <el-button color="#76A9F5" plain>关注我</el-button>
-        <el-button color="#76A9F5" plain>发私信</el-button>
       </div>
       <div v-else>
-
         <el-button color="#76A9F5" plain>编辑个人资料</el-button>
       </div>
     </div>

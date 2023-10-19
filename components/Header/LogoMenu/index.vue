@@ -5,7 +5,7 @@
 * 用户信息的请求获取
 */
 import { useUserDataStore } from "@/stores/useUserData"
-import GetUserData from '@/api/User'
+import GetUserDataApi from '@/api/User'
 import { useRouter } from 'vue-router'
 // import { Menu } from '@element-plus/icons-vue'
 const store = useUserDataStore()
@@ -24,7 +24,7 @@ const LoginOut = () => {
 }
 const getUserData = async () => {
   if (localStorage.getItem('Username') !== null) {
-    const { data: res } = await GetUserData.GetUserData()
+    const { data: res } = await GetUserDataApi.GetUserData()
     store.setUserData(res.data)
   }
 }
@@ -40,20 +40,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <client-only>
+  <client-only v-if="isLogin">
     <el-dropdown trigger="click">
       <img :src="store.Userdata.Users.user_pic" alt="Logo" class="userLogo">
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item>
-            <nuxt-link to="/CtrlView/Users">个人设置</nuxt-link>
-          </el-dropdown-item>
-          <el-dropdown-item>
-            <nuxt-link to="/CtrlView/Article">文章</nuxt-link>
-          </el-dropdown-item>
-          <el-dropdown-item>
-            <nuxt-link to="/CtrlView/Collection">我的</nuxt-link>
-          </el-dropdown-item>
+          <nuxt-link to="/CtrlView/Users">
+            <el-dropdown-item>我的</el-dropdown-item>
+          </nuxt-link>
+          <nuxt-link :to="'/space/' + store.Userdata.Users.username">
+            <el-dropdown-item>空间</el-dropdown-item>
+          </nuxt-link>
           <el-dropdown-item>
             <el-button type="primary" plain v-if="isLogin" @click="LoginOut">注销</el-button>
             <nuxt-link to="/Login" v-else><el-button type="primary" plain>登录</el-button></nuxt-link>

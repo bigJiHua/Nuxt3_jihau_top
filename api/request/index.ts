@@ -1,8 +1,5 @@
 import axios from 'axios'
 import { ElNotification, ElMessage } from 'element-plus'
-import { useRouter } from 'vue-router'
-const router = useRouter()
-
 // 创建axios实例
 const request = axios.create({
   baseURL: 'http://192.168.0.103:666/api',
@@ -56,13 +53,10 @@ request.interceptors.response.use(response => {
     duration: 1500
   })
   if (errorCode === 401) {
-    if (process.env.NODE_ENV === 'production') {
-      error.context.redirect('/')
-    } else {
-      // 在客户端使用 router 对象进行路由跳转
-      localStorage.removeItem('token')
-      router.push('/')
-    }
+    localStorage.removeItem('token')
+    localStorage.removeItem('Username')
+    localStorage.removeItem('Useridentity')
+    location.reload()
   }
   return Promise.reject(error)
 })

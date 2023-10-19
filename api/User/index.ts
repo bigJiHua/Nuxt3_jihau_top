@@ -32,12 +32,18 @@ const CagUserData = function (userId: string, data: any) {
   params.append('setData', JSON.stringify(data))
   return request.patch('/users/cagUser', params.toString())
 }
-// 修改密码
-const CagPassword = function (oldpwd: string, newpwd: string) {
+// 修改用户权限
+const CagUserPower = function (type: string, value: string) {
   const params = new URLSearchParams()
-  params.append('oldpwd', oldpwd)
-  params.append('newpwd', newpwd)
-  params.append('username', localStorage.getItem('Username') as string)
+  params.append('type', type)
+  params.append('value', value)
+  return request.patch('/users/cagpow', params.toString())
+}
+// 修改密码
+const CagPassword = function (data: { oldpwd: string, newpwd: string }) {
+  const params = new URLSearchParams()
+  params.append('oldpwd', data.oldpwd)
+  params.append('newpwd', data.newpwd)
   return request.patch('/users/cagpwd', params)
 }
 export default {
@@ -46,5 +52,6 @@ export default {
   UpnewUser,
   DelUser,
   CagPassword,
-  getAuthData
+  getAuthData,
+  CagUserPower
 }
