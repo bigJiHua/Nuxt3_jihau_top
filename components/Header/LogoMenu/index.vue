@@ -36,6 +36,11 @@ onMounted(() => {
   if (!userData.username && !store.Userdata.Users.username) {
     getUserData()
   }
+  setInterval(() => {
+    if (router.currentRoute.value.path === '/Login' && store.Userdata.Users.username) {
+      getUserData()
+    }
+  }, 1000)
 })
 </script>
 
@@ -45,8 +50,11 @@ onMounted(() => {
       <img :src="store.Userdata.Users.user_pic" alt="Logo" class="userLogo">
       <template #dropdown>
         <el-dropdown-menu>
-          <nuxt-link to="/CtrlView/Users">
+          <nuxt-link to="/Users">
             <el-dropdown-item>我的</el-dropdown-item>
+          </nuxt-link>
+          <nuxt-link to="/editor">
+            <el-dropdown-item>发布文章</el-dropdown-item>
           </nuxt-link>
           <nuxt-link :to="'/space/' + store.Userdata.Users.username">
             <el-dropdown-item>空间</el-dropdown-item>

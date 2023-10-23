@@ -4,7 +4,7 @@
     <LeftM class="left"></LeftM>
     </KeepAlive>
     <KeepAlive>
-      <RightM class="right" :isOpen="true"></RightM>
+      <RightM class="right"></RightM>
     </KeepAlive>
   </div>
 </template>

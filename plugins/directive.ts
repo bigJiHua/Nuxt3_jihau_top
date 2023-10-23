@@ -9,7 +9,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         highlight = el.querySelectorAll('pre code')
         if (highlight.length !== 0) {
           clearInterval(getElment)
-          highlight.forEach((block) => {
+          highlight.forEach((block: any) => {
             hljs.highlightBlock(block)
           })
         }

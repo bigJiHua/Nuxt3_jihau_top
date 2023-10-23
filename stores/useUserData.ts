@@ -15,17 +15,17 @@ export const useUserDataStore = defineStore('UserData', {
           id: 0,
           user_id: "",
           username: "",
-          isadmin: 0,
-          iscom: 0,
-          isart: 0,
-          isupimg: 0,
-          isrel: 0,
-          isspace: 0,
-          islike: 0,
-          iscol: 0
+          isadmin: 1,
+          iscom: 1,
+          isart: 1,
+          isupimg: 1,
+          isrel: 1,
+          isspace: 1,
+          islike: 1,
+          iscol: 1,
         }
       }
-    } as any ,
+    } as any,
     stateCode: 200,
   }),
   actions: {

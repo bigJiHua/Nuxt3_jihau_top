@@ -1,4 +1,8 @@
 <script setup lang="ts">
+
+definePageMeta({
+  layout: 'ctrl-view'
+})
 const tabPosition: any = ref('left')
 onMounted(() => {
   if (process.client) {
@@ -31,10 +35,11 @@ onMounted(() => {
 <style lang="less" scoped>
 .UserDataBox,
 .Usertabs {
-  width: 100%;
   height: 100%;
+  width: 100%;
 }
-/deep/.el-tabs__content {
+
+:deep(.el-tabs__content) {
   padding: 5px;
 }
 </style>

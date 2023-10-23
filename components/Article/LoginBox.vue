@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { useUserDataStore } from '@/stores/useUserData'
 import Login from '@/api/Page'
 import { CloseBold } from '@element-plus/icons-vue'
-const store = useUserDataStore()
 const router = useRouter()
 const username = ref('jihua')
 const password = ref('123456')
@@ -27,7 +25,7 @@ const login = async () => {
       message: '已经登录啦！请勿重复登录',
       type: 'warning'
     })
-    router.push('/CtrlView')
+    location.reload()
     return
   }
   // 验证
@@ -44,7 +42,7 @@ const login = async () => {
     localStorage.setItem('token', res.token)
     localStorage.setItem('Username', res.data.Users.username)
     localStorage.setItem('Useridentity', res.data.Users.useridentity)
-    store.setUserData(res.data)
+    location.reload()
     setTimeout(() => {
       show.value = false
       loading.value = false
@@ -53,17 +51,7 @@ const login = async () => {
   }
 }
 const register = () => {
-  if (localStorage.getItem('token')) {
-    ElMessage({
-      message: '已经登录啦！请勿重复登录',
-      type: 'warning'
-    })
-    setTimeout(() => {
-      router.push('/CtrlView/Users')
-    }, 1000)
-  } else {
-    router.push('/register')
-  }
+  router.push('/register')
 }
 const validata = (key: string) => {
   let bool = true

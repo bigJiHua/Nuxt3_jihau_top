@@ -13,7 +13,7 @@ const MenuItem = reactive([
   { path: '/SpsList', text: '友链' },
   { path: '/checkver', text: '激活账户' },
   { path: 'https://www.jihau.com', text: '主站博客页面' },
-  { path: '/page/YSZC', text: '隐私政策' },
+  { path: '/notify/YSZC', text: '隐私政策' },
   { path: '/html/goods/10010.html', text: '物品寻求页面' },
   { path: '/error/type-phone', text: '错误页面测试-phone' },
   { path: '/error/type-window', text: '错误页面测试-Windows' },
@@ -71,7 +71,6 @@ a {
 .Header {
   height: 40px;
   width: 85vw;
-  border-radius: 5px;
   padding: 5px;
   display: flex;
   margin: 0 auto;
@@ -127,39 +126,5 @@ a {
   margin-right: 10px;
 }
 
-@media screen and (max-width: 768px) {
-  .HeaderTitle {
-    font-size: 1.5rem;
-    font-weight: 400;
-  }
-
-  .HeaderLeft {
-    display: flex;
-    width: 100%;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .Header {
-    width: 95vw;
-  }
-
-  .LoginBtn {
-    margin-top: 20px;
-    width: 100%;
-  }
-
-  .RightMenu {
-    display: flex;
-    align-items: center;
-    margin: 5px;
-
-    >button {
-      margin: 0 10px 0 0;
-    }
-  }
-
-}
 </style>
 

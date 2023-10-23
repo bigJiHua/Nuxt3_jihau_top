@@ -84,4 +84,14 @@ onMounted(() => {
     display: flex;
     justify-content: space-between;
   }
-}</style>
+}
+
+@media screen and(max-width: 755px) {
+  .inputBox {
+    width: 75vw;
+    padding: 10px;
+    margin: 0 20px;
+    left: 44%;
+  }
+}
+</style>

@@ -40,15 +40,32 @@ import { useIndexLunBoStore } from '~/stores/useindexDemoData'
 import getLunboData from '@/api/Page'
 const store = useIndexLunBoStore()
 const images = ref(toRaw(store.getLunBoList))
+// SSR请求轮播图 /data/Setting?value=
+const NUrl = `${reqConfig.baseUrl}/data/Setting`;
+useFetch(NUrl, {
+  method: 'get',
+  params: {
+    value: 'Lunbo'
+  }
+})
+  .then(response => {
+    const res: any = response.data.value
+    images.value = res.data
+  })
+
 const getLunBoList = async () => {
   const { data: res } = await getLunboData.getSetting('Lunbo')
   store.setLunBoData(res.data)
   images.value = res.data
 }
 onMounted(() => {
-  images.value = toRaw(store.getLunBoList)
-  if (images.value.length === 0) {
-    getLunBoList()
+  setTimeout(() => {
+    if (images.value) {
+      store.setLunBoData(images.value)
+    }
+  }, 800);
+  if (images.value.length === 0 && store.LunBoList.length !== 0) {
+    images.value = toRaw(store.getLunBoList)
   }
 })
 </script>

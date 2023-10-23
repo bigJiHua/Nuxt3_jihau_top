@@ -13,22 +13,23 @@ const MenuItem = reactive([
   { path: '/SpsList', text: '友链' },
   { path: '/checkver', text: '激活账户' },
   { path: 'https://www.jihau.com', text: '主站博客页面' },
-  { path: '/page/YSZC', text: '隐私政策' },
+  { path: '/notify/YSZC', text: '隐私政策' },
   { path: '/html/goods/10010.html', text: '物品寻求页面' },
   { path: '/error/type-phone', text: '错误页面测试-phone' },
   { path: '/error/type-window', text: '错误页面测试-Windows' },
 ])
 const CtrlMenuItem = reactive([
-  { path: '/CtrlView/Users', text: '我的信息' },
-  { path: '/CtrlView/Article', text: '我的文章' },
-  { path: '/CtrlView/Article/add', text: '发布文章' },
-  { path: '/CtrlView/Article/cag', text: '修改文章' },
-  { path: '/CtrlView/Article/wait', text: '草稿箱' },
-  { path: '/CtrlView/Article/recycle', text: '回收站' },
-  { path: '/CtrlView/my/like', text: '我的喜欢' },
-  { path: '/CtrlView/my/collect', text: '我的收藏' },
-  { path: '/CtrlView/my/comment', text: '我的评论' },
-  { path: '/CtrlView/Setting', text: '个性设置' },
+  { path: '/Users', text: '个人设置' },
+  { path: '/my', text: '我的消息' },
+  { path: '/editor/list', text: '我的文章' },
+  { path: '/editor', text: '发布文章' },
+  { path: '/editor/cag', text: '修改文章' },
+  { path: '/editor/wait', text: '草稿箱' },
+  { path: '/editor/recycle', text: '回收站' },
+  { path: '/my/like', text: '我的喜欢' },
+  { path: '/my/collect', text: '我的收藏' },
+  { path: '/my/comment', text: '我的评论' },
+  { path: '/my/Setting', text: '个性设置' },
 ])
 
 const drawer = ref(false)
@@ -78,7 +79,8 @@ onMounted(() => {
         </div>
         <div v-if="isLogin">
           <el-drawer v-model="innerDrawer" :with-header="false" :append-to-body="true" size="50vw" style="padding: 0;">
-            <div class="MenuItem" v-for="(item, index) in CtrlMenuItem" :key="index" @click="innerDrawer = false, drawer = false">
+            <div class="MenuItem" v-for="(item, index) in CtrlMenuItem" :key="index"
+              @click="innerDrawer = false, drawer = false">
               <NuxtLink :to="item.path" class="text-x2">{{ item.text }}</NuxtLink>
             </div>
           </el-drawer>
@@ -110,8 +112,7 @@ a {
 
 .Header {
   height: 40px;
-  width: 85vw;
-  border-radius: 5px;
+  width: 95vw;
   padding: 5px;
   display: flex;
   margin: 0 auto;
@@ -120,19 +121,6 @@ a {
   justify-content: space-between;
   align-items: center;
   border-radius: 0 0 5px 5px;
-}
-
-.HeaderTitle {
-  font-size: 2rem;
-  font-weight: 100;
-  color: rgb(141, 141, 141);
-}
-
-.HeaderLeft {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-wrap: nowrap;
 }
 
 .menu-container {
@@ -167,39 +155,31 @@ a {
   margin-right: 10px;
 }
 
-@media screen and (max-width: 768px) {
-  .HeaderTitle {
-    font-size: 1.5rem;
-    font-weight: 400;
+.HeaderTitle {
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+
+.HeaderLeft {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.LoginBtn {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.RightMenu {
+  display: flex;
+  align-items: center;
+  margin: 5px;
+
+  >button {
+    margin: 0 10px 0 0;
   }
-
-  .HeaderLeft {
-    display: flex;
-    width: 100%;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .Header {
-    width: 95vw;
-  }
-
-  .LoginBtn {
-    margin-top: 20px;
-    width: 100%;
-  }
-
-  .RightMenu {
-    display: flex;
-    align-items: center;
-    margin: 5px;
-
-    >button {
-      margin: 0 10px 0 0;
-    }
-  }
-
 }
 </style>
 

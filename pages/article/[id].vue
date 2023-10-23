@@ -3,7 +3,7 @@ import getArticleApi from '@/api/Article'
 import UserAction from '@/api/Article/Action'
 import { useRoute } from 'vue-router'
 import { useAuthorDataStore } from '@/stores/useUserData'
-import { Star, Share, View, Calendar } from '@element-plus/icons-vue'
+import { Share, View, Calendar } from '@element-plus/icons-vue'
 const store = useAuthorDataStore()
 const router = useRoute()
 const Active: any = reactive({
@@ -30,13 +30,40 @@ const ArticleData: any = reactive({
   commont: []
 })
 const goodpage = ref(true)
-const page = router.params.id
 const Move = reactive({
   goodnum: false,
   collect: false
 })
 const showLogin = ref(false)
-const loading = ref(true)
+// router.params.id
+const AUrl = `${reqConfig.baseUrl}/data/article/`;
+useFetch(AUrl, {
+  method: 'get',
+  params: {
+    id: router.params.id
+  }
+})
+  .then(response => {
+    const res: any = response.data.value
+    if (res) {
+      ArticleData.article = res.data.article
+      ArticleData.goodnum = res.data.goodnum
+      ArticleData.collect = res.data.collect
+      ArticleData.commont = res.data.comment
+      Move.goodnum = res.data.acgoodnum
+      Move.collect = res.data.accollect
+      goodpage.value = false
+      ArticleData.article.lable = res.data.article.lable.split('、')
+    } else if (response.data === null) {
+      goodpage.value = true
+      ArticleData.article.title = '404'
+      ArticleData.article.username =  '404'
+      ArticleData.article.keyword =  '404'
+    }
+  })
+  .catch(error => {
+    console.error('Request failed:', error);
+  });
 
 const getArticle = async (id: string) => {
   const { data: res } = await getArticleApi.getArchives(id)
@@ -46,38 +73,8 @@ const getArticle = async (id: string) => {
   ArticleData.commont = res.data.comment
   Move.goodnum = res.data.acgoodnum
   Move.collect = res.data.accollect
-  store.setArticleAuthor(ArticleData.article.username)
-  ArticleData.article.lable = ArticleData.article.lable.split('、')
-  // 5秒后请求增加阅读数
-  setTimeout(async () => {
-    await getArticleApi.UpdatedReadNum(id)
-  }, 5000)
-  if (res.data.article !== '{}') {
-    goodpage.value = false
-    loading.value = false
-  }
-  useHead({
-    title: ArticleData.article.title,
-    meta: [
-      {
-        name: 'keywords',
-        content: ArticleData.article.keyword
-      },
-      {
-        name: 'description',
-        content: ArticleData.article.keyword
-      },
-      {
-        name: 'robots',
-        content: 'all'
-      },
-      {
-        name: 'author',
-        content: ArticleData.article.username
-      }
-    ]
-  })
 }
+// 点赞
 const goodnum = async (artid: string) => {
   if (localStorage.getItem('Username') === null) {
     ElMessage({
@@ -98,19 +95,22 @@ const goodnum = async (artid: string) => {
         articleid: artid,
         type: 'goodnum'
       }
-      const { data: res } = await UserAction.UserActive(data)
-      if (res.status === 200) {
-        if (Move.goodnum === false) {
-          ArticleData.goodnum += 1
-          Move.goodnum = !Move.goodnum
-        } else if (Move.goodnum === true) {
-          ArticleData.goodnum -= 1
-          Move.goodnum = !Move.goodnum
+      setTimeout(async () => {
+        const { data: res } = await UserAction.UserActive(data)
+        if (res.status === 200) {
+          if (Move.goodnum === false) {
+            ArticleData.goodnum += 1
+            Move.goodnum = !Move.goodnum
+          } else if (Move.goodnum === true) {
+            ArticleData.goodnum -= 1
+            Move.goodnum = !Move.goodnum
+          }
         }
-      }
+      }, 1500)
     }
   }
 }
+// 收藏
 const collect = async (artid: string) => {
   if (localStorage.getItem('Username') === null) {
     ElMessage({
@@ -145,6 +145,7 @@ const collect = async (artid: string) => {
     }
   }
 }
+// 评论
 const commont = async (artid: string) => {
   if (localStorage.getItem('Username') === null) {
     ElMessage({
@@ -208,18 +209,32 @@ const share = () => {
   )
 }
 onMounted(() => {
-  getArticle(router.params.id as string)
+  setTimeout(() => {
+    store.setArticleAuthor(toRaw(ArticleData.article.username))
+  }, 800);
+  // 5秒后请求增加阅读数
+  setTimeout(async () => {
+    if (goodpage.value && router.params.id) {
+      await getArticleApi.UpdatedReadNum(router.params.id as string)
+    }
+  }, 5000)
 })
 </script>
 <template>
   <div id="" class="article">
+    <Head>
+      <Title>{{ ArticleData.article.title }}</Title>
+      <Meta name="keywords" :content="ArticleData.article.keyword" />
+      <Meta name="description" :content="ArticleData.article.describes" />
+      <Meta name="author" :content="ArticleData.article.username" />
+      <Meta name="copyright" :content="ArticleData.article.username" />
+      <Meta name="robots" content="all" />
+      <Meta name="ogImage" :content="ArticleData.article.cover_img" />
+    </Head>
     <div class="leftContent">
       <div v-if="goodpage" style="text-align: center">
-        <el-empty description="加载中" v-if="loading" />
-        <div v-else>
-          <h1>404 NOT FOUNT</h1>
-          <nuxt-link to="/">返回主页</nuxt-link>
-        </div>
+        <h1>404 NOT FOUNT</h1>
+        <nuxt-link to="/">返回主页</nuxt-link>
       </div>
       <div v-else>
         <div class="tabmenu">
@@ -239,35 +254,40 @@ onMounted(() => {
               {{ ArticleData.article.read_num }}
             </div>
           </div>
-          <div class="tabLable">
-            <el-tag v-for="(item, index) in ArticleData.article.lable" class="lable-tag">{{ item }}</el-tag>
-          </div>
         </div>
         <div class="content">
           <p v-html="ArticleData.article.content" v-highlight></p>
         </div>
         <div class="btn_active">
-          <el-button type="success" plain class="goodnum" @click="goodnum(ArticleData.article.article_id)">
+          <el-button type="primary" plain class="goodnum" v-if="!Move.goodnum"
+            @click="goodnum(ArticleData.article.article_id)">
             <span>点赞</span>
-            <span :class="{ selg: Move.goodnum }">
-              ❤
-            </span>
+            <img src="~assets/icon/thumb_up_FILL0_wght400_GRAD0_opsz24.svg" alt="点赞"
+              style="width: 1em; height: 1em; margin-right: 8px">
             <span>{{ ArticleData.goodnum }}</span>
           </el-button>
-          <el-button type="success" plain class="collect" @click="collect(ArticleData.article.article_id)">
+          <el-button type="primary" class="goodnum" v-else @click="goodnum(ArticleData.article.article_id)">
+            <span>已点赞</span>
+          </el-button>
+          <el-button type="primary" plain class="collect" v-if="!Move.collect"
+            @click="collect(ArticleData.article.article_id)">
             <span>收藏</span>
-            <span :class="{ selc: Move.collect }">
-              <el-icon>
-                <Star />
-              </el-icon>
-            </span>
+            <img src="~assets/icon/star_FILL0_wght400_GRAD0_opsz24.svg" alt="点赞"
+              style="width: 1em; height: 1em; margin-right: 8px">
             <span>{{ ArticleData.collect }}</span>
+          </el-button>
+          <el-button type="primary" class="collect" v-else @click="collect(ArticleData.article.article_id)">
+            <span>已收藏</span>
           </el-button>
           <el-button type="primary" plain class="collect" @click="share">分享
             <el-icon color="#409EFC" class="no-inherit">
               <Share />
             </el-icon>
           </el-button>
+        </div>
+        <div class="tabLable">
+          <span style="font-size: 0.7rem;">标签：</span>
+          <el-tag v-for="(item, index) in ArticleData.article.lable" class="lable-tag">{{ item }}</el-tag>
         </div>
         <div class="commentArea">
           <p>全部评论</p>
@@ -393,11 +413,6 @@ onMounted(() => {
   letter-spacing: 5px;
 }
 
-.selc,
-.selg {
-  color: red;
-}
-
 .commentArea {
   padding: 10px 0 20px 0;
   border-radius: 5px;
@@ -409,6 +424,7 @@ onMounted(() => {
   }
 
   #comtext {
+    width: 100%;
     border-radius: 8px;
     border: 2px rgba(243, 245, 248, 0.8) solid;
     padding: 5px;

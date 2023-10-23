@@ -1,4 +1,6 @@
-# Nuxt 3 Minimal Starter
+# 这是一个使用Nuxt3作为前端技术栈的重构版本
+
+## Nuxt 3 Minimal Starter
 
 Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 

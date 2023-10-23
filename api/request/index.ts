@@ -2,8 +2,7 @@ import axios from 'axios'
 import { ElNotification, ElMessage } from 'element-plus'
 // 创建axios实例
 const request = axios.create({
-  baseURL: 'http://192.168.0.103:666/api',
-  // baseURL: 'https://jihau.top/api',
+  baseURL: reqConfig.baseUrl,
   timeout: 5000
 })
 

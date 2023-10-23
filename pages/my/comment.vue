@@ -1,4 +1,9 @@
 <script setup lang="ts">
+
+
+definePageMeta({
+  layout: 'ctrl-view'
+})
 </script>
 
 <template>

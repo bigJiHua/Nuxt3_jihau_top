@@ -13,11 +13,6 @@ const isUser = ref(props.item.user_id ? true : false)
 onMounted(() => {
   props.item.keyword = props.item.keyword.split('、')
 })
-// user_content
-// user_id
-// user_pic
-// useridentity
-// username
 </script>
 
 <template>

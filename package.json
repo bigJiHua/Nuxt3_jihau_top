@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "jihau_top_nuxt3",
   "private": true,
   "type": "commonjs",
   "scripts": {
@@ -15,8 +15,9 @@
     "@nuxt/devtools": "latest",
     "@types/crypto-js": "^4.1.2",
     "dayjs": "^1.11.2",
-    "eslint": "^8.49.0",
-    "eslint-plugin-typescript": "^0.14.0",
+    "error": "^10.4.0",
+    "eslint": "^8.52.0",
+    "eslint-config-standard-with-typescript": "^39.1.1",
     "eslint-plugin-vue": "^9.17.0",
     "nuxt": "^3.7.3"
   },
@@ -25,11 +26,12 @@
     "@pinia/nuxt": "^0.4.11",
     "autoprefixer": "^10.4.16",
     "axios": "^1.5.0",
+    "compressorjs": "^1.2.1",
     "crypto-js": "^4.1.1",
     "element-plus": "^2.3.14",
+    "highlight.js": "^11.5.1",
     "less": "^4.2.0",
     "less-loader": "^11.1.3",
-    "swiper": "^10.3.1",
-    "highlight.js": "^11.5.1"
+    "swiper": "^10.3.1"
   }
 }

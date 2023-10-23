@@ -3,7 +3,22 @@ import ArticleAPI from '@/api/Article'
 import { useArticleListStore } from "@/stores/useArticleData"
 const store = useArticleListStore()
 const ArticleListData: any = ref(toRaw(store.getArticleList))
-let Num = 0
+let Num = 5
+const AUrl = `${reqConfig.baseUrl}/data/list`
+useFetch(AUrl, {
+  method: 'get',
+  params: {
+    page: 0
+  }
+})
+  .then(response => {
+    const res: any = response.data.value
+    ArticleListData.value = res.data
+  })
+  .catch(error => {
+    console.error('Request failed:', error);
+  });
+
 // 获取新的文章列表
 const getNewArticleList = async () => {
   const { data: res } = await ArticleAPI.getArticleList(Num)
@@ -26,15 +41,16 @@ const isBottomGetArticle = () => {
       // 如果是手机的话
       getNewArticleList();
     }
-
     throttleTimer = null; // 重置定时器
   }, 800); // 设置节流时间间隔，这里设置为500毫秒
 };
 
 onMounted(() => {
-  if (ArticleListData.value.length === 0) {
-    getNewArticleList()
-  }
+  setTimeout(() => {
+    if (ArticleListData.value.length !== 0) {
+      store.setArticleData([...ArticleListData.value])
+    }
+  }, 800);
   if (process.env.NODE_ENV === 'development') {
     window.addEventListener('scroll', isBottomGetArticle)
   }

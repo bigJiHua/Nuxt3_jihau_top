@@ -46,7 +46,7 @@ const ShareBox = async () => {
 onMounted(() => {
   setTimeout(() => {
     isdemo.value = true
-  }, 800);
+  }, 200);
 })
 </script>
 
@@ -103,12 +103,6 @@ onMounted(() => {
   top: 10px;
 }
 
-.article_doc_txt {
-  text-indent: 3.6rem;
-  font-size: 1.3rem;
-  overflow: hidden;
-}
-
 .togolink {
   color: rgba(0, 0, 0, 0.692);
   text-decoration: none;
@@ -144,6 +138,26 @@ onMounted(() => {
   font-weight: bolder;
   font-size: 0.8rem;
 }
+.article_demos {
+  opacity: 0;
+}
+.article_demo {
+  animation: identifier-6f9b9245 0.8s cubic-bezier(0.4, 0, 1, 1);
+}
+
+@keyframes identifier {
+  0% {
+    margin-top: 80px;
+    opacity: 0;
+  }
+
+  100% {
+    margin-top: 8px;
+    opacity: 1;
+  }
+}
+
+
 
 @media only screen and (min-width: 755px) {
   .article_area {
@@ -168,8 +182,11 @@ onMounted(() => {
     padding: 0 10px;
 
     .article_doc_txt {
+      text-indent: 3rem;
       font-size: 1rem;
+      overflow: hidden;
     }
+
   }
 
   /* 文章动效 */
@@ -224,6 +241,19 @@ onMounted(() => {
     overflow: hidden;
   }
 
+  .article_doc_title>a {
+    font-size: 1.5rem;
+    font-weight: bolder;
+    font-family: '微软雅黑';
+  }
+
+  .article_doc_txt {
+    text-indent: 1rem;
+    font-size: 1.2rem;
+    overflow: hidden;
+  }
+
+
   .article_span_time {
     font-size: 0.8rem;
   }
@@ -236,15 +266,6 @@ onMounted(() => {
 
   .article_item {
     padding: 8px;
-  }
-
-  .article_demos {
-    margin-top: 80px;
-  }
-
-  .article_demo {
-    margin-top: 8px;
-    transition: all 0.3s;
   }
 }
 </style>

@@ -4,7 +4,6 @@ import { useRoute } from 'vue-router'
 import { useAuthorDataStore } from '@/stores/useUserData'
 const router = useRoute()
 const store = useAuthorDataStore()
-
 const NotifyData: any = reactive({
   title: '',
   username: '',
@@ -12,12 +11,40 @@ const NotifyData: any = reactive({
   content: ''
 })
 const goodpage = ref(true)
-const loading = ref(true)
+// router.params.id
+const NUrl = `${reqConfig.baseUrl}/data/page/`;
+useFetch(NUrl, {
+  method: 'get',
+  params: {
+    id: router.params.id
+  }
+})
+  .then(response => {
+    const res: any = response.data.value
+    if (res) {
+      NotifyData.title = res.data.title
+      NotifyData.username = res.data.username
+      NotifyData.pub_date = res.data.pub_date
+      NotifyData.content = res.data.content
+      NotifyData.keyword = res.data.keyword
+      NotifyData.describes = res.data.describes
+      goodpage.value = false
+    } else if (response.data === null) {
+      goodpage.value = true
+      NotifyData.title = 404
+      NotifyData.username =  404
+      NotifyData.pub_date =  404
+      NotifyData.content = 404
+    } 
+  })
+  .catch(error => {
+    console.error('Request failed:', error);
+  });
+
 const getNotify = async (id: string) => {
   const { data: res } = await GetNotifyData.getPageData(id)
   if (res.status !== 404) {
     goodpage.value = false
-    loading.value = false
     NotifyData.title = res.data.title
     NotifyData.username = res.data.username
     NotifyData.pub_date = res.data.pub_date
@@ -49,19 +76,28 @@ const getNotify = async (id: string) => {
   })
 }
 onMounted(() => {
-  getNotify(router.params.id as string)
+  setTimeout(() => {
+    if (toRaw(NotifyData.username)) {
+      store.setArticleAuthor(toRaw(NotifyData.username))
+    }
+  }, 800);
 })
 </script>
 
 <template>
   <div id="" class="article">
+    <Head>
+      <Title>{{ NotifyData.title }}</Title>
+      <Meta name="keywords" :content="NotifyData.keyword" />
+      <Meta name="description" :content="NotifyData.describes" />
+      <Meta name="author" :content="NotifyData.username" />
+      <Meta name="copyright" :content="NotifyData.username" />
+      <Meta name="robots" content="all" />
+    </Head>
     <div class="leftContent">
       <div v-if="goodpage" style="text-align: center">
-        <el-empty description="加载中" v-if="loading" />
-        <div v-else>
-          <h1>404 NOT FOUNT</h1>
-          <nuxt-link to="/">返回主页</nuxt-link>
-        </div>
+        <h1>404 NOT FOUNT/无权查看</h1>
+        <nuxt-link to="/">返回主页</nuxt-link>
       </div>
       <div v-else>
         <div class="content st">

@@ -8,14 +8,13 @@ const username = ref('jihua')
 const password = ref('123456')
 const loading = ref(false)
 const show = ref(false)
-const setTime = ref(2000)
 const rules: any = ref({
   username: {
     rule: /^(?=(.*[a-zA-Z].*))(?=(.*\d.*))[\w]{5,12}$|^(?=(.*[a-zA-Z].*))(?=(.*_.*))[\w]{5,12}$|^(?=(.*\d.*))(?=(.*_.*))[\w]{5,12}$|^(?=.*[a-zA-Z\d_].*[a-zA-Z\d_])[\w]{5,12}$/,
     msg: '用户名不能为空!且长度为5-12位'
   },
   password: {
-    rule: /^[^\u4e00-\u9fa5]{6,30}$/,
+    rule: /^[^\u4e00-\u9fa5]{6,15}$/,
     msg: '密码不能为空!且长度为6-12位'
   }
 })
@@ -26,7 +25,7 @@ const register = () => {
       type: 'warning'
     })
     setTimeout(() => {
-      router.push('/CtrlView/Users')
+      router.push('/Users')
     }, 1000)
   } else {
     router.push('/register')
@@ -52,7 +51,7 @@ const login = async () => {
       message: '已经登录啦！请勿重复登录',
       type: 'warning'
     })
-    router.push('/CtrlView')
+    router.push('/Users')
     return
   }
   // 验证
@@ -60,8 +59,6 @@ const login = async () => {
     // 发起请求
     const { data: res } = await Login.LoginMenu(username.value, password.value)
     if (res.token) {
-      // 打开开关
-      loading.value = false
       // 判断返回状态码是否成功
       localStorage.setItem('token', res.token)
       localStorage.setItem('Username', res.data.Users.username)
@@ -71,8 +68,8 @@ const login = async () => {
         show.value = false
         loading.value = false
         localStorage.removeItem('VerCode')
-        router.push('/CtrlView')
-      }, setTime.value)
+        router.push('/Users')
+      }, 1500)
     } else {
       setTimeout(() => {
         loading.value = false
@@ -90,7 +87,7 @@ useHead({
     },
     {
       name: 'description',
-      content: '这是jihau.top网站的登录页面，欢迎您访问此网站！'
+      content: '这是jihau_top网站的登录页面，欢迎您访问此网站！'
     }
   ]
 })

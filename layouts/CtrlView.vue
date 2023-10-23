@@ -14,44 +14,50 @@ onMounted(() => {
 </script>
 <template>
   <div class="CtrlViewLayout">
-    <div class="common-layout body">
-      <el-container class="mainArea">
-        <el-header style="padding: 0;background-color: white; ">
-          <Header></Header>
-        </el-header>
-        <el-container>
-          <el-aside class="menu" width="200px" v-if="isSHow">
-            <CtrlPanelAside></CtrlPanelAside>
-          </el-aside>
-          <el-main class="main">
-            <slot />
-          </el-main>
-        </el-container>
+    <el-container>
+      <el-header class="CtrlHeader" style="padding: 0;background-color: white; ">
+        <Header></Header>
+      </el-header>
+      <el-container class="CtrlContent">
+        <el-aside class="menu" width="200px" v-if="isSHow">
+          <CtrlPanelAside></CtrlPanelAside>
+        </el-aside>
+        <el-main class="main">
+          <slot />
+        </el-main>
       </el-container>
-    </div>
+    </el-container>
   </div>
-  <Backtop></Backtop>
 </template>
 
 <style lang="less" scoped>
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
 .CtrlViewLayout {
   background-color: #edf1f5;
 }
-
-.body {
-  height: 100vh;
-  width: 100vw;
-  margin: 0 auto;
-}
-
-.mainArea {
-  height: 100%;
+.CtrlHeader {
   width: 100%;
-}
-.main {
-  padding: 0;
+  height: 59px;
+  overflow: hidden;
 }
 .menu {
-  position: relative;
+  width: 200px;
+  height: calc(100vh - 60px);
+}
+.CtrlContent {
+  width: 100vw;
+  height: calc(100vh - 60px);
+  overflow: hidden;
+  box-sizing: content-box;
+}
+.main {
+  width: calc(100vw - 202px);
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
 }
 </style>

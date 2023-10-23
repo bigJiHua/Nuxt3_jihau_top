@@ -1,8 +1,13 @@
 <script setup lang="ts">
+
+
+definePageMeta({
+  layout: 'ctrl-view'
+})
 </script>
 
 <template>
-<h1>系统设置</h1>
+<h1>我的喜欢</h1>
 </template>
 
 <style lang="less" scoped>
