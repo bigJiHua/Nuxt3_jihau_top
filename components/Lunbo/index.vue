@@ -89,8 +89,8 @@ onMounted(() => {
 
   .LunboArea {
     position: relative;
-    height: 250px;
-    width: 100%;
+    height: 200px;
+    width: 95%;
   }
 
   .Lunbo_title {

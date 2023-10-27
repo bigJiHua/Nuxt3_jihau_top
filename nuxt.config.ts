@@ -23,7 +23,8 @@ export default defineNuxtConfig({
     '@/assets/css/index.css',
     '@/assets/css/typeface.css',
     'element-plus/dist/index.css',
-    'highlight.js/styles/monokai-sublime.css'
+    'highlight.js/styles/monokai-sublime.css',
+    'bytemd/dist/index.css'
   ],
   app: {
     head: {
@@ -38,7 +39,7 @@ export default defineNuxtConfig({
         },
       ],
       script: [
-        // { src: '/ckeditor/ckeditor.js' } // 到时候再引入
+        { src: '/ckeditor/ckeditor.js' }
       ],
       meta: [
         {

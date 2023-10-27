@@ -22,9 +22,8 @@ import { User, Document, MessageBox, Setting } from '@element-plus/icons-vue'
         </el-menu-item-group>
         <el-menu-item-group title="编辑">
           <nuxt-link to="/editor"><el-menu-item index="2-2">发布文章</el-menu-item></nuxt-link>
-          <nuxt-link to="/editor/cag"><el-menu-item index="2-3">修改文章</el-menu-item></nuxt-link>
-          <nuxt-link to="/editor/wait"><el-menu-item index="2-4">草稿箱</el-menu-item></nuxt-link>
-          <nuxt-link to="/editor/recycle"><el-menu-item index="2-5">回收站</el-menu-item></nuxt-link>
+          <nuxt-link to="/editor/wait"><el-menu-item index="2-3">草稿箱</el-menu-item></nuxt-link>
+          <nuxt-link to="/editor/cag"><el-menu-item index="2-4">修改文章</el-menu-item></nuxt-link>
         </el-menu-item-group>
       </el-sub-menu>
       <el-sub-menu index="3">

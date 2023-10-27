@@ -50,7 +50,7 @@ const UpdatedReadNum = function (id: string) {
 }
 
 // 搜索接口
-const SearchApi = function (key: string,type:string) { 
+const SearchApi = function (key: string, type: string) {
   const params = new URLSearchParams()
   params.append('key', key)
   params.append('type', type)

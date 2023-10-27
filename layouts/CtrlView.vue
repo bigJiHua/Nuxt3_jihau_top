@@ -60,4 +60,13 @@ onMounted(() => {
   padding: 0;
   overflow: hidden;
 }
+@media screen and(max-width: 755px) {
+  .main {
+    height: 100vh;
+    padding: 60px 0 0 0;
+    width: 95vw;
+    margin: 0 auto;
+    overflow: scroll;
+  }  
+}
 </style>

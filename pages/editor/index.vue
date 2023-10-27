@@ -1,24 +1,48 @@
 <script setup lang="ts">
+import { Check } from '@element-plus/icons-vue'
 import { useRouter } from '#vue-router';
+import postArticleApi from '@/api/CtrlMenu'
 const router = useRouter()
-useHead({
-  script: [{
-    src: '/ckeditor/ckeditor.js'
-  }]
-})
 definePageMeta({
   layout: 'ctrl-view',
 })
-const editorData = ref({
+// 编辑数据
+const editorData: any = ref({
+  username: '',
   title: '',
   lable: '',
   keyword: '',
   cover_img: '',
   content: '',
+  describes: '',
+  state: 0,
+  pub_date: '',
+  isMd: false
+})
+// 校验规则
+const rules: any = reactive({
+  title: {
+    rule: /\S/,
+    msg: '文章标题不能为空'
+  },
+  content: {
+    rule: /.{50,}/,
+    msg: '不能水文章哦！字数大于等于50！'
+  },
+  lable: {
+    rule: /\S/,
+    msg: '忘记填标签咯！'
+  },
+  keyword: {
+    rule: /\S/,
+    msg: '填一下关键字吧！'
+  }
 })
 const elContent = ref('') // 备份修改之前的
 const isTrue = ref(false)
-const isAutoSafe = ref(false)
+const isAutoSafe = ref(false) // 自动保存
+const isMd = ref(false) // 切换编辑器
+const showPanel = ref(false) //面板开关
 
 // 同步子组件对服务组件的数据
 let setCount = 0
@@ -29,94 +53,209 @@ const cagEditorData = (cagData: string) => {
   if (editorData.value.content !== cagData) {
     editorData.value.content = cagData
     isTrue.value = true
-    if (isAutoSafe.value === true && setCount % 10 === 0) {
-      console.log('发送请求');
-    }
   }
   setTimeout(() => {
     isTrue.value = false
   }, 500);
 }
-
+// 清空当前所有编辑
 const deleteEditor = async (): Promise<void> => {
   if (await ElMessageBoxTips.WarningTips('你确定不保存该文本吗？(可以选择上传草稿') === 'true') {
     editorData.value = {
+      username: '',
       title: '',
       lable: '',
       keyword: '',
       cover_img: '',
       content: '',
+      describes: '',
+      state: 0,
+      pub_date: ''
     }
     router.push('/editor/list')
   }
 }
-onMounted(() => {
+// 切换编辑器
+const ChangeEditormd = async function (isChange: boolean) {
+  if (isChange && await ElMessageBoxTips.WarningTips('你确定要切换成markdown编辑器吗？') === 'true') {
+    isMd.value = true
+  } else if (await ElMessageBoxTips.WarningTips('你确定要切换成富文本编辑器吗？') === 'true') {
+    isMd.value = false
+  }
+}
+// 发布文章
+const PostNewArticle = async (isSet?: boolean) => {
+  let push = 0
+  for (const key in rules) {
+    if (validata(key)) {
+      push += 1
+    }
+  }
+  showPanel.value = true
+  isAutoSafe.value = false
+  if (push === Object.keys(rules).length) {
+    editorData.value.isMd = isMd.value
+    if (process.env.NODE_ENV === 'development') editorData.value.username = localStorage.getItem('Username')
+    if (isMd.value) editorData.value.content = JSON.stringify(editorData.value.content)
+    if (isSet) editorData.value.state = '2'
+    const { data: res } = await postArticleApi.UseraddArticle(editorData.value)
+    if (res.status === 200) {
+      editorData.value = {
+        username: '',
+        title: '',
+        lable: '',
+        keyword: '',
+        cover_img: '',
+        content: '',
+        describes: '',
+        state: 0,
+        pub_date: ''
+      }
+      localStorage.removeItem('setArtData')
+      setTimeout(() => {
+        if (!isSet) {
+          router.push('/article/' + res.article)
+        } else {
+          router.push('/editor/wait')
+        }
+      }, 500)
+    }
+  }
+}
+// 校验规则 
+const validata = function (key: string) {
+  let bool = true
+  if (!rules[key].rule.test(editorData.value[key])) {
+    ElMessage({
+      message: rules[key].msg,
+      type: 'error'
+    })
+    bool = false
+  }
+  return bool
+}
+// 自动保存到本地
+setInterval(() => {
+  if (isAutoSafe.value) {
+    if (process.env.NODE_ENV === 'development') {
+      localStorage.setItem('setArtData', JSON.stringify(editorData.value))
+      isTrue.value = true
+      setTimeout(() => {
+        isTrue.value = false
+      }, 200);
+    }
+  }
+}, 2500);
+onMounted(async () => {
   if (process.env.NODE_ENV === 'development') {
-    console.log(window.CKEDITOR);
+    // console.log(window.CKEDITOR);
+    // 监测本地是否有数据
+    if (localStorage.getItem('setArtData') !== null) {
+      if (await ElMessageBoxTips.WarningTips('检测到本地存在历史文章数据，确认加载吗？还是取消删除') === 'true') {
+        editorData.value = JSON.parse(localStorage.getItem('setArtData') as string)
+        isAutoSafe.value = true
+      } else {
+        localStorage.removeItem('setArtData')
+        if (localStorage.getItem('setArtData') === null) {
+          ElMessage({
+            message: '删除成功！',
+            type: 'success'
+          })
+        }
+      }
+    }
   }
 })
 </script>
 
 <template>
-  <div class="editor-container">
-    <div class="ArticleDataPanel">
-      <div>
-        是否开启自动存草稿：<el-switch v-model="isAutoSafe" class="ml-2"
-          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
-      </div>
-      <el-form :label-position="'top'" label-width="100px" :model="editorData" style="max-width: 460px">
-        <el-form-item>
-          <template #label>
-            标题<span style="color: red;">*</span>---设置文章标题
-          </template>
-          <el-input v-model="editorData.title" />
-        </el-form-item>
-        <el-form-item>
-          <template #label>
-            标签<span style="color: red;">*</span>---设置文章标签(以中文顿号分隔)
-          </template>
-          <el-input v-model="editorData.lable" />
-        </el-form-item>
-        <el-form-item>
-          <template #label>
-            关键词<span style="color: red;">*</span>---设置文章关键词(以中文顿号分隔)
-          </template>
-          <el-input v-model="editorData.keyword" />
-        </el-form-item>
-        <el-form-item>
-          <template #label>
-            文章描述<span style="color: red;">*</span>---设置文章描述(可选)
-          </template>
-          <el-input v-model="editorData.keyword" />
-        </el-form-item>
-        <el-form-item>
-          <template #label>
-            封面---设置文章封面(可选)
-          </template>
-          <el-input v-model="editorData.cover_img" />
-        </el-form-item>
-      </el-form>
-      <div class="ActivityBtn">
-        <el-button type="primary" plain>发布</el-button>
-        <el-button type="success" plain>存草稿</el-button>
+  <div class="postArticleArea">
+    <div class="HeaderBox">
+      <div class="itemBox">
         <el-button type="danger" plain @click="deleteEditor">删除</el-button>
+        <el-button type="success" plain @click="PostNewArticle(true)">存草稿</el-button>
+        <el-button type="primary" plain v-if="!showPanel" @click="showPanel = true">展开面板</el-button>
+        <el-button type="primary" plain v-else @click="showPanel = false">关闭面板</el-button>
+        <div class="phone-none">
+          备份保存到本地：<el-switch v-model="isAutoSafe" class="ml-2"
+            style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+        </div>
       </div>
-      <p><span style="color: red;">*</span>为必填项</p>
-      <p><span style="color: red;">注意：</span>标签关键词用中文顿号间隔！</p>
-      <nuxt-link to="/editor/md">
-        不喜欢富文本？<el-button type="primary">切换编辑器</el-button>
-      </nuxt-link>
+      <div class="postBtn">
+        <div class="window-none">
+          自动存草稿：<el-switch v-model="isAutoSafe" class="ml-2"
+            style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+        </div>
+        <el-button type="success" :icon="Check" circle v-show="isTrue" />
+        <el-button type="primary" @click="PostNewArticle()">发布</el-button>
+      </div>
     </div>
-    <div id="EditorArea">
-      <Cekditor :content="editorData.content" @cagEditorData="cagEditorData" :type="'set'"></Cekditor>
-      <div class="ShowStateBox">
-        <el-button type="success" v-if="isTrue">接收</el-button>
+    <div class="editor-container">
+      <div class="ArticleDataPanel" v-show="showPanel">
+        <el-form :label-position="'top'" label-width="100px" :model="editorData" style="max-width: 460px">
+          <el-form-item>
+            <template #label>
+              标题<span style="color: red;">*</span>---设置文章标题
+            </template>
+            <el-input v-model="editorData.title" />
+          </el-form-item>
+          <el-form-item>
+            <template #label>
+              标签<span style="color: red;">*</span>---设置文章标签(以中文顿号分隔)
+            </template>
+            <el-input v-model="editorData.lable" />
+          </el-form-item>
+          <el-form-item>
+            <template #label>
+              关键词<span style="color: red;">*</span>---设置文章关键词(以中文顿号分隔)
+            </template>
+            <el-input v-model="editorData.keyword" />
+          </el-form-item>
+          <el-form-item>
+            <template #label>
+              文章描述<span style="color: red;">*</span>---设置文章描述(可选)
+            </template>
+            <el-input v-model="editorData.describes" />
+          </el-form-item>
+          <el-form-item>
+            <template #label>
+              封面---设置文章封面(可选)
+            </template>
+            <el-input v-model="editorData.cover_img" />
+          </el-form-item>
+        </el-form>
+        <dev class="cover_img" v-show="editorData.cover_img">
+          <img :src="editorData.cover_img" alt="Cover_img">
+        </dev>
+        <p><span style="color: red;">*</span>为必填项</p>
+        <p><span style="color: red;">注意：</span>标签关键词用中文顿号间隔！</p>
+        <p v-if="!isMd">
+          不喜欢富文本？<el-button type="primary" @click="ChangeEditormd(true)">切换编辑器</el-button></p>
+        <p v-else>
+          不喜欢MarkDown？<el-button type="primary" @click="ChangeEditormd(false)">切换编辑器</el-button></p>
+      </div>
+      <div class="EditorArea" v-if="!isMd">
+        <Cekditor :content="editorData.content" @cagEditorData="cagEditorData" :type="'set'" />
+      </div>
+      <div class="EditorArea" v-else>
+        <CekditorMd :content="editorData.content" @cagEditorData="cagEditorData" :type="'set'" />
       </div>
     </div>
   </div>
 </template>
 
 <style lang="less" scoped>
+.postArticleArea {
+  padding: 5px;
+}
+
+.HeaderBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 15px;
+}
+
 .editor-container {
   display: flex;
   flex-wrap: wrap;
@@ -133,24 +272,33 @@ onMounted(() => {
   background-color: #ffffff;
 }
 
-.ActivityBtn {
+.itemBox {
+  flex: 1.5;
   display: flex;
   justify-content: space-between;
-  margin: 20px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-#EditorArea {
+.postBtn {
+  flex: 1;
+
+  >button:last-child {
+    float: right;
+  }
+}
+
+.EditorArea {
   flex: 3;
-  height: 100%;
+  height: calc(100vh - 110px);
   background-color: #ffffff;
 }
 
-.ShowStateBox {
-  padding: 5px;
-  width: 100%;
-  height: 30px;
-  display: flex;
-  justify-content: center;
+.cover_img {
+  >img {
+    width: 100%;
+    height: 90px;
+  }
 }
 
 @media screen and(max-width: 755px) {
@@ -162,6 +310,22 @@ onMounted(() => {
   .editor-container {
     display: block;
     overflow: scroll;
+  }
+
+  .HeaderBox {
+    display: block;
+    padding: 0;
+
+    .postBtn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 2.5px 5px 2.5px;
+
+      >button {
+        float: none;
+      }
+    }
   }
 }
 </style>

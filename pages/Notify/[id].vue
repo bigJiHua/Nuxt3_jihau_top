@@ -156,7 +156,7 @@ onMounted(() => {
     padding: 20px;
     border-radius: 12px;
     margin-right: 20px;
-    width: 45vw;
+    width: 50vw;
   }
 
   .ArticleRightPanel {

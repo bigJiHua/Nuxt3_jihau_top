@@ -3,11 +3,6 @@
 </template>
 
 <script setup lang="ts">
-useHead({
-  script: [{
-    src: '/ckeditor/ckeditor.js'
-  }]
-})
 const props = defineProps({
   content: {
     type: String,
@@ -21,6 +16,7 @@ const props = defineProps({
 const id = 'Cekditor';
 const ckeditor = ref<any>(null);
 const emit = defineEmits(['cagEditorData'])
+const editorValue = ref('')
 
 // 开启同步模式 如果模式不为改
 if (props.type !== 'cag') {
@@ -31,11 +27,6 @@ if (props.type !== 'cag') {
     clearInterval(get);
   }, 800);
 }
-setInterval(() => {
-  if (ckeditor.value.getData() && ckeditor.value.getData() !== '' && ckeditor.value.getData() !== props.content) {
-    emit('cagEditorData', ckeditor.value.getData())
-  }
-}, 800)
 
 onMounted(() => {
   if (process.env.NODE_ENV === 'development') {
@@ -43,7 +34,20 @@ onMounted(() => {
     const CKEDITOR: any = window.CKEDITOR;
     // 渲染编辑器
     if (CKEDITOR) {
-      ckeditor.value = CKEDITOR.replace(id, { height: '500px' });
+      ckeditor.value = CKEDITOR.replace(id, { height: '450px' });
+      ckeditor.value.setData(props.content);
+      // 监听同步
+      let Count = 0
+      ckeditor.value.on('change', (e: any) => {
+        Count += 1
+        editorValue.value = e.editor.getData()
+        if (Count >= 120) {
+          setTimeout(() => {
+            emit('cagEditorData', editorValue.value);
+          }, 200);
+          Count = 0
+        }
+      })
     }
   }
 });
@@ -63,6 +67,6 @@ onBeforeUnmount(() => {
 
 <style scoped>
 :deep(#cke_Cekditor) {
-  height: calc(100vh - 200px) !important;
+  height: calc(100vh - 200px);
 }
 </style>

@@ -57,7 +57,8 @@ request.interceptors.response.use(response => {
     localStorage.removeItem('Useridentity')
     location.reload()
   }
-  return Promise.reject(error)
+  // TODO 未知问题
+  return error.response
 })
 
 

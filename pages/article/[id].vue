@@ -6,12 +6,15 @@ import { useAuthorDataStore } from '@/stores/useUserData'
 import { Share, View, Calendar } from '@element-plus/icons-vue'
 const store = useAuthorDataStore()
 const router = useRoute()
+const isLogin = ref(false)
+const showLogin = ref(false)
+const goodpage = ref(true)
+const isMd = ref(false)
 const Active: any = reactive({
   goodnum: false,
   collect: false,
   comTXT: ''
 })
-const isLogin = ref(false)
 const ArticleData: any = reactive({
   article: {
     title: '',
@@ -29,12 +32,10 @@ const ArticleData: any = reactive({
   collect: '',
   commont: []
 })
-const goodpage = ref(true)
 const Move = reactive({
   goodnum: false,
   collect: false
 })
-const showLogin = ref(false)
 // router.params.id
 const AUrl = `${reqConfig.baseUrl}/data/article/`;
 useFetch(AUrl, {
@@ -44,6 +45,7 @@ useFetch(AUrl, {
   }
 })
   .then(response => {
+    if (/\bmd[A-Z0-9]+\b/g.test(router.params.id as string)) isMd.value = true
     const res: any = response.data.value
     if (res) {
       ArticleData.article = res.data.article
@@ -53,12 +55,13 @@ useFetch(AUrl, {
       Move.goodnum = res.data.acgoodnum
       Move.collect = res.data.accollect
       goodpage.value = false
+      ArticleData.article.content = JSON.parse(ArticleData.article.content)
       ArticleData.article.lable = res.data.article.lable.split('、')
     } else if (response.data === null) {
       goodpage.value = true
       ArticleData.article.title = '404'
-      ArticleData.article.username =  '404'
-      ArticleData.article.keyword =  '404'
+      ArticleData.article.username = '404'
+      ArticleData.article.keyword = '404'
     }
   })
   .catch(error => {
@@ -191,6 +194,7 @@ const commont = async (artid: string) => {
 const closePanel = () => {
   showLogin.value = false
 }
+// 分享 TODO分享统计事件
 const share = () => {
   const copyw = `https://jihau.top/article/${ArticleData.article.article_id}`
   navigator.clipboard.writeText(copyw).then(
@@ -222,6 +226,7 @@ onMounted(() => {
 </script>
 <template>
   <div id="" class="article">
+
     <Head>
       <Title>{{ ArticleData.article.title }}</Title>
       <Meta name="keywords" :content="ArticleData.article.keyword" />
@@ -255,8 +260,11 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <div class="content">
+        <div class="content" v-if="!isMd">
           <p v-html="ArticleData.article.content" v-highlight></p>
+        </div>
+        <div class="content" v-else>
+          <CekditorViewsMd :content="ArticleData.article.content"></CekditorViewsMd>
         </div>
         <div class="btn_active">
           <el-button type="primary" plain class="goodnum" v-if="!Move.goodnum"
@@ -344,7 +352,7 @@ onMounted(() => {
     padding: 20px;
     border-radius: 12px;
     margin-right: 20px;
-    width: 45vw;
+    width: 50vw;
   }
 
   .ArticleRightPanel {
