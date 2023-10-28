@@ -1,0 +1,24 @@
+/*全局属性*/
+* {
+  margin: 0;
+  padding: 0;
+}
+body,
+html {
+  scroll-behavior: smooth;
+}
+a {
+  text-decoration: none;
+  color: #6ba2f4;
+}
+@media only screen and (max-width: 755px) {
+  .phone-none {
+    display: none;
+  }
+}
+@media only screen and (min-width: 755px) {
+  .window-none {
+    display: none;
+    flex: node;
+  }
+}

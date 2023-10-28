@@ -22,7 +22,7 @@ const uploadImg = ref(false)
 const ChangeUserData = async (type: string) => {
   // 获取用户信息
   const data: any = {}
-  const userId = UserData.user_id
+  const userId = store.Userdata.Users.user_id
   switch (type) {
     case 'img':
       data.user_pic = uploadImgData.value
@@ -137,11 +137,11 @@ onMounted(() => {
       <el-upload class="upload-demo" drag :multiple="false" :limit="1" :http-request="cag_pic">
         <el-icon class="el-icon--upload"><upload-filled /></el-icon>
         <div class="el-upload__text">
-          Drop file here or <em>click to upload</em>
+          把图片拖进来或者<em>点击上传</em>
         </div>
         <template #tip>
           <div class="el-upload__tip">
-            jpg/png files with a size less than 500kb
+            jpg/png文件 大小500k以下
           </div>
         </template>
       </el-upload>

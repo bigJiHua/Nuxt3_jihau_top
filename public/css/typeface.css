@@ -1,0 +1,51 @@
+/*全局字体*/
+@font-face {
+  font-family: 'webfont';
+  font-display: swap;
+  src: url('https://at.alicdn.com/t/webfont_rk2ov097jij.eot');
+  src: url('https://at.alicdn.com/t/webfont_rk2ov097jij.eot?#iefix')
+      format('embedded-opentype'),
+    url('https://at.alicdn.com/t/webfont_rk2ov097jij.woff2') format('woff2'),
+    url('https://at.alicdn.com/t/webfont_rk2ov097jij.woff') format('woff'),
+    url('https://at.alicdn.com/t/webfont_rk2ov097jij.ttf') format('truetype'),
+    url('https://at.alicdn.com/t/webfont_rk2ov097jij.svg#思源黑体-粗')
+      format('svg');
+}
+@font-face {
+  font-family: 'PT Serif';
+  src: url('@/assets/font/PT_Serif/PTSerif-Bold.ttf'),
+    url('@/assets/font/PT_Serif/PTSerif-BoldItalic.ttf'),
+    url('@/assets/font/PT_Serif/PTSerif-Italic.ttf'),
+    url('@/assets/font/PT_Serif/PTSerif-Regular.ttf');
+}
+@font-face {
+  font-family: 'Pacifico';
+  src: url('@/assets/font/Pacifico/Pacifico-Regular.ttf');
+}
+@font-face {
+  font-family: 'Patrick Hand';
+  src: url('@/assets/font/Patrick_Hand/PatrickHand-Regular.ttf');
+}
+@font-face {
+  font-family: 'Cookie';
+  src: url('@/assets/font/Cookie/Cookie-Regular.ttf');
+}
+@font-face {
+  font-family: 'songti';
+  src: url('@/assets/font/songti/NotoSerifSC-Medium.otf');
+}
+.pts {
+  font-family: 'PT Serif';
+}
+.pac {
+  font-family: 'Pacifico';
+}
+.ph {
+  font-family: 'Patrick Hand';
+}
+.coker {
+  font-family: 'Cookie';
+}
+.st {
+  font-family: 'songti';
+}

@@ -41,11 +41,15 @@ onMounted(() => {
       ckeditor.value.on('change', (e: any) => {
         Count += 1
         editorValue.value = e.editor.getData()
-        if (Count >= 120) {
+        if (props.type === 'set' && Count >= 120) {
           setTimeout(() => {
             emit('cagEditorData', editorValue.value);
           }, 200);
           Count = 0
+        } else {
+          setTimeout(() => {
+            emit('cagEditorData', editorValue.value);
+          }, 2500);
         }
       })
     }

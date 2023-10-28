@@ -60,27 +60,43 @@ const cagEditorData = (cagData: string) => {
 }
 // 清空当前所有编辑
 const deleteEditor = async (): Promise<void> => {
-  if (await ElMessageBoxTips.WarningTips('你确定不保存该文本吗？(可以选择上传草稿') === 'true') {
-    editorData.value = {
-      username: '',
-      title: '',
-      lable: '',
-      keyword: '',
-      cover_img: '',
-      content: '',
-      describes: '',
-      state: 0,
-      pub_date: ''
+  if (await ElMessageBoxTips.WarningTips('你确定要删除这篇文章吗？') === 'true') {
+    if (editorData.value.id === '') ElMessage({
+      message: '错误！请刷新页面重试',
+      type: 'warning'
+    })
+    const { data: res } = await postArticleApi.UserdelArticle(editorData.value.id)
+    if (res.status === 200) {
+      editorData.value = {
+        username: '',
+        title: '',
+        lable: '',
+        keyword: '',
+        cover_img: '',
+        content: '',
+        describes: '',
+        state: 0,
+        pub_date: ''
+      }
+      setTimeout(() => {
+        router.push('/editor/list')
+      }, 500);
     }
-    router.push('/editor/list')
   }
 }
 // 重新发布文章
-const PostNewArticle = async (isDraft?: boolean) => {
-  if (isMd) editorData.value.content = JSON.stringify(editorData.value.content)
-  if (isDraft && editorData.value.state === 0) {
-    if(await ElMessageBoxTips.WarningTips('你确定要保存为草稿吗？') === 'true'){
+const PostNewArticle = async (isDraft: boolean | number) => {
+  if (isDraft === true && editorData.value.state === 0) {
+    if (await ElMessageBoxTips.WarningTips('你确定要保存为草稿吗？') === 'true') {
       editorData.value.state = "2"
+    } else return
+  } else if (parseInt(editorData.value.state) !== 0 && !isDraft) {
+    if (await ElMessageBoxTips.WarningTips('准备好发布了吗？') === 'true') {
+      editorData.value.state = "0"
+    } else return
+  } else if (isDraft === 1) {
+    if (await ElMessageBoxTips.WarningTips('准备好更新该文章了吗？') === 'true') {
+      editorData.value.state = "0"
     } else return
   }
   let push = 0
@@ -90,9 +106,14 @@ const PostNewArticle = async (isDraft?: boolean) => {
     }
   }
   if (push === Object.keys(rules).length) {
+    if (isMd.value) editorData.value.content = JSON.stringify({
+      data: editorData.value.content
+    })
     const { data: res } = await postArticleApi.UsercagArticle(editorData.value)
     if (res.status === 200) {
-      router.push('/editor/list')
+      setTimeout(() => {
+        router.push('/editor/list')
+      }, 500);
     }
   }
 }
@@ -107,8 +128,7 @@ const getArticle = async (id?: string) => {
   if (res.status === 200 && res !== undefined) {
     router.replace('/editor/cag/' + queryId)
     editorData.value = { ...res.data.article }
-    if (/\bmd[A-Z0-9]+\b/g.test(res.data.article.article_id as string)) isMd.value = true
-    if (isMd.value) editorData.value.content = JSON.parse(res.data.article.content)
+    if (/\bmd[A-Z0-9]+\b/g.test(queryId as string)) isMd.value = true
     isget.value = true
     return
   }
@@ -161,16 +181,19 @@ onMounted(() => {
       </div>
       <div class="postBtn">
         <el-button type="success" v-show="isTrue">同步</el-button>
-        <el-button type="primary" @click="PostNewArticle()">更新</el-button>
+        <el-button type="primary" v-if="editorData.state === 0" @click="PostNewArticle(1)">更新</el-button>
+        <el-button type="primary" v-else @click="PostNewArticle(false)">发布</el-button>
       </div>
     </div>
     <div class="editor-container">
       <div class="ArticleDataPanel">
         <div class="articleState" v-if="router.currentRoute.value.params.id">
-          <h3>当前状态：</h3>
-          <el-tag v-if="editorData.state === 0" type="success">已发布</el-tag>
-          <el-tag v-else-if="editorData.state === 2" type="warning">草稿</el-tag>
-          <el-tag v-else type="danger">未发布</el-tag>
+          <div>
+            <h3>当前状态：</h3>
+            <el-tag v-if="editorData.state === 0" type="success">已发布</el-tag>
+            <el-tag v-else-if="editorData.state === 2" type="warning">草稿</el-tag>
+            <el-tag v-else type="danger">未发布</el-tag>
+          </div>
         </div>
         <el-form :label-position="'top'" label-width="100px" :model="editorData" style="max-width: 460px">
           <el-form-item>
@@ -208,6 +231,7 @@ onMounted(() => {
           <img :src="editorData.cover_img" alt="Cover_img">
         </dev>
         <p><span style="color: red;">*</span>为必填项</p>
+        <p><span style="color: red;">*</span>不能设置图片封面为base64格式！</p>
         <p><span style="color: red;">注意：</span>标签关键词用中文顿号间隔！</p>
       </div>
       <div class="EditorArea" v-if="isget">
@@ -274,6 +298,14 @@ onMounted(() => {
   >img {
     width: 80%;
     height: 90px;
+  }
+}
+
+.articleState {
+  padding: 10px;
+
+  >div {
+    display: flex;
   }
 }
 

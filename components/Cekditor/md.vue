@@ -1,7 +1,3 @@
-<template>
-  <Editor class="mdEditor" :locale="zhHans" :value="mdContent" :plugins="plugins" @change="handleChange" />
-</template>
-
 <script setup lang="ts">
 import gfm from '@bytemd/plugin-gfm'
 import highlight from '@bytemd/plugin-highlight-ssr'
@@ -34,13 +30,7 @@ const plugins = ref([
   footnotes(),
   mediumZoom()
 ])
-const selectTheme = ref(`---
-theme: juejin # Markdown 主题，默认值：juejin
-highlight: juejin # 代码高亮主题，默认值：juejin
-# 默认设置 如不需要请删除
----
-`)
-const mdContent = ref(`${selectTheme.value}`)
+const mdContent = ref('')
 const handleChange = (v: string) => {
   mdContent.value = v
   if (mdContent.value !== '' && mdContent.value !== props.content) {
@@ -48,14 +38,17 @@ const handleChange = (v: string) => {
   }
 }
 onMounted(() => {
-  console.log(props.content);
   if (props.type === 'set') {
-    mdContent.value = selectTheme.value + props.content
-  } else {
     mdContent.value = props.content
+  } else {
+    mdContent.value = JSON.parse(props.content).data
   }
 })
 </script>
+<template>
+  <Editor class="mdEditor" :locale="zhHans" :value="mdContent" :plugins="plugins" @change="handleChange" />
+</template>
+
 <style lang="less" scoped>
 :deep(.bytemd) {
   height: calc(100vh - 120px);

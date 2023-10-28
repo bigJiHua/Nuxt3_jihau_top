@@ -24,7 +24,7 @@ export default defineNuxtConfig({
     '@/assets/css/typeface.css',
     'element-plus/dist/index.css',
     'highlight.js/styles/monokai-sublime.css',
-    'bytemd/dist/index.css'
+    'bytemd/dist/index.css',
   ],
   app: {
     head: {
@@ -36,7 +36,7 @@ export default defineNuxtConfig({
         {
           rel: 'stylesheet',
           href: 'https://unpkg.com/element-plus/dist/index.css'
-        },
+        }
       ],
       script: [
         { src: '/ckeditor/ckeditor.js' }

@@ -8,13 +8,14 @@ import footnotes from '@bytemd/plugin-footnotes'
 import mediumZoom from '@bytemd/plugin-medium-zoom'
 import { Viewer } from '@bytemd/vue-next'
 import zhHans from "bytemd/locales/zh_Hans.json"
-import 'juejin-markdown-themes/dist/juejin.min.css'
+import 'juejin-markdown-themes/dist/simplicity-green.min.css'
 const props = defineProps({
   content: {
     type: String,
     default: ''
   }
 })
+const data = JSON.parse(props.content).data
 // 渲染md的插件
 const plugins = ref([
   gfm(),
@@ -28,8 +29,8 @@ const plugins = ref([
 </script>
 
 <template>
-  <Viewer class="viewer" :tabindex="2" :sanitize="23" :value="content" :plugins="plugins" :locale="zhHans"></Viewer>
+  <Viewer class="viewer markdown-body" :tabindex="2" :sanitize="23" :value="data" :plugins="plugins" :locale="zhHans">
+  </Viewer>
 </template>
 
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

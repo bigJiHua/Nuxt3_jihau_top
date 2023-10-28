@@ -52,10 +52,10 @@ useFetch(AUrl, {
       ArticleData.goodnum = res.data.goodnum
       ArticleData.collect = res.data.collect
       ArticleData.commont = res.data.comment
+      ArticleData.article.content = ArticleData.article.content
       Move.goodnum = res.data.acgoodnum
       Move.collect = res.data.accollect
       goodpage.value = false
-      ArticleData.article.content = JSON.parse(ArticleData.article.content)
       ArticleData.article.lable = res.data.article.lable.split('、')
     } else if (response.data === null) {
       goodpage.value = true
@@ -226,7 +226,6 @@ onMounted(() => {
 </script>
 <template>
   <div id="" class="article">
-
     <Head>
       <Title>{{ ArticleData.article.title }}</Title>
       <Meta name="keywords" :content="ArticleData.article.keyword" />

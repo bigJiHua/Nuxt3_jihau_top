@@ -96,7 +96,9 @@ const PostNewArticle = async (isSet?: boolean) => {
   if (push === Object.keys(rules).length) {
     editorData.value.isMd = isMd.value
     if (process.env.NODE_ENV === 'development') editorData.value.username = localStorage.getItem('Username')
-    if (isMd.value) editorData.value.content = JSON.stringify(editorData.value.content)
+    if (isMd.value) editorData.value.content = JSON.stringify({
+      data: editorData.value.content
+    })
     if (isSet) editorData.value.state = '2'
     const { data: res } = await postArticleApi.UseraddArticle(editorData.value)
     if (res.status === 200) {
