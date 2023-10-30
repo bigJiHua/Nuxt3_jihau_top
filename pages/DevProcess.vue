@@ -1,14 +1,20 @@
 <script setup lang="ts">
-import getDevPApi from '@/api/Page'
-const ListItem: Array<any> = reactive([])
+const ListItem: any = ref([])
 
-const getDevP = async () => {
-  const { data: res } = await getDevPApi.getSetting('DevP')
-  ListItem.push(res.data)
-}
-onMounted(() => {
-  getDevP()
+const SUrl = `${reqConfig.baseUrl}/data/Setting`
+useFetch(SUrl, {
+  method: 'get',
+  params: {
+    value: 'DevP'
+  }
 })
+  .then(response => {
+    const res: any = response.data.value
+    ListItem.value = res.data
+  })
+  .catch(error => {
+    console.error('Request failed:', error);
+  });
 
 useHead({
   title: 'jihau_top网站发展历程',
@@ -28,7 +34,7 @@ useHead({
 <template>
   <div id="" class="DevProcess">
     <div class="Tree">
-      <div class="Tree_dome" v-for="(item, index) in ListItem[0]" :key="index">
+      <div class="Tree_dome" v-for="(item, index) in ListItem" :key="index">
         <div class="Tree_Area">
           <span class="set_title">迭代内容:</span>{{ item.set_title }}
           <a :href="item.set_url" v-if="item.set_url">点击查看</a>

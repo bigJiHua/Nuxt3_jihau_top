@@ -46,24 +46,26 @@ const ChangeUserData = async (type: string) => {
   const res = await GetUData.CagUserData(userId, data)
   if (res.status === 200 && type === 'img') {
     uploadImg.value = false
+    location.reload()
   }
 }
+const { $setBase64Avator } = useNuxtApp()
 // 上传图片事件
 const cag_pic: any = function (e: any) {
-  const fd = new FileReader()
-  fd.readAsDataURL(e.file)
-  fd.onload = function (event: any) {
-    // 设置用户头像
-    uploadImgData.value = event.target.result
+  if (e.file.size > 1024 * 1024 * 5) {
+    ElMessage({
+      message: '图片大小不能超过5M',
+      type: 'error'
+    })
+    uploadImg.value = false
+    return
+  }
+  $setBase64Avator(e.file, true).then((res: any) => {
+    uploadImgData.value = res
     if (uploadImgData.value !== '') {
       ChangeUserData('img')
-    } else {
-      ElMessageBox({
-        message: '图片上传失败',
-        type: 'warning'
-      })
     }
-  }
+  })
 }
 onMounted(() => {
   if (store.Userdata.Users.username) {
@@ -93,7 +95,6 @@ onMounted(() => {
         </client-only>
       </div>
       <div class="Item">
-        <!-- <el-input v-model="store.Userdata.Users.birthday"></el-input> -->
         <el-button type="primary" plain @click="ChangeUserData('bir')">修改</el-button>
       </div>
     </div>

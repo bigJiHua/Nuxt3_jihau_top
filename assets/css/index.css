@@ -15,6 +15,18 @@ a {
   .phone-none {
     display: none;
   }
+  .cagPwdPanel {
+    width: 90vw !important;
+  }
+  .el-dialog__body {
+    padding: 5px 20px !important;
+  }
+  .el-form-item {
+    margin-bottom: 30px !important;
+  }
+  .el-dialog__footer {
+    padding: 10px 20px !important;
+  }
 }
 @media only screen and (min-width: 755px) {
   .window-none {

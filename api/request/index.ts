@@ -8,7 +8,7 @@ const request = axios.create({
 
 // axios请求拦截器
 request.interceptors.request.use(config => {
-  if (localStorage.getItem('token')) {
+  if (process.env.NODE_ENV === 'development' && localStorage.getItem('token')) {
     config.headers.Authorization = localStorage.getItem('token')
   }
   return config
@@ -34,12 +34,14 @@ request.interceptors.response.use(response => {
       type: 'warning',
       duration: 1500
     })
-  } else {
-    ElMessage.success({
-      message: res.message,
-      duration: 1500
-    })
   }
+  // 成功与否不再显示
+  // else {
+  //   ElMessage.success({
+  //     message: res.message,
+  //     duration: 1500
+  //   })
+  // }
   return response
 }, error => {
   const errorCode: number = error.response.status ? error.response.status : 200

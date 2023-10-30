@@ -19,11 +19,12 @@ import { User, Document, MessageBox, Setting } from '@element-plus/icons-vue'
         </template>
         <el-menu-item-group title="数据">
           <nuxt-link to="/editor/list"><el-menu-item index="2-1">我的文章</el-menu-item></nuxt-link>
+          <nuxt-link to="/editor/gallery"><el-menu-item index="2-2">图片资源</el-menu-item></nuxt-link>
         </el-menu-item-group>
         <el-menu-item-group title="编辑">
-          <nuxt-link to="/editor"><el-menu-item index="2-2">发布文章</el-menu-item></nuxt-link>
-          <nuxt-link to="/editor/wait"><el-menu-item index="2-3">草稿箱</el-menu-item></nuxt-link>
-          <nuxt-link to="/editor/cag"><el-menu-item index="2-4">修改文章</el-menu-item></nuxt-link>
+          <nuxt-link to="/editor"><el-menu-item index="2-3">发布文章</el-menu-item></nuxt-link>
+          <nuxt-link to="/editor/wait"><el-menu-item index="2-4">草稿箱</el-menu-item></nuxt-link>
+          <nuxt-link to="/editor/cag"><el-menu-item index="2-5">修改文章</el-menu-item></nuxt-link>
         </el-menu-item-group>
       </el-sub-menu>
       <el-sub-menu index="3">

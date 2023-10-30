@@ -10,7 +10,7 @@ const UserPrivacy = ref([
   { class: 'isspace', text: '查看我的空间', value: store.Userdata.Users.UserPower.isspace === 1 ? true : false }
 ])
 const ChangUserPower = async (key: number, is: boolean) => {
-  if (await ElMessageBoxTips.WarningTips('你确定要改变改权限吗？') === 'true') {
+  if (await WarningTips('你确定要改变改权限吗？') ) {
     for (const item in store.Userdata.Users.UserPower) {
       if (UserPrivacy.value[key].class === item) {
         if ((store.Userdata.Users.UserPower[item] === 1 ? true : false) === is) {

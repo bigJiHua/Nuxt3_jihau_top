@@ -91,8 +91,8 @@ const delUser = async () => {
   const user = localStorage.getItem('Username')
   const deluser = localStorage.getItem('Username')
   if (user && deluser) {
-    if (await ElMessageBoxTips.WarningTips('你确定要注销自己的账号吗？') === 'true') {
-      if (await ElMessageBoxTips.WarningTips('你确定要注销自己的管理员账号吗？555') === 'true') {
+    if (await WarningTips('你确定要注销自己的账号吗？')) {
+      if (await WarningTips('你确定要注销自己的管理员账号吗？555')) {
         const res = await cagpwaApi.DelUser(user, deluser)
         if (res.data.status === 200) {
           //退出当前登录
@@ -150,7 +150,7 @@ onMounted(() => {
     </div>
   </div>
   <client-only>
-    <el-dialog v-model="dialogFormVisible" title="Shipping address">
+    <el-dialog v-model="dialogFormVisible" title="修改密码" class="cagPwdPanel" top="30vh">
       <el-form :model="data" :rules="rules">
         <el-form-item label="请输入旧密码" type="password" show-password prop="oldpwd">
           <el-input v-model="data.oldpwd" autocomplete="off" />
@@ -204,13 +204,12 @@ onMounted(() => {
   }
 }
 
-@media screen and(max-width: 755px) {
+@media screen and (max-width: 755px) {
   .CardItem {
     >span {
       display: inline-block;
       width: 25%;
     }
   }
-
 }
 </style>

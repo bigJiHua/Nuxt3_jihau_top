@@ -1,7 +1,7 @@
 import { ElMessageBox, ElMessage } from 'element-plus'
 
 // 二次封装 回调 Element 提示框 结果只返回 true / false
-function WarningTips(Tips: string): Promise<string> {
+export default function (Tips: string): Promise<boolean> {
   return new Promise((resolve) => {
     ElMessageBox.confirm(
       Tips,
@@ -12,17 +12,13 @@ function WarningTips(Tips: string): Promise<string> {
         type: 'warning',
       }
     ).then(() => {
-      resolve('true');
+      resolve(true);
     }).catch(() => {
       ElMessage({
         type: 'info',
         message: '已取消该操作',
       });
-      resolve('false');
+      resolve(false);
     });
   });
-}
-
-export default {
-  WarningTips
 }

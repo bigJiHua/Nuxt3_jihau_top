@@ -1,13 +1,33 @@
 <script setup lang="ts">
-import getSpsList from '@/api/Page'
-const UserData: Array<any> = reactive([])
-const getSpsListItem = async () => {
-  const val = 'Sps'
-  const { data: res } = await getSpsList.getSetting(val)
-  UserData.push(res.data)
-}
-onMounted(() => {
-  getSpsListItem()
+const UserData: any = ref([])
+
+const SUrl = `${reqConfig.baseUrl}/data/Setting`
+useFetch(SUrl, {
+  method: 'get',
+  params: {
+    value: 'Sps'
+  }
+})
+  .then(response => {
+    const res: any = response.data.value
+    UserData.value = res.data
+  })
+  .catch(error => {
+    console.error('Request failed:', error);
+  });
+
+useHead({
+  title: '友链---JiHua的好朋友！',
+  meta: [
+    {
+      name: 'keywords',
+      content: '友链、友情链接、JiHua、jihau.top、通知页面、好朋友'
+    },
+    {
+      name: 'description',
+      content: '这是jihau.top网站的友链页面，欢迎您访问此网站！点击即可申请添加友链墙，互换website链接，成为最好的朋友！'
+    }
+  ]
 })
 </script>
 
@@ -41,7 +61,7 @@ onMounted(() => {
       </div>
     </div>
     <div id="" class="SpsListBox">
-      <div class="document_author_introduce" v-for="(item, index) in UserData[0]" :key="index">
+      <div class="document_author_introduce" v-for="(item, index) in UserData" :key="index">
         <div class="phone_Viewset">
           <div class="author_logoset">
             <a :href="item.set_url">
@@ -54,7 +74,7 @@ onMounted(() => {
         </div>
         <div class="introduce_doc" id="introduce_doc">
           <div class="priceArea" v-if="+item.set_difault01">
-            <p class="rmbicon">好朋友{{ item.set_title }} 赞助了 :</p>
+            <p class="rmbicon">好朋友{{ item.set_title }} 支持了 :</p>
             <span class="price">{{ item.set_difault01 }}</span>
           </div>
           <div class="priceArea" v-else>
@@ -143,7 +163,7 @@ onMounted(() => {
     width: 85vw;
     margin: 0 auto;
   }
-  
+
   .document_author_introduce {
     width: 30%;
     min-height: 180px;
@@ -252,10 +272,12 @@ onMounted(() => {
   .SpsList {
     padding: 20px 0 0 0;
   }
+
   .SpsListBox {
     width: 95vw;
     margin: 0 auto;
   }
+
   .document_author_introduce {
     width: 100vw;
     background-color: rgba(240, 243, 246, 0.8);

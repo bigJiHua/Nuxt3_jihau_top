@@ -22,6 +22,7 @@ const CtrlMenuItem = reactive([
   { path: '/Users', text: '个人设置' },
   { path: '/my', text: '我的消息' },
   { path: '/editor/list', text: '我的文章' },
+  { path: '/editor/gallery', text: '图片资源' },
   { path: '/editor', text: '发布文章' },
   { path: '/editor/wait', text: '草稿箱' },
   { path: '/editor/cag', text: '修改文章' },

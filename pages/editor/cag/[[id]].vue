@@ -60,7 +60,7 @@ const cagEditorData = (cagData: string) => {
 }
 // 清空当前所有编辑
 const deleteEditor = async (): Promise<void> => {
-  if (await ElMessageBoxTips.WarningTips('你确定要删除这篇文章吗？') === 'true') {
+  if (await WarningTips('你确定要删除这篇文章吗？') ) {
     if (editorData.value.id === '') ElMessage({
       message: '错误！请刷新页面重试',
       type: 'warning'
@@ -87,15 +87,15 @@ const deleteEditor = async (): Promise<void> => {
 // 重新发布文章
 const PostNewArticle = async (isDraft: boolean | number) => {
   if (isDraft === true && editorData.value.state === 0) {
-    if (await ElMessageBoxTips.WarningTips('你确定要保存为草稿吗？') === 'true') {
+    if (await WarningTips('你确定要保存为草稿吗？') ) {
       editorData.value.state = "2"
     } else return
   } else if (parseInt(editorData.value.state) !== 0 && !isDraft) {
-    if (await ElMessageBoxTips.WarningTips('准备好发布了吗？') === 'true') {
+    if (await WarningTips('准备好发布了吗？') ) {
       editorData.value.state = "0"
     } else return
   } else if (isDraft === 1) {
-    if (await ElMessageBoxTips.WarningTips('准备好更新该文章了吗？') === 'true') {
+    if (await WarningTips('准备好更新该文章了吗？') ) {
       editorData.value.state = "0"
     } else return
   }

@@ -16,11 +16,11 @@ onMounted(() => {
 <template>
   <div class="UserDataBox">
     <el-tabs :tabPosition="tabPosition" type="border-card" class="Usertabs">
-      <el-tab-pane label="账号设置">
-        <CtrlPanelUserCount></CtrlPanelUserCount>
-      </el-tab-pane>
       <el-tab-pane label="个人资料">
         <CtrlPanelUser></CtrlPanelUser>
+      </el-tab-pane>
+      <el-tab-pane label="账号设置">
+        <CtrlPanelUserCount></CtrlPanelUserCount>
       </el-tab-pane>
       <el-tab-pane label="隐私设置">
         <CtrlPanelUserPrivacy></CtrlPanelUserPrivacy>

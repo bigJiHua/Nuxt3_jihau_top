@@ -8,6 +8,8 @@ const props = defineProps({
   }
 })
 const isdemo = ref(false)
+const { $copyUrl } = useNuxtApp()
+// 用于判断是否带贴图
 const ifcov = computed(() => {
   if (props.data.cover_img.match(/^http/)) {
     return true
@@ -17,31 +19,7 @@ const ifcov = computed(() => {
 // 分享
 const ShareBox = async () => {
   const copyw = `https://jihau.top/article/${props.data.article_id}`
-  if (process.env.NODE_ENV === 'development') {
-    navigator.clipboard.writeText(copyw).then(
-      () => {
-        ElNotification({
-          title: '成功',
-          message: '已成功将链接复制到剪贴板！',
-          type: 'success',
-        })
-      },
-      () => {
-        ElNotification({
-          title: '失败',
-          message: '分享失败，无法将文章链接复制到剪贴板',
-          type: 'warning',
-        })
-      }
-    )
-  } else {
-    ElNotification({
-      title: '错误！',
-      message: '分享失败，无法将文章链接复制到剪贴板',
-      type: 'error',
-    })
-  }
-
+  $copyUrl(copyw)
 }
 onMounted(() => {
   setTimeout(() => {
@@ -107,11 +85,6 @@ onMounted(() => {
   color: rgba(0, 0, 0, 0.692);
   text-decoration: none;
 }
-
-.article_area {
-  margin: 10px;
-}
-
 .article_doc_title>a {
   font-size: 1.2rem;
   font-weight: 600;
@@ -138,9 +111,11 @@ onMounted(() => {
   font-weight: bolder;
   font-size: 0.8rem;
 }
+
 .article_demos {
   opacity: 0;
 }
+
 .article_demo {
   animation: identifier-6f9b9245 0.8s cubic-bezier(0.4, 0, 1, 1);
 }
@@ -221,12 +196,12 @@ onMounted(() => {
   }
 
   .article_img {
-    padding: 0 6px;
-    height: 75px;
-    width: 200px;
+    padding: 0;
+    height: 90px;
+    width: 215px;
     overflow: hidden;
-    border-radius: 12px;
-    margin-bottom: 10px;
+    border-radius: 5px;
+    margin: 5px;
   }
 
   .article_img_item {
@@ -242,14 +217,14 @@ onMounted(() => {
   }
 
   .article_doc_title>a {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: bolder;
     font-family: '微软雅黑';
   }
 
   .article_doc_txt {
     text-indent: 1rem;
-    font-size: 1.2rem;
+    font-size: 0.9rem;
     overflow: hidden;
   }
 

@@ -60,7 +60,7 @@ const cagEditorData = (cagData: string) => {
 }
 // 清空当前所有编辑
 const deleteEditor = async (): Promise<void> => {
-  if (await ElMessageBoxTips.WarningTips('你确定不保存该文本吗？(可以选择上传草稿') === 'true') {
+  if (await WarningTips('你确定不保存该文本吗？(可以选择上传草稿') ) {
     editorData.value = {
       username: '',
       title: '',
@@ -77,9 +77,9 @@ const deleteEditor = async (): Promise<void> => {
 }
 // 切换编辑器
 const ChangeEditormd = async function (isChange: boolean) {
-  if (isChange && await ElMessageBoxTips.WarningTips('你确定要切换成markdown编辑器吗？') === 'true') {
+  if (isChange && await WarningTips('你确定要切换成markdown编辑器吗？') ) {
     isMd.value = true
-  } else if (await ElMessageBoxTips.WarningTips('你确定要切换成富文本编辑器吗？') === 'true') {
+  } else if (await WarningTips('你确定要切换成富文本编辑器吗？') ) {
     isMd.value = false
   }
 }
@@ -153,7 +153,7 @@ onMounted(async () => {
     // console.log(window.CKEDITOR);
     // 监测本地是否有数据
     if (localStorage.getItem('setArtData') !== null) {
-      if (await ElMessageBoxTips.WarningTips('检测到本地存在历史文章数据，确认加载吗？还是取消删除') === 'true') {
+      if (await WarningTips('检测到本地存在历史文章数据，确认加载吗？还是取消删除') ) {
         editorData.value = JSON.parse(localStorage.getItem('setArtData') as string)
         isAutoSafe.value = true
       } else {

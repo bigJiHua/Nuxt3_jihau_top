@@ -1,15 +1,42 @@
 <script setup lang="ts">
 import getNlApi from '@/api/Article'
-const notifyList: Array<any> = reactive([])
-
-const getDevP = async () => {
-  const { data: res } = await getNlApi.getNotifyList()
-  notifyList.push(res.data)
+let notifyList: any = ref([])
+let AllNum = ref(0)
+// 获取通知
+const getDevP = async (num: number = 0) => {
+  notifyList.value = []
+  const { data: res } = await getNlApi.getNotifyList(num)
+  notifyList.value = res.data
+  AllNum.value = res.Num
 }
-onMounted(() => {
-  getDevP()
+const NUrl = `${reqConfig.baseUrl}/data/notify`
+useFetch(NUrl, {
+  method: 'get',
+  params: {
+    Num: 0
+  }
 })
+  .then(response => {
+    const res: any = response.data.value
+    notifyList.value = res.data
+    AllNum.value = res.Num
+  })
+  .catch(error => {
+    console.error('Request failed:', error);
+  });
 
+// 上一页
+const prevNum = (num: number) => {
+  getDevP((num - 1) * 20)
+}
+// 数字
+const pagerNum = (num: number) => {
+  getDevP((num - 1) * 20)
+}
+// 下一页
+const nextNum = (num: number) => {
+  getDevP((num - 1) * 20)
+}
 useHead({
   title: '通知',
   meta: [
@@ -28,13 +55,17 @@ useHead({
 <template>
   <div id="" class="DevProcess">
     <div class="Tree">
-      <div class="Tree_dome" v-for="(item, index) in notifyList[0]" :key="index">
+      <div class="Tree_dome" v-for="(item, index) in notifyList" :key="index">
         <div class="Tree_Area">
           <span class="set_title">通知:</span>
           <nuxt-link :to="'/Notify/' + item.notify_id">{{ item.title }}</nuxt-link>
           <span class="set_time">发布日期：{{ item.pub_date }}</span>
         </div>
       </div>
+    </div>
+    <div class="pagBtnArea">
+      <el-pagination background layout="prev, pager, next" :total="AllNum" @current-change="prevNum"
+        @prev-click="pagerNum" @next-click="nextNum" :default-page-size="20" />
     </div>
   </div>
 </template>
@@ -48,6 +79,18 @@ useHead({
 .Tree {
   display: flex;
   flex-wrap: wrap;
+  height: calc(100vh - 105px);
+  overflow: scroll;
+}
+
+.Tree::-webkit-scrollbar {
+  display: none;
+}
+
+.pagBtnArea {
+  display: flex;
+  justify-content: center;
+  padding: 5px;
 }
 
 @media only screen and (min-width: 755px) {

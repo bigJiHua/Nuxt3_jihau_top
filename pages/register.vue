@@ -74,7 +74,7 @@ const validata = (key: string) => {
   return bool
 }
 const comeback = async () => {
-  if (await ElMessageBoxTips.WarningTips('放弃注册吗？') === 'true') {
+  if (await WarningTips('放弃注册吗？') ) {
     router.back()
   }
 }

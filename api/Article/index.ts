@@ -9,12 +9,12 @@ const getArchive = function () {
   return request.get('/data/archive')
 }
 // 通知列表
-const getNotifyList = function () {
+const getNotifyList = function (Num: number) {
   const user = localStorage.getItem('Username')
   if (user) {
-    return request.get('/data/notify?user=' + user)
+    return request.get('/data/notify?user=' + user + '&Num=' + Num)
   }
-  return request.get('/data/notify')
+  return request.get('/data/notify?Num=' + Num)
 }
 // 获取文章内容
 const getArchives = function (id: string) {
