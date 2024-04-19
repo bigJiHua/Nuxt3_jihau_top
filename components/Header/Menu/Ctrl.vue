@@ -3,8 +3,8 @@ import { Menu, Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 const key: any = ref('')
-const SearchFunc = () => {
-  router.push('/Search/' + key.value)
+const SearchFunc = (): void => {
+  void router.push('/Search/' + key.value)
   key.value = ''
 }
 const MenuItem = reactive([
@@ -20,24 +20,21 @@ const MenuItem = reactive([
 ])
 const CtrlMenuItem = reactive([
   { path: '/Users', text: '个人设置' },
-  { path: '/my', text: '我的消息' },
+  { path: '/Users/msg', text: '我的消息' },
   { path: '/editor/list', text: '我的文章' },
   { path: '/editor/gallery', text: '图片资源' },
   { path: '/editor', text: '发布文章' },
   { path: '/editor/wait', text: '草稿箱' },
   { path: '/editor/cag', text: '修改文章' },
-  { path: '/my/like', text: '我的喜欢' },
-  { path: '/my/collect', text: '我的收藏' },
-  { path: '/my/comment', text: '我的评论' },
-  { path: '/my/Setting', text: '个性设置' },
+  { path: '/Users/Setting', text: '个性设置' },
 ])
 
 const drawer = ref(false)
 const innerDrawer = ref(false)
 const isLogin = ref(false)
 onMounted(() => {
-  if (process.client) {
-    isLogin.value = localStorage.getItem('token') ? true : false;
+  if (process.client ?? false) {
+    isLogin.value = localStorage.getItem('token') !== null
   }
 })
 </script>
@@ -45,8 +42,10 @@ onMounted(() => {
 <template>
   <div class="Header">
     <div class="HeaderLeft">
-      <div style="display: flex;">
-        <h1 class="HeaderTitle coker"><nuxt-link to="/">JiHua的web和js开发数据</nuxt-link></h1>
+      <div>
+        <h1 class="HeaderTitle coker">
+          <nuxt-link to="/">JiHua的web和js开发数据</nuxt-link>
+        </h1>
         <!-- <img src="https://jihau.top/img/logo.png" alt="Logo" class="logo"> -->
       </div>
       <div class="RightMenu">
@@ -55,15 +54,29 @@ onMounted(() => {
       </div>
     </div>
     <client-only>
-      <el-drawer v-model="drawer" :with-header="false" :append-to-body="true" size="70vw" style="padding: 0;"
-        :before-close="close">
+      <el-drawer
+        v-model="drawer"
+        :with-header="false"
+        :append-to-body="true"
+        size="70vw"
+        style="padding: 0"
+      >
         <div class="defalutMenu">
-          <div class="MenuItem" v-for="(item, index) in MenuItem" :key="index" @click="drawer = false">
+          <div
+            class="MenuItem"
+            v-for="(item, index) in MenuItem"
+            :key="index"
+            @click="drawer = false"
+          >
             <NuxtLink :to="item.path" class="text-x2">{{ item.text }}</NuxtLink>
           </div>
           <div class="MenuItem">
             <div class="SearchBox">
-              <el-input v-model="key" placeholder="搜搜搜~" class="input-with-select">
+              <el-input
+                v-model="key"
+                placeholder="搜搜搜~"
+                class="input-with-select"
+              >
                 <template #append>
                   <el-button :icon="Search" @click="SearchFunc" />
                 </template>
@@ -71,19 +84,39 @@ onMounted(() => {
             </div>
           </div>
           <div class="LoginBtn" v-if="!isLogin">
-            <nuxt-link to="/Login"><el-button type="primary" plain @click="drawer = false">登录</el-button></nuxt-link>
+            <nuxt-link to="/Login"
+              ><el-button type="primary" plain @click="drawer = false"
+                >登录</el-button
+              ></nuxt-link
+            >
           </div>
           <div class="MenuItem" v-if="isLogin">
-            <el-button type="primary" plain @click="innerDrawer = true">后台菜单</el-button>
+            <el-button type="primary" plain @click="innerDrawer = true"
+              >后台菜单</el-button
+            >
           </div>
         </div>
         <div v-if="isLogin">
-          <el-drawer v-model="innerDrawer" :with-header="false" :append-to-body="true" size="50vw" style="padding: 0;">
-            <div class="MenuItem" v-for="(item, index) in CtrlMenuItem" :key="index"
-              @click="innerDrawer = false, drawer = false">
-              <NuxtLink :to="item.path" class="text-x2">{{ item.text }}</NuxtLink>
-            </div>
-          </el-drawer>
+          <client-only>
+            <el-drawer
+              v-model="innerDrawer"
+              :with-header="false"
+              :append-to-body="true"
+              size="50vw"
+              style="padding: 0"
+            >
+              <div
+                class="MenuItem"
+                v-for="(item, index) in CtrlMenuItem"
+                :key="index"
+                @click=";(innerDrawer = false), (drawer = false)"
+              >
+                <NuxtLink :to="item.path" class="text-x2">{{
+                  item.text
+                }}</NuxtLink>
+              </div>
+            </el-drawer>
+          </client-only>
         </div>
       </el-drawer>
     </client-only>
@@ -177,9 +210,8 @@ a {
   align-items: center;
   margin: 5px;
 
-  >button {
+  > button {
     margin: 0 10px 0 0;
   }
 }
 </style>
-

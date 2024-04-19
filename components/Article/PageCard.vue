@@ -1,17 +1,24 @@
+<!-- 搜索功能的展示卡片 -->
 <script setup lang="ts">
 const props = defineProps({
   item: {
     type: Object,
     default() {
       return {}
-    }
-  }
+    },
+  },
 })
-const id = ref(props.item.article_id ? props.item.article_id : props.item.notify_id)
-const link = ref(props.item.article_id ? `/article/${id.value}  ` : `/Notify/${id.value}`)
+const id = ref(
+  props.item.article_id ? props.item.article_id : props.item.notify_id
+)
+const link = ref(
+  props.item.article_id ? `/article/${id.value}  ` : `/Notify/${id.value}`
+)
 const isUser = ref(props.item.user_id ? true : false)
 onMounted(() => {
-  props.item.keyword = props.item.keyword.split('、')
+  if (/、/.test(props.item.keyword)) {
+    props.item.keyword = props.item.keyword.split('、')
+  }
 })
 </script>
 
@@ -20,12 +27,18 @@ onMounted(() => {
     <div class="Usercard">
       <div class="UserData">
         <div class="UserImg">
-          <img :src="item.user_pic" alt="Logo" v-if="item.user_pic">
-          <img src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" alt="defalut" v-else>
+          <img :src="item.user_pic" alt="Logo" v-if="item.user_pic" />
+          <img
+            src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
+            alt="defalut"
+            v-else
+          />
         </div>
         <div class="UserContent">
           <p class="username">
-            <nuxt-link :to="'/space/' + item.username">{{ item.username }}</nuxt-link>
+            <nuxt-link :to="'/space/' + item.username">{{
+              item.username
+            }}</nuxt-link>
           </p>
           <div>
             <p class="useridentity">
@@ -37,17 +50,15 @@ onMounted(() => {
           </div>
         </div>
       </div>
-      <div class="ActionBtn">
-        <!-- TODO待开发事件 -->
-        <el-button color="#76A9F5" plain>关注我</el-button>
-      </div>
     </div>
   </div>
   <div id="" class="itemarea" v-else>
     <div class="card">
       <div class="card_title">
         <div class="User">
-          <nuxt-link :to="{ path: '/space/' + item.username }"> {{ item.username }}</nuxt-link>
+          <nuxt-link :to="{ path: '/space/' + item.username }">
+            {{ item.username }}</nuxt-link
+          >
           <span>发布于{{ item.pub_date }}</span>
         </div>
         <nuxt-link :to="link">
@@ -55,12 +66,17 @@ onMounted(() => {
         </nuxt-link>
       </div>
       <article>
-        <nuxt-link :to="link">
-          {{ item.content }}...
-        </nuxt-link>
+        <nuxt-link :to="link"> {{ item.content }}... </nuxt-link>
       </article>
       <div class="details">
-        <p><el-tag size="small" v-for="(word, index) in item.keyword" :key="index">{{ word }}</el-tag></p>
+        <p>
+          <el-tag
+            size="small"
+            v-for="(word, index) in item.keyword"
+            :key="index"
+            >{{ word }}</el-tag
+          >
+        </p>
         <el-tag size="small">标签：{{ item.lable }}</el-tag>
       </div>
     </div>
@@ -89,7 +105,7 @@ onMounted(() => {
 }
 
 .UserImg {
-  >img {
+  > img {
     width: 45px;
     height: 45px;
   }
@@ -102,10 +118,10 @@ onMounted(() => {
 .UserContent {
   margin: 5px;
 
-  >div {
+  > div {
     display: flex;
 
-    >p {
+    > p {
       margin: 5px;
     }
   }
@@ -116,7 +132,7 @@ onMounted(() => {
     color: #fb7299;
   }
 
-  >span {
+  > span {
     font-size: 0.8rem;
     display: inline-block;
     margin: 10px;
@@ -156,4 +172,3 @@ onMounted(() => {
   }
 }
 </style>
-

@@ -1,43 +1,62 @@
 <script setup lang="ts">
+import getArtDataApi from '@/api/CtrlMenu'
 definePageMeta({
   layout: 'ctrl-view'
 })
-import getArtDataApi from '@/api/CtrlMenu'
-let MyArticleListData = ref([] as Array<any>)
-let AllNum = ref(0)
-const getArticle = async (num: number) => {
-  if (!num) num = 0
-  const { data: res } = await getArtDataApi.UsergetArticle(num,2)
+const MyArticleListData: Ref<any[]> = ref([])
+const AllNum: Ref<number> = ref(0)
+const NullData: Ref<boolean> = ref(false)
+const getArticle = async (num: number): Promise<void> => {
+  if (num === 0) num = 0
   MyArticleListData.value = []
+  const { data: res } = await getArtDataApi.UsergetArticle(num, 2)
   MyArticleListData.value = [...res.data]
   AllNum.value = res.Num
+  if (res.data.length === 0) {
+    NullData.value = true
+  }
 }
 
 // 上一页
-const prevNum = (num: number) => {
-  getArticle((num - 1) * 10)
+const prevNum = (num: number): void => {
+  void getArticle((num - 1) * 10)
 }
 // 数字
-const pagerNum = (num: number) => {
-  getArticle((num - 1) * 10)
+const pagerNum = (num: number): void => {
+  void getArticle((num - 1) * 10)
 }
 // 下一页
-const nextNum = (num: number) => {
-  getArticle((num - 1) * 10)
+const nextNum = (num: number): void => {
+  void getArticle((num - 1) * 10)
 }
 onMounted(() => {
-  getArticle(0)
+  void getArticle(0)
 })
 </script>
 
 <template>
   <div class="MyArticleList">
-    <div class="ArticleListArea">
-      <ArticleForMyCard v-for="(item, index) in MyArticleListData" :key="index" :data="item" />
+    <div class="NullData" v-if="!MyArticleListData">
+      <el-empty description="暂无草稿数据">
+        <nuxt-link to="/editor">发布文章</nuxt-link>
+      </el-empty>
+    </div>
+    <div class="ArticleListArea" v-else>
+      <ArticleForMyCard
+        v-for="(item, index) in MyArticleListData"
+        :key="index"
+        :data="(item)"
+      />
     </div>
     <div class="pagBtnArea">
-      <el-pagination background layout="prev, pager, next" :total="AllNum" @current-change="prevNum"
-        @prev-click="pagerNum" @next-click="nextNum" />
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="AllNum"
+        @current-change="prevNum"
+        @prev-click="pagerNum"
+        @next-click="nextNum"
+      />
     </div>
   </div>
 </template>

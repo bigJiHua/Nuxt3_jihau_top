@@ -1,29 +1,37 @@
 <script setup lang="ts">
+import { useIndexLunBoStore } from '@/stores/useindexDemoData'
+import getLunboData from '@/api/Page'
 // import Swiper core and required modules
-import { Navigation, Pagination, Scrollbar, A11y, Autoplay } from 'swiper/modules';
+import {
+  Navigation,
+  Pagination,
+  Scrollbar,
+  A11y,
+  Autoplay,
+} from 'swiper/modules'
 // Import Swiper Vue.js components
-import { Swiper, SwiperSlide } from 'swiper/vue';
-import 'swiper/less';
-import 'swiper/less/navigation';
-import 'swiper/less/pagination';
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import 'swiper/less'
+import 'swiper/less/navigation'
+import 'swiper/less/pagination'
 
 const modules = [Navigation, Pagination, Scrollbar, Autoplay, A11y]
 let swiperOption = {
   spaceBetween: 0,
   slidesPerView: 1, // 一屏显示的slide个数  'auto'
-  slidesPerGroup: 1, //每组多少个swiper滑块
+  slidesPerGroup: 1, // 每组多少个swiper滑块
   centeredSlides: true, // 居中的slide是否标记为active，默认是最左active,这样样式即可生效
   slideToClickedSlide: true, // 点击的slide会居中
   loop: true, // 循环播放, 可有无限滚动效果，初始加载即是滚动后的效果
   scrollbar: { draggable: true },
-  grabCursor: true, //抓手光标
+  grabCursor: true, // 抓手光标
   autoplay: {
     delay: 3000,
-    disableOnInteraction: false, //用户操作swiper之后，是否禁止autoplay
-    pauseOnMouseEnter: true, //鼠标置于swiper是否时暂停自动切换
+    disableOnInteraction: false, // 用户操作swiper之后，是否禁止autoplay
+    pauseOnMouseEnter: true, // 鼠标置于swiper是否时暂停自动切换
   },
-  //使用前进后退按钮来控制Swiper切换。
-  navigation: true,   // 1默认，在内
+  // 使用前进后退按钮来控制Swiper切换。
+  navigation: true, // 1默认，在内
   // 2前进、后退按钮放到容器的外面
   // navigation: {
   //   nextEl: ".swiper-button-next",
@@ -31,39 +39,38 @@ let swiperOption = {
   //   hiddenClass: "button-hidden", //隐藏时的class
   //   disabledClass: "button-disabled", //不可用时的class
   // },
-  //使用分页器导航
+  // 使用分页器导航
   pagination: {
     clickable: true,
   },
-};
-import { useIndexLunBoStore } from '~/stores/useindexDemoData'
-import getLunboData from '@/api/Page'
+}
 const store = useIndexLunBoStore()
 const images = ref(toRaw(store.getLunBoList))
 // SSR请求轮播图 /data/Setting?value=
-const NUrl = `${reqConfig.baseUrl}/data/Setting`;
-useFetch(NUrl, {
-  method: 'get',
-  params: {
-    value: 'Lunbo'
-  }
-})
-  .then(response => {
-    const res: any = response.data.value
-    images.value = res.data
-  })
+// const NUrl = `${reqConfig.baseUrl}/data/Setting`
+// await useFetch(NUrl, {
+//   method: 'get',
+//   params: {
+//     value: 'Lunbo',
+//   },
+// }).then((response) => {
+//   const res: any = response.data.value
+//   images.value = res.data
+// })
 
-const getLunBoList = async () => {
+const getLunBoList = async (): Promise<void> => {
   const { data: res } = await getLunboData.getSetting('Lunbo')
   store.setLunBoData(res.data)
   images.value = res.data
 }
 onMounted(() => {
+  void getLunBoList()
   setTimeout(() => {
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (images.value) {
       store.setLunBoData(images.value)
     }
-  }, 800);
+  }, 800)
   if (images.value.length === 0 && store.LunBoList.length !== 0) {
     images.value = toRaw(store.getLunBoList)
   }

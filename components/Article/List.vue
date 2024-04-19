@@ -79,6 +79,7 @@ onMounted(() => {
   max-height: 226px;
   padding: 8px;
   top: 10px;
+  overflow: hidden;
 }
 
 .togolink {
@@ -155,11 +156,11 @@ onMounted(() => {
   .article_doc {
     flex: 1;
     padding: 0 10px;
+    overflow: hidden;
 
     .article_doc_txt {
       text-indent: 3rem;
-      font-size: 1rem;
-      overflow: hidden;
+      font-size: 0.8rem;
     }
 
   }
@@ -179,6 +180,9 @@ onMounted(() => {
 
   .artmethod {
     padding: 0 20px;
+  }
+  .article_doc_title {
+    padding: 0 10px;
   }
 }
 
@@ -213,7 +217,6 @@ onMounted(() => {
   .article_doc {
     max-height: 100px;
     min-width: 50%;
-    overflow: hidden;
   }
 
   .article_doc_title>a {

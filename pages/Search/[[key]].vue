@@ -100,7 +100,7 @@ useHead({
     overflow: scroll;
     padding: 10px 20px;
     margin: 7px 30px 7px 5px;
-    max-height: 38vh;
+    max-height: 60vh;
   }
 }
 

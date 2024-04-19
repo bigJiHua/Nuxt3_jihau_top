@@ -1,29 +1,34 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: 'ctrl-view'
-})
-import { Delete, DocumentCopy, Plus, Picture as IconPicture } from '@element-plus/icons-vue'
+import {
+  Delete,
+  DocumentCopy,
+  Plus,
+  Picture as IconPicture,
+} from '@element-plus/icons-vue'
 import setdata from '@/api/CtrlMenu/gallery'
+definePageMeta({
+  layout: 'ctrl-view',
+})
 const { $copyUrl, $setBase64Avator } = useNuxtApp()
-let imgGallery = ref([] as Array<any>)
-let AllNum = ref(0)
+const imgGallery: Ref<any[]> = ref([])
+const AllNum: Ref<number> = ref(0)
 const isUp = ref(false)
 const UploadImg: any = ref(null)
-let localNum = ref(0)
+const localNum: Ref<number> = ref(0)
 // 获取图片分页
-const getGallery = async (num: number) => {
+const getGallery = async (num: number): Promise<void> => {
   imgGallery.value = []
-  if (!num) num = 0
+  if (num === 0) num = 0
   const usdata = {
     picusername: localStorage.getItem('Username') as string,
-    Num: num
+    Num: num,
   }
   const { data: res } = await setdata.getImage(usdata)
   imgGallery.value = res.data
   AllNum.value = res.Num
 }
 // 复制Url
-const copyUrl = (url: string) => {
+const copyUrl = (url: string): void => {
   $copyUrl(url)
 }
 // 删除照片
@@ -31,60 +36,64 @@ const deleteImg = async (id: string) => {
   if (await WarningTips('你确定要删除这张照片码？')) {
     await setdata.delImage(id)
     setTimeout(() => {
-      getGallery(localNum.value)
+      void getGallery(localNum.value)
     }, 1000)
   }
 }
 // 上传图片
-const up_img: any = async (e: any) => {
+const upImg = async (e: any): Promise<any> => {
   UploadImg.value.clearFiles()
   let uploadImgData = null
   let qNum = 0
-  if (e.file.size > 1024 * 1024 * 30) return ElMessage({
-    message: '干你*，太大了！我要受不了了！啊啊啊啊...',
-    type: 'error'
-  })
+  if (e.file.size > 1024 * 1024 * 30) {
+    return ElMessage({
+      message: '文件超过最大值',
+      type: 'error'
+    })
+  }
   if (e.file.size > 1024 * 1024) {
     qNum = 0.4
   } else {
     qNum = 0.6
   }
-  $setBase64Avator(e.file, false, qNum).then(async (res: any) => {
-    uploadImgData = res
-    if (uploadImgData !== null) {
-      const { data: res } = await setdata.upImage(uploadImgData)
-      if (res.status === 200) {
-        UploadImg.value.clearFiles()
-        setTimeout(() => {
-          getGallery(0)
-        }, 800)
+  $setBase64Avator(e.file, false, qNum)
+    .then(async (res: any) => {
+      uploadImgData = res
+      if (uploadImgData !== null) {
+        const { data: res } = await setdata.upImage(uploadImgData)
+        if (res.status === 200) {
+          UploadImg.value.clearFiles()
+          setTimeout(() => {
+            void getGallery(0)
+          }, 800)
+        }
       }
-    }
-  }).catch(err => {
-    ElNotification({
-      title: '错误',
-      message: err,
-      type: 'warning'
     })
-  })
+    .catch((err) => {
+      ElNotification({
+        title: '错误',
+        message: err,
+        type: 'warning',
+      })
+    })
 }
 // 上一页
 const prevNum = (num: number) => {
   localNum.value = (num - 1) * 20
-  getGallery((num - 1) * 20)
+  void getGallery((num - 1) * 20)
 }
 // 数字
 const pagerNum = (num: number) => {
   localNum.value = (num - 1) * 20
-  getGallery((num - 1) * 20)
+  void getGallery((num - 1) * 20)
 }
 // 下一页
 const nextNum = (num: number) => {
   localNum.value = (num - 1) * 20
-  getGallery((num - 1) * 20)
+  void getGallery((num - 1) * 20)
 }
 onMounted(() => {
-  getGallery(0)
+  void getGallery(0)
 })
 </script>
 
@@ -93,8 +102,15 @@ onMounted(() => {
     <div class="GalleryListArea">
       <div class="galleryItem">
         <div class="uploadImg" @click="isUp = true">
-          <el-upload class="upload-demo" ref="UploadImg" drag :multiple="false" :limit="1" :http-request="up_img"
-            accept="image">
+          <el-upload
+            class="upload-demo"
+            ref="UploadImg"
+            drag
+            :multiple="false"
+            :limit="1"
+            :http-request="upImg"
+            accept="image"
+          >
             <el-icon class="el-icon--upload">
               <Plus />
             </el-icon>
@@ -107,12 +123,20 @@ onMounted(() => {
       </div>
       <div class="galleryItem" v-for="(item, index) in imgGallery" :key="index">
         <!-- <img class="galleryImg" :src="item.userimage" alt="用户图片"> -->
-        <el-image class="galleryImg" :src="item.userimage" :zoom-rate="1.2" :max-scale="7" :min-scale="0.2"
-          :initial-index="4" fit="cover" :loading="'lazy'">
+        <el-image
+          class="galleryImg"
+          :src="item.userimage"
+          :zoom-rate="1.2"
+          :max-scale="7"
+          :min-scale="0.2"
+          :initial-index="4"
+          fit="cover"
+          :loading="'lazy'"
+        >
           <template #error>
             <div class="image-slot">
               <el-icon><icon-picture /></el-icon>
-              <span style="font-size: 0.8rem;">加载失败...</span>
+              <span style="font-size: 0.8rem">加载失败...</span>
             </div>
           </template>
         </el-image>
@@ -127,8 +151,15 @@ onMounted(() => {
       </div>
     </div>
     <div class="pagBtnArea">
-      <el-pagination background layout="prev, pager, next" :total="AllNum" :default-page-size="20"
-        @current-change="prevNum" @prev-click="pagerNum" @next-click="nextNum" />
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="AllNum"
+        :default-page-size="20"
+        @current-change="prevNum"
+        @prev-click="pagerNum"
+        @next-click="nextNum"
+      />
     </div>
   </div>
 </template>
@@ -185,7 +216,9 @@ onMounted(() => {
     width: 100%;
     height: 100%;
 
-    :deep(.upload-demo),:deep(.el-upload),:deep(.el-upload-dragger) {
+    :deep(.upload-demo),
+    :deep(.el-upload),
+    :deep(.el-upload-dragger) {
       height: 100%;
       width: 100%;
     }
@@ -198,7 +231,7 @@ onMounted(() => {
     }
   }
 
-  >.galleryImg {
+  > .galleryImg {
     width: 100%;
     height: 100%;
   }
@@ -207,7 +240,6 @@ onMounted(() => {
     opacity: 1;
     animation: shadowUp 0.2s linear;
   }
-
 }
 
 @keyframes shadowUp {
@@ -236,7 +268,6 @@ onMounted(() => {
     padding: 5px;
     margin: 5px;
   }
-
 }
 
 .MyGalleryList::-webkit-scrollbar {

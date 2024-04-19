@@ -14,12 +14,12 @@ const getRandomSubstring = (Krandomey: string, data: string) => {
 }
 
 // 封装数据加密方法
-function encryptData(data: any) {
+function encryptData(data: any): string {
   return CryptoJS.AES.encrypt(JSON.stringify(data), Secret).toString()
 }
 
 // 封装数据解密方法
-function decryptData(encryptedData: string) {
+function decryptData(encryptedData: string): string {
   const bytes = CryptoJS.AES.decrypt(encryptedData, Secret)
   const decryptedData = bytes.toString(CryptoJS.enc.Utf8)
   return JSON.parse(decryptedData)
@@ -27,23 +27,23 @@ function decryptData(encryptedData: string) {
 
 // 封装本地存储方法
 // 获取Value
-const getLoc = (key: string, isDecry: boolean) => {
+const getLoc = (key: string, isDecry: boolean): string | undefined => {
   if (process.env.NODE_ENV === 'production') return
-  const storedValue = localStorage.getItem(key);
-  return storedValue ? (isDecry ? decryptData(storedValue) : JSON.parse(storedValue)) : null;
-};
+  const storedValue = localStorage.getItem(key)
+  return (storedValue != null) ? (isDecry ? decryptData(storedValue) : JSON.parse(storedValue)) : null
+}
 
 // 设置Value
-const setLoc = (key: string, value: string | Array<any> | Object, isDecry: boolean) => {
+const setLoc = (key: string, value: string | any[] | object, isDecry: boolean): object | undefined => {
   if (process.env.NODE_ENV === 'production') return
-  localStorage.setItem(key, JSON.stringify(isDecry ? encryptData(value) : value));
-};
+  localStorage.setItem(key, JSON.stringify(isDecry ? encryptData(value) : value))
+}
 
 // 删除Value
-const remLoc = (key: string) => {
+const remLoc = (key: string): void => {
   if (process.env.NODE_ENV === 'production') return
-  localStorage.removeItem(key);
-};
+  localStorage.removeItem(key)
+}
 
 export default {
   encryptData,

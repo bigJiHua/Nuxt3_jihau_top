@@ -12,8 +12,9 @@ a {
   color: #6ba2f4;
 }
 @media only screen and (max-width: 755px) {
+  /* 视窗设置不见 */
   .phone-none {
-    display: none;
+    display: none !important;
   }
   .cagPwdPanel {
     width: 90vw !important;
@@ -28,9 +29,10 @@ a {
     padding: 10px 20px !important;
   }
 }
+/*  手机设置不见 */
 @media only screen and (min-width: 755px) {
   .window-none {
-    display: none;
+    display: none !important;
     flex: node;
   }
 }

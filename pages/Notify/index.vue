@@ -92,6 +92,9 @@ useHead({
   justify-content: center;
   padding: 5px;
 }
+.Tree_dome {
+  max-height: 30px;
+}
 
 @media only screen and (min-width: 755px) {
   .Tree_dome {

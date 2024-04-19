@@ -8,15 +8,17 @@ const request = axios.create({
 
 // axios请求拦截器
 request.interceptors.request.use(config => {
-  if (process.env.NODE_ENV === 'development' && localStorage.getItem('token')) {
-    config.headers.Authorization = localStorage.getItem('token')
-  }
+  config.headers.Authorization = localStorage.getItem('token')
+  config.headers.viewportWidth = window.innerWidth
+  config.headers.viewportHeight = window.innerHeight
+  config.headers.pixelRatio = Math.floor(window.devicePixelRatio * 1000) / 1000
+  config.headers.navigatorplatform = window.navigator.userAgent
   return config
-}, error => {
+}, (error): any => {
   ElNotification({
     title: '错误',
     message: error.message,
-    type: 'error',
+    type: 'error'
   })
   return Promise.reject(error)
 })
@@ -34,22 +36,20 @@ request.interceptors.response.use(response => {
       type: 'warning',
       duration: 1500
     })
+  } else {
+    ElMessage.success({
+      message: res.message,
+      duration: 1500
+    })
   }
-  // 成功与否不再显示
-  // else {
-  //   ElMessage.success({
-  //     message: res.message,
-  //     duration: 1500
-  //   })
-  // }
   return response
-}, error => {
+}, (error): any => {
   const errorCode: number = error.response.status ? error.response.status : 200
   const message = error.response.data.message ? error.response.data.message : error.message
   // 在需要显示通知的地方调用函数
   ElNotification({
     title: '错误',
-    message: message,
+    message,
     type: 'error',
     duration: 1500
   })
@@ -57,11 +57,9 @@ request.interceptors.response.use(response => {
     localStorage.removeItem('token')
     localStorage.removeItem('Username')
     localStorage.removeItem('Useridentity')
-    location.reload()
+    return navigateTo('/Login')
   }
-  // TODO 未知问题
-  return error.response
+  return Promise.reject(error.response)
 })
-
 
 export default request

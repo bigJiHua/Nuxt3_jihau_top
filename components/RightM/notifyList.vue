@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import getNotifyAPI from '@/api/Article'
-import { Notification } from '@element-plus/icons-vue'
 const notifyList: any = ref([])
-const getNotifyData = async () => {
-  const { data: res } = await getNotifyAPI.getNotifyList()
+const getNotifyData = async (): Promise<void> => {
+  const { data: res } = await getNotifyAPI.getNotifyList(10)
   notifyList.value = res.data
 }
 onMounted(() => {
-  if (notifyList.value.length === 0) getNotifyData()
+  if (notifyList.value.length === 0) void getNotifyData()
 })
 </script>
 
@@ -16,16 +15,23 @@ onMounted(() => {
     <p class="ararc_title Cookie">
       <nuxt-link to="/Notify">通知</nuxt-link>
     </p>
-    <div class="notifyArea">
-      <el-icon class="NotifyIcon">
-        <Notification />
-      </el-icon>
-      <el-carousel height="25px" pause-on-hover class="Noticelist" :interval="5000" direction="vertical" hide-scrollbar>
-        <el-carousel-item v-for="(data, index) in notifyList" :key="index">
-          <nuxt-link :to="'/Notify/' + data.notify_id">{{ data.title }}</nuxt-link>
-        </el-carousel-item>
-      </el-carousel>
-    </div>
+    <ClientOnly>
+      <van-notice-bar left-icon="volume-o" :scrollable="false">
+        <van-swipe
+          vertical
+          class="notice-swipe"
+          :autoplay="3000"
+          :touchable="false"
+          :show-indicators="false"
+        >
+          <van-swipe-item v-for="(data, index) in notifyList" :key="index">
+            <nuxt-link :to="'/Notify/' + data.notify_id">{{
+              data.title
+            }}</nuxt-link>
+          </van-swipe-item>
+        </van-swipe>
+      </van-notice-bar>
+    </ClientOnly>
   </div>
 </template>
 
@@ -33,7 +39,8 @@ onMounted(() => {
 .ararc {
   background-color: #fff;
   margin: 10px 0 15px 0;
-  box-shadow: rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 10%) 0px 10px 15px -3px, rgb(0 0 0 / 5%) 0px 4px 6px -2px;
+  box-shadow: rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 0%) 0px 0px 0px 0px,
+    rgb(0 0 0 / 10%) 0px 10px 15px -3px, rgb(0 0 0 / 5%) 0px 4px 6px -2px;
   border-radius: 5px;
   border-radius: 5px;
   padding: 10px;
@@ -46,7 +53,7 @@ onMounted(() => {
   font-weight: bolder;
   font-family: 'songti';
 
-  >a {
+  > a {
     color: black;
   }
 }
@@ -75,17 +82,4 @@ onMounted(() => {
 .Noticelist {
   width: 100%;
 }
-
-.NotifyIcon {
-  font-size: 1.5rem;
-  margin-right: 5px;
-}
-
-.notifyArea {
-  margin: 10px 0;
-  display: flex;
-  align-items: flex-start;
-  padding: 5px;
-  justify-content: center;
-  background-color: #FFFBE8;
-}</style>
+</style>

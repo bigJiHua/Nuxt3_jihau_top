@@ -1,7 +1,7 @@
 import request from '../request'
 // 获取当前用户所有文章
-const UsergetArticle = function (page: number,type?: number) {
-  //TODO 摒弃原有参数 Because不安全
+const UsergetArticle = function (page: number, type?: number) {
+  // 复用接口 type为2则获取待发布的文章list
   return request.get('/article?page=' + page + '&type=' + type)
 }
 // 添加文章

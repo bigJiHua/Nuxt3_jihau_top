@@ -1,5 +1,5 @@
 <script setup lang="ts">
-let right = ref(35)
+const right = ref(35)
 onMounted(() => {
   if (process.env.NODE_ENV === 'development') {
     if (window.screenX > 765) {

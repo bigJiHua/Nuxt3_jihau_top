@@ -2,7 +2,7 @@
 import hljs from 'highlight.js'
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.directive('highlight', {
-    mounted(el) {
+    mounted (el) {
       // 设置一直进行的定时器
       let highlight = []
       const getElment = setInterval(() => {
@@ -14,6 +14,6 @@ export default defineNuxtPlugin((nuxtApp) => {
           })
         }
       }, 200)
-    }    
+    }
   })
 })

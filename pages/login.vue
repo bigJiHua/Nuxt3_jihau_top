@@ -4,8 +4,8 @@ import { useUserDataStore } from '@/stores/useUserData'
 import Login from '@/api/Page'
 const store = useUserDataStore()
 const router = useRouter()
-const username = ref('jihua')
-const password = ref('123456')
+const username = ref('')
+const password = ref('')
 const loading = ref(false)
 const show = ref(false)
 const rules: any = ref({
@@ -46,7 +46,7 @@ const validata = (key: string) => {
 const login = async () => {
   loading.value = true
   // 验证是否已经拥有token 输入的用户名是否合法 输入的密码是否合法
-  if (localStorage.getItem('token')) {
+  if (localStorage.getItem('token') != null) {
     ElMessage({
       message: '已经登录啦！请勿重复登录',
       type: 'warning'
@@ -58,7 +58,7 @@ const login = async () => {
   if (validata('username') && validata('password')) {
     // 发起请求
     const { data: res } = await Login.LoginMenu(username.value, password.value)
-    if (res.token) {
+    if (res.token !== '') {
       // 判断返回状态码是否成功
       localStorage.setItem('token', res.token)
       localStorage.setItem('Username', res.data.Users.username)

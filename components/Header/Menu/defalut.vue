@@ -3,8 +3,8 @@ import { Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 const key: any = ref('')
-const SearchFunc = () => {
-  router.push('/Search/' + key.value)
+const SearchFunc = (): void => {
+  void router.push('/Search/' + key.value)
   key.value = ''
 }
 const MenuItem = reactive([
@@ -20,8 +20,8 @@ const MenuItem = reactive([
 ])
 const isLogin = ref(false)
 onMounted(() => {
-  if (process.client) {
-    isLogin.value = localStorage.getItem('token') ? true : false;
+  if (process.client ?? false) {
+    isLogin.value = localStorage.getItem('token') !== null
   }
 })
 </script>
@@ -31,8 +31,10 @@ onMounted(() => {
     <client-only>
       <el-menu class="el-menu-demo menu-container" mode="horizontal">
         <el-menu-item class="HeaderLeft">
-          <h1 class="HeaderTitle coker"><nuxt-link to="/">JiHua的web和js开发数据</nuxt-link></h1>
-          <img src="https://jihau.top/img/logo.png" alt="Logo" class="logo">
+          <h1 class="HeaderTitle coker">
+            <nuxt-link to="/">JiHua的web和js开发数据</nuxt-link>
+          </h1>
+          <img src="https://jihau.top/img/logo.png" alt="Logo" class="logo" />
         </el-menu-item>
         <el-menu-item v-for="(item, index) in MenuItem" :key="index">
           <NuxtLink :to="item.path" class="text-x2">{{ item.text }}</NuxtLink>
@@ -48,9 +50,13 @@ onMounted(() => {
         </el-input>
       </div>
       <div class="User">
-        <HeaderLogoMenu></HeaderLogoMenu>
+        <ClientOnly>
+          <HeaderLogoMenu></HeaderLogoMenu>
+        </ClientOnly>
         <div class="User" v-if="!isLogin">
-          <nuxt-link to="/Login"><el-button type="primary" plain>登录</el-button></nuxt-link>
+          <nuxt-link to="/Login"
+            ><el-button type="primary" plain>登录</el-button></nuxt-link
+          >
         </div>
       </div>
     </div>
@@ -125,6 +131,4 @@ a {
 .SearchBox {
   margin-right: 10px;
 }
-
 </style>
-

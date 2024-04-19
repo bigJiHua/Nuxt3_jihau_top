@@ -8,13 +8,9 @@ onMounted(() => {
     window.onresize = () => {
       if (window.innerWidth > 756) {
         isSHow.value = true
-        // 暂时取消
-        // location.reload()
       }
     }
   }
-  //TODO 待删
-  // console.log(router.currentRoute.value.path.match(/^\/CtrlView\//))
 })
 </script>
 

@@ -29,7 +29,7 @@ const plugins = ref([
 </script>
 
 <template>
-  <Viewer class="viewer markdown-body" :tabindex="2" :sanitize="23" :value="data" :plugins="plugins" :locale="zhHans">
+  <Viewer class="markdown-body" :tabindex="2" :sanitize="23" :value="data" :plugins="plugins" :locale="zhHans">
   </Viewer>
 </template>
 

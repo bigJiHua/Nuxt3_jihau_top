@@ -7,7 +7,7 @@ let UserData: any = reactive(store.Userdata.Users)
 const dialogFormVisible = ref(false)
 const data: any = reactive({
   oldpwd: '',
-  newpwd: ''
+  newpwd: '',
 })
 const pwdCheck = (rule: any, value: string, callback: any) => {
   if (value === '') {
@@ -21,32 +21,16 @@ const pwdCheck = (rule: any, value: string, callback: any) => {
 }
 const rules = reactive<FormRules<typeof data>>({
   oldpwd: [{ validator: pwdCheck, trigger: 'blur' }],
-  newpwd: [{ validator: pwdCheck, trigger: 'blur' }]
+  newpwd: [{ validator: pwdCheck, trigger: 'blur' }],
 })
 const validata = () => {
   let bool = true
-  if (!/^[^\u4e00-\u9fa5]{6,30}$/.test(data.oldpwd)) {
-    ElMessage({
-      message: '请输入原密码和新密码且不能为空!且长度为6-12位',
-      type: 'error'
-    })
-    data.oldpwd = ''
-    data.newpwd = ''
-    bool = false
-  } else if (!/^[^\u4e00-\u9fa5]{6,30}$/.test(data.newpwd)) {
-    ElMessage({
-      message: '请输入原密码和新密码且不能为空!且长度为6-12位',
-      type: 'error'
-    })
-    data.oldpwd = ''
-    data.newpwd = ''
-    bool = false
-  } else if (data.oldpwd === '' || data.newpwd === '') {
+  if (data.oldpwd === '' || data.newpwd === '') {
     data.oldpwd = ''
     data.newpwd = ''
     ElMessage({
       message: '请输入原密码和新密码且不能为空!且长度为6-12位',
-      type: 'error'
+      type: 'error',
     })
     data.oldpwd = ''
     data.newpwd = ''
@@ -54,7 +38,18 @@ const validata = () => {
   } else if (data.oldpwd === data.newpwd) {
     ElMessage({
       type: 'error',
-      message: '新密码不能与旧密码相同'
+      message: '新密码不能与旧密码相同',
+    })
+    data.oldpwd = ''
+    data.newpwd = ''
+    bool = false
+  } else if (
+    !/^[^\u4e00-\u9fa5]{6,30}$/.test(data.oldpwd) &&
+    !/^[^\u4e00-\u9fa5]{6,30}$/.test(data.newpwd)
+  ) {
+    ElMessage({
+      message: '请输入原密码和新密码且不能为空!且长度为6-12位',
+      type: 'error',
     })
     data.oldpwd = ''
     data.newpwd = ''
@@ -62,6 +57,7 @@ const validata = () => {
   }
   return bool
 }
+// 修改用户密码
 const ChangeUserPassword = async (action: boolean) => {
   dialogFormVisible.value = false
   if (!action) {
@@ -69,10 +65,11 @@ const ChangeUserPassword = async (action: boolean) => {
     data.newpwd = ''
     return
   }
+  // 校验规则
   if (validata()) {
     const res = await cagpwaApi.CagPassword(data)
     if (res.data.status === 200) {
-      //退出当前登录
+      // 退出当前登录
       if (process.client) {
         localStorage.removeItem('token')
         localStorage.removeItem('Username')
@@ -81,31 +78,29 @@ const ChangeUserPassword = async (action: boolean) => {
         store.setUserData([])
         setTimeout(() => {
           location.reload()
-        }, 1500);
+        }, 1500)
       }
     }
   }
-
 }
+// 注销用户
 const delUser = async () => {
   const user = localStorage.getItem('Username')
   const deluser = localStorage.getItem('Username')
-  if (user && deluser) {
+  if (user !== undefined && deluser !== undefined) {
     if (await WarningTips('你确定要注销自己的账号吗？')) {
-      if (await WarningTips('你确定要注销自己的管理员账号吗？555')) {
-        const res = await cagpwaApi.DelUser(user, deluser)
-        if (res.data.status === 200) {
-          //退出当前登录
-          if (process.client) {
-            localStorage.removeItem('token')
-            localStorage.removeItem('Username')
-            localStorage.removeItem('Useridentity')
-            localStorage.removeItem('UserData')
-            store.setUserData([])
-            setTimeout(() => {
-              location.reload()
-            }, 3000);
-          }
+      const res = await cagpwaApi.DelUser(user, deluser)
+      if (res.data.status === 200) {
+        // 退出当前登录
+        if (process.client) {
+          localStorage.removeItem('token')
+          localStorage.removeItem('Username')
+          localStorage.removeItem('Useridentity')
+          localStorage.removeItem('UserData')
+          store.setUserData([])
+          setTimeout(() => {
+            location.reload()
+          }, 3000)
         }
       }
     }
@@ -125,21 +120,20 @@ onMounted(() => {
     <div class="title">站点账号</div>
     <div class="CardItem">
       <span>邮箱</span>
-      <el-input v-model="store.Userdata.Users.email" disabled>
-      </el-input>
+      <el-input v-model="store.Userdata.Users.email" disabled> </el-input>
       <el-button type="primary" plain disabled>修改</el-button>
     </div>
     <div class="CardItem">
       <span>手机号</span>
-      <el-input placeholder="XXXXXXXXXXX" disabled>
-      </el-input>
+      <el-input placeholder="XXXXXXXXXXX" disabled> </el-input>
       <el-button type="primary" plain disabled>修改</el-button>
     </div>
     <div class="CardItem">
       <span>密码</span>
-      <el-input placeholder="***********" disabled>
-      </el-input>
-      <el-button type="primary" plain @click="dialogFormVisible = true">修改</el-button>
+      <el-input placeholder="***********" disabled> </el-input>
+      <el-button type="primary" plain @click="dialogFormVisible = true"
+        >修改</el-button
+      >
     </div>
   </div>
   <div class="Card" v-if="UserData">
@@ -150,12 +144,27 @@ onMounted(() => {
     </div>
   </div>
   <client-only>
-    <el-dialog v-model="dialogFormVisible" title="修改密码" class="cagPwdPanel" top="30vh">
+    <el-dialog
+      v-model="dialogFormVisible"
+      title="修改密码"
+      class="cagPwdPanel"
+      top="30vh"
+    >
       <el-form :model="data" :rules="rules">
-        <el-form-item label="请输入旧密码" type="password" show-password prop="oldpwd">
+        <el-form-item
+          label="请输入旧密码"
+          type="password"
+          show-password
+          prop="oldpwd"
+        >
           <el-input v-model="data.oldpwd" autocomplete="off" />
         </el-form-item>
-        <el-form-item label="请输入新密码" type="password" show-password prop="newpwd">
+        <el-form-item
+          label="请输入新密码"
+          type="password"
+          show-password
+          prop="newpwd"
+        >
           <el-input v-model="data.newpwd" autocomplete="off" />
         </el-form-item>
       </el-form>
@@ -176,7 +185,7 @@ onMounted(() => {
   height: 100%;
   border-radius: 5px;
   padding: 10px;
-  background-color: #F5F7FA;
+  background-color: #f5f7fa;
   margin-bottom: 15px;
 }
 
@@ -194,19 +203,19 @@ onMounted(() => {
   flex-wrap: nowrap;
   margin: 20px 0;
 
-  >span {
+  > span {
     display: inline-block;
     width: 15%;
   }
 
-  >button {
+  > button {
     margin-left: 15px;
   }
 }
 
 @media screen and (max-width: 755px) {
   .CardItem {
-    >span {
+    > span {
       display: inline-block;
       width: 25%;
     }

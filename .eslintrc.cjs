@@ -1,11 +1,12 @@
 module.exports = {
+    "parser": "vue-eslint-parser", // 解决 Parsing error: '>' expected 报错
     "env": {
         "browser": true,
         "es2021": true
     },
     "extends": [
-        "standard-with-typescript",
-        "plugin:vue/vue3-essential"
+        "plugin:vue/vue3-essential", // vue3-base校验
+        "standard-with-typescript"
     ],
     "overrides": [
         {
@@ -21,8 +22,11 @@ module.exports = {
         }
     ],
     "parserOptions": {
+        "parser": "@typescript-eslint/parser",
+        "project": './tsconfig.json',
         "ecmaVersion": "latest",
-        "sourceType": "module"
+        "sourceType": "module",
+        "extraFileExtensions": ['.vue'],
     },
     "plugins": [
         "vue"

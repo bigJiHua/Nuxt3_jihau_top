@@ -13,8 +13,8 @@ export const useUserDataStore = defineStore('UserData', {
         birthday: '',
         UserPower: {
           id: 0,
-          user_id: "",
-          username: "",
+          user_id: '',
+          username: '',
           isadmin: 1,
           iscom: 1,
           isart: 1,
@@ -23,24 +23,25 @@ export const useUserDataStore = defineStore('UserData', {
           isspace: 1,
           islike: 1,
           iscol: 1,
+          isfans: 1
         }
       }
     } as any,
-    stateCode: 200,
+    stateCode: 200
   }),
   actions: {
-    setUserData(data: any) {
+    setUserData (data: any) {
       this.Userdata = data
     },
-    setState(code: number) {
+    setState (code: number) {
       this.stateCode = code
     }
   },
   getters: {
-    getUserData(): any {
+    getUserData (): any {
       return this.Userdata
     }
-  },
+  }
 })
 
 export const useAuthorDataStore = defineStore('AuthorData', {
@@ -48,13 +49,29 @@ export const useAuthorDataStore = defineStore('AuthorData', {
     ArticleAuthor: ''
   }),
   actions: {
-    setArticleAuthor(data: any) {
+    setArticleAuthor (data: any) {
       this.ArticleAuthor = data
     }
   },
   getters: {
-    getArticleAuthor(): string {
+    getArticleAuthor (): string {
       return this.ArticleAuthor
     }
+  }
+})
+
+export const useSpaceUserDataStore = defineStore('SpaceUserData', {
+  state: () => ({
+    UserData: []
+  }),
+  actions: {
+    setUserData (data: any) {
+      this.UserData = data
+    }
   },
+  getters: {
+    getUserData (): any[] {
+      return this.UserData
+    }
+  }
 })

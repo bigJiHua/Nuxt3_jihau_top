@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import getArtDataApi from '@/api/CtrlMenu'
 definePageMeta({
   layout: 'ctrl-view'
 })
-import getArtDataApi from '@/api/CtrlMenu'
-let MyArticleListData = ref([] as Array<any>)
-let AllNum = ref(0)
-const getArticle = async (num: number) => {
-  if (!num) num = 0
+const MyArticleListData: Ref<any[]> = ref([])
+const AllNum: Ref<number> = ref(0)
+const getArticle = async (num: number): Promise<void> => {
+  if (num === 0) num = 0
   const { data: res } = await getArtDataApi.UsergetArticle(num)
   MyArticleListData.value = []
   MyArticleListData.value = [...res.data]
@@ -15,18 +15,18 @@ const getArticle = async (num: number) => {
 
 // 上一页
 const prevNum = (num: number) => {
-  getArticle((num - 1) * 10)
+  void getArticle((num - 1) * 10)
 }
 // 数字
 const pagerNum = (num: number) => {
-  getArticle((num - 1) * 10)
+  void getArticle((num - 1) * 10)
 }
 // 下一页
 const nextNum = (num: number) => {
-  getArticle((num - 1) * 10)
+  void getArticle((num - 1) * 10)
 }
 onMounted(() => {
-  getArticle(0)
+  void getArticle(0)
 })
 </script>
 

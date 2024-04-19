@@ -1,8 +1,6 @@
 <template>
   <div class="DefaultLayout">
-    <keepAlive>
       <Header></Header>
-    </keepAlive>
     <div class="body">
       <slot />
     </div>

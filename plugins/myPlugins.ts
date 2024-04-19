@@ -9,24 +9,25 @@ export default defineNuxtPlugin((nuxtApp: any) => {
     // 全局调用 const { $*** } = useNuxtApp()
     // const { $sayHello } = useNuxtApp()
     provide: {
-      sayHello: (msg: string) => { console.log('Hello ' + msg); },
-      setBase64Avator: (file: File, isBase64: boolean = false, quality: number = 0) => {
-        return new Promise(resolve => {
+      sayHello: (msg: string) => { console.log('Hello ' + msg) },
+      setBase64Avator: async (file: File, isBase64: boolean = false, quality: number = 0): Promise<any> => {
+        return await new Promise(resolve => {
+          // eslint-disable-next-line no-new
           new Compressor(file, {
-            quality: quality,
-            success(result) {
-              if (!isBase64) return resolve(result)
-              const reader = new FileReader();
+            quality,
+            success (result) {
+              if (!isBase64) { resolve(result); return }
+              const reader = new FileReader()
               reader.onloadend = function () {
-                const base64Data = reader.result as string;
-                resolve(base64Data);
-              };
-              reader.readAsDataURL(result);
+                const base64Data = reader.result as string
+                resolve(base64Data)
+              }
+              reader.readAsDataURL(result)
             },
-            error(err) {
+            error (err) {
               ElMessage({
                 message: err.message,
-                type: 'warning',
+                type: 'warning'
               })
             }
           })

@@ -6,7 +6,7 @@ const monthlist: any = ref([])
 const ArticleData: any = ref([])
 const yearlist: any = ref(toRaw(store.getArchive.YearListData))
 const AllArticleData: any = ref(toRaw(store.getArchive.ArchiveListData))
-const getdata = async () => {
+const getdata = async (): Promise<void> => {
   const { data: res } = await getArc.getArchive()
   const getArticleData = res.data
   // 筛出年份
@@ -45,7 +45,7 @@ const getdata = async () => {
 }
 onMounted(() => {
   if (AllArticleData.value.length === 0 || yearlist.value.length === 0) {
-    getdata()
+    void getdata()
   }
 })
 </script>

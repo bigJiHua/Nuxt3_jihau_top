@@ -8,20 +8,23 @@ const NotifyData: any = reactive({
   title: '',
   username: '',
   pub_date: '',
-  content: ''
+  content: '',
+  keyword: '',
+  describ: '',
 })
+const isBad = ref(false)
 const goodpage = ref(true)
 // router.params.id
-const NUrl = `${reqConfig.baseUrl}/data/page/`;
-useFetch(NUrl, {
-  method: 'get',
-  params: {
-    id: router.params.id
-  }
-})
-  .then(response => {
-    const res: any = response.data.value
-    if (res) {
+const NUrl = `${reqConfig.baseUrl}/data/page/`
+const SystemNReq = async (): Promise<void> => {
+  useFetch(NUrl, {
+    method: 'get',
+    params: {
+      id: router.params.id,
+    },
+  })
+    .then((response) => {
+      const res: any = response.data.value
       NotifyData.title = res.data.title
       NotifyData.username = res.data.username
       NotifyData.pub_date = res.data.pub_date
@@ -29,58 +32,35 @@ useFetch(NUrl, {
       NotifyData.keyword = res.data.keyword
       NotifyData.describes = res.data.describes
       goodpage.value = false
-    } else if (response.data === null) {
+    })
+    .catch((error) => {
       goodpage.value = true
       NotifyData.title = 404
-      NotifyData.username =  404
-      NotifyData.pub_date =  404
+      NotifyData.username = 404
+      NotifyData.pub_date = 404
       NotifyData.content = 404
-    } 
-  })
-  .catch(error => {
-    console.error('Request failed:', error);
-  });
-
-const getNotify = async (id: string) => {
-  const { data: res } = await GetNotifyData.getPageData(id)
-  if (res.status !== 404) {
-    goodpage.value = false
-    NotifyData.title = res.data.title
-    NotifyData.username = res.data.username
-    NotifyData.pub_date = res.data.pub_date
-    NotifyData.content = res.data.content
-    store.setArticleAuthor(res.data.username)
-  } else {
-    goodpage.value = true
-  }
-  useHead({
-    title: NotifyData.title,
-    meta: [
-      {
-        name: 'keywords',
-        content: NotifyData.keyword
-      },
-      {
-        name: 'description',
-        content: NotifyData.lable
-      },
-      {
-        name: 'robots',
-        content: 'all'
-      },
-      {
-        name: 'author',
-        content: NotifyData.username
-      }
-    ]
-  })
+      console.error('Request failed:', error)
+    })
 }
+await SystemNReq()
+// 获取通知数据
+// const getNotify = async (id: string): Promise<void> => {
+//   const { data: res } = await GetNotifyData.getPageData(id)
+//   if (res.status !== 404) {
+//     goodpage.value = false
+//     NotifyData.title = res.data.title
+//     NotifyData.username = res.data.username
+//     NotifyData.pub_date = res.data.pub_date
+//     NotifyData.content = res.data.content
+//     store.setArticleAuthor(res.data.username)
+//   } else {
+//     goodpage.value = true
+//   }
+// }
 onMounted(() => {
   setTimeout(() => {
-    if (toRaw(NotifyData.username)) {
-      store.setArticleAuthor(toRaw(NotifyData.username))
-    }
-  }, 800);
+    store.setArticleAuthor(toRaw(NotifyData.username))
+  }, 800)
 })
 </script>
 
@@ -92,7 +72,6 @@ onMounted(() => {
       <Meta name="description" :content="NotifyData.describes" />
       <Meta name="author" :content="NotifyData.username" />
       <Meta name="copyright" :content="NotifyData.username" />
-      <Meta name="robots" content="all" />
     </Head>
     <div class="leftContent">
       <div v-if="goodpage" style="text-align: center">
@@ -129,11 +108,11 @@ onMounted(() => {
   background-color: #fff;
 }
 
-.ContentMessage>span:first-child {
+.ContentMessage > span:first-child {
   margin-right: 10px;
 }
 
-.ContentMessage>span {
+.ContentMessage > span {
   font-size: 10px;
 }
 

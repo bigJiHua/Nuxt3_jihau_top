@@ -3,8 +3,8 @@ import { useRouter } from 'vue-router'
 import Login from '@/api/Page'
 import { CloseBold } from '@element-plus/icons-vue'
 const router = useRouter()
-const username = ref('jihua')
-const password = ref('123456')
+const username = ref('')
+const password = ref('')
 const loading = ref(false)
 const show = ref(false)
 const rules: any = ref({
@@ -50,8 +50,8 @@ const login = async () => {
     }, 2000)
   }
 }
-const register = () => {
-  router.push('/register')
+const register = (): void => {
+  void router.push('/register')
 }
 const validata = (key: string) => {
   let bool = true

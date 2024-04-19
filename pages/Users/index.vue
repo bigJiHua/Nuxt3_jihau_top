@@ -5,6 +5,7 @@ definePageMeta({
 })
 const tabPosition: any = ref('left')
 onMounted(() => {
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   if (process.client) {
     if (window.innerWidth < 756) {
       tabPosition.value = 'top'

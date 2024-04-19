@@ -9,7 +9,7 @@ const data = reactive({
   code: router.currentRoute.value.params.user
 })
 // 提交检查验证
-const subCheckCode = async () => {
+const subCheckCode = async (): Promise<void> => {
   if (data.code !== undefined && data.user !== undefined) {
     const { data: res } = await checkMail.checkVer(data)
     if (res.status === 200) {
@@ -26,10 +26,10 @@ const subCheckCode = async () => {
   }
 }
 onMounted(() => {
-  if(user && code) {
-    subCheckCode()
+  if (user !== undefined && code !== undefined) {
+    void subCheckCode()
   } else {
-    router.push('/checkVel')
+    void router.push('/checkVel')
   }
 })
 </script>

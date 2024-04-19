@@ -1,0 +1,40 @@
+<script setup lang="ts">
+import GetUData from '@/api/User'
+import { useRouter } from 'vue-router'
+const router = useRouter()
+definePageMeta({
+  layout: 'space-view'
+})
+const user: Ref<string> = ref(
+  router.currentRoute.value.params.id
+) as Ref<string>
+const FansLIst: Ref<any> = ref([]) as Ref<any>
+const haveData: Ref<boolean> = ref(true)
+// 获取粉丝列表
+const getRelation = async (Num: string): Promise<void> => {
+  const { data: res } = await GetUData.getUserRelationData(
+    user.value,
+    'Beflist',
+    Num
+  )
+  FansLIst.value = res.data.Beflist
+  haveData.value = FansLIst.value.length != 0
+}
+onMounted(() => {
+  void getRelation('0')
+})
+</script>
+
+<template>
+  <h3>他的粉丝</h3>
+  <div class="fansListBox" v-if="haveData">
+    <div v-for="(item, index) in FansLIst" :key="index">
+      <ArticlePageCard :item="item"></ArticlePageCard>
+    </div>
+  </div>
+  <el-empty v-else>
+    <template #description> 空空如也 没有粉丝</template>
+  </el-empty>
+</template>
+
+<style lang="less" scoped></style>

@@ -1,11 +1,7 @@
 <template>
   <div id="" class="center_box">
-    <KeepAlive>
     <LeftM class="left"></LeftM>
-    </KeepAlive>
-    <KeepAlive>
-      <RightM class="right"></RightM>
-    </KeepAlive>
+    <RightM class="right"></RightM>
   </div>
 </template>
 

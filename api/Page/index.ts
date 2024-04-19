@@ -10,6 +10,7 @@ const LoginMenu = function (username: string, password: string) {
   params.append('password', password)
   return request.post('/my/login', params)
 }
+// 用户注册
 const UpnewUser = function (userdata: {
   username: string,
   password: string,
@@ -21,8 +22,13 @@ const UpnewUser = function (userdata: {
   params.append('email', userdata.email)
   return request.post('/my/reguser', params)
 }
+// Space
+const GetSpaceData = function (user: string) { 
+  return request.get('/data/space?user=' + user)
+}
 export default {
   getSetting,
   LoginMenu,
-  UpnewUser
+  UpnewUser,
+  GetSpaceData
 }

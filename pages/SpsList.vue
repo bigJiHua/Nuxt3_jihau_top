@@ -35,7 +35,7 @@ useHead({
   <div class="SpsList">
     <a href="https://jihau.com/%e6%84%8f%e8%a7%81%e5%8f%8d%e9%a6%88"
       style="position: absolute; top: 60px; border: 0; left: 20px">我也要加入!</a>
-    <a class="github-corner" href="https://github.com/bigJiHua/Vue_jihau_top/tree/master" aria-label="在 GitHub 上查看源代码"
+    <a class="github-corner" href="https://github.com/bigJiHua/Nuxt3_jihau_top" aria-label="在 GitHub 上查看源代码"
       target="_blank" style="position: absolute; top: 50px; border: 0; right: 0">
       <svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true" fill="#151513" color="#fff">
         <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
@@ -98,6 +98,8 @@ useHead({
   display: flex;
   flex-wrap: wrap;
   position: relative;
+  justify-content: center;
+  height: calc(100vh - 50px);
 }
 
 .phone_Viewset {
@@ -111,7 +113,7 @@ useHead({
 
 .document_author_introduce {
   border-radius: 5px;
-  margin: 10px;
+  margin: 10px 5px;
 }
 
 .priceArea {
@@ -162,17 +164,18 @@ useHead({
   .SpsListBox {
     width: 85vw;
     margin: 0 auto;
+    align-content: flex-start;
   }
 
   .document_author_introduce {
     width: 30%;
-    min-height: 180px;
+    height: 180px;
     background-color: #ffffff68;
     box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px,
       rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
       rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
     border-radius: 8px;
-    padding: 20px 10px;
+    padding: 10px 5px;
   }
 
   .document_author_introduce:hover {

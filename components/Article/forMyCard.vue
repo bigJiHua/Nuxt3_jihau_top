@@ -3,14 +3,14 @@ import { Edit } from '@element-plus/icons-vue'
 const props = defineProps({
   data: {
     type: Object,
-    default: () => ({})
-  }
+    default: () => ({}),
+  },
 })
 const lable = ref([])
 const keyword = ref([])
 onMounted(() => {
-  lable.value = props.data.lable.split("、")
-  keyword.value = props.data.keyword.split("、")
+  lable.value = props.data.lable.split('、')
+  keyword.value = props.data.keyword.split('、')
 })
 </script>
 
@@ -30,8 +30,13 @@ onMounted(() => {
         </nuxt-link>
       </div>
       <div class="contentArea">
-        <div class="ArticleCoverImg" v-if="props.data.cover_img !== 'undefined' && props.data.cover_img !== ''">
-          <img :src="data.cover_img" alt="文章配图" class="ArticleImg">
+        <div
+          class="ArticleCoverImg"
+          v-if="
+            props.data.cover_img !== 'undefined' && props.data.cover_img !== ''
+          "
+        >
+          <img :src="data.cover_img" alt="文章配图" class="ArticleImg" />
         </div>
         <div class="ArticleContent">
           {{ data.content }}
@@ -41,11 +46,18 @@ onMounted(() => {
         <div class="Usertag">
           <div class="lableItem">
             标签：
-            <el-tag size="small" v-for="(item, index) in lable" :key="index">{{ item }}</el-tag>
+            <el-tag size="small" v-for="(item, index) in lable" :key="index">{{
+              item
+            }}</el-tag>
           </div>
           <div class="keywordItem">
             关键词：
-            <el-tag size="small" v-for="(item, index) in keyword" :key="index">{{ item }}</el-tag>
+            <el-tag
+              size="small"
+              v-for="(item, index) in keyword"
+              :key="index"
+              >{{ item }}</el-tag
+            >
           </div>
         </div>
         <div class="UserDataNum">
@@ -73,17 +85,6 @@ onMounted(() => {
   overflow: hidden;
 }
 
-@media screen and(max-width: 768px) {
-  .CardItem {
-    width: 100%;
-    height: auto;
-    background-color: #fff;
-    margin: 10px 0;
-    border-radius: 5px;
-    overflow: hidden;
-  }
-}
-
 .Header {
   display: flex;
   justify-content: space-between;
@@ -96,7 +97,21 @@ onMounted(() => {
 }
 
 .titleLink:hover {
-  color: #286DD4;
+  color: #286dd4;
+}
+
+@media screen and(max-width: 768px) {
+  .CardItem {
+    width: 100%;
+    height: auto;
+    background-color: #fff;
+    margin: 10px 0;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .titleLink {
+    font-size: 0.8rem;
+  }
 }
 
 .user {
@@ -117,7 +132,6 @@ onMounted(() => {
   align-items: center;
   flex-wrap: nowrap;
 }
-
 
 .ActionBtn {
   padding: 5px;
@@ -141,7 +155,7 @@ onMounted(() => {
 
 .lableItem,
 .keywordItem {
-  >span {
+  > span {
     margin-right: 5px;
     font-size: 0.6rem;
   }
@@ -169,5 +183,4 @@ onMounted(() => {
   flex: 2;
 }
 
-.action {}
 </style>

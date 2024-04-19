@@ -30,10 +30,10 @@
   font-family: 'Cookie';
   src: url('@/assets/font/Cookie/Cookie-Regular.ttf');
 }
-@font-face {
+/* @font-face {
   font-family: 'songti';
   src: url('@/assets/font/songti/NotoSerifSC-Medium.otf');
-}
+} */
 .pts {
   font-family: 'PT Serif';
 }
@@ -47,5 +47,5 @@
   font-family: 'Cookie';
 }
 .st {
-  font-family: 'songti';
+  font-family: 'SimSun';
 }

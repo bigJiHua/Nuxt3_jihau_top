@@ -1,77 +1,75 @@
 <script setup lang="ts">
 import ArticleAPI from '@/api/Article'
-import { useArticleListStore } from "@/stores/useArticleData"
+import { useArticleListStore } from '@/stores/useArticleData'
 const store = useArticleListStore()
 const ArticleListData: any = ref(toRaw(store.getArticleList))
+const refreshing: Ref<boolean> = ref(false)
+const loading: Ref<boolean> = ref(false)
+const finished: Ref<boolean> = ref(false)
 let Num = 5
 const AUrl = `${reqConfig.baseUrl}/data/list`
 useFetch(AUrl, {
   method: 'get',
   params: {
-    page: 0
-  }
+    page: 0,
+  },
 })
-  .then(response => {
+  .then((response) => {
     const res: any = response.data.value
     ArticleListData.value = res.data
   })
-  .catch(error => {
-    console.error('Request failed:', error);
-  });
+  .catch((error) => {
+    console.error('Request failed:', error)
+  })
 
 // 获取新的文章列表
 const getNewArticleList = async () => {
   const { data: res } = await ArticleAPI.getArticleList(Num)
-  store.setArticleData([...ArticleListData.value, ...res.data])
+  if (res.data.length === 0) finished.value = true
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+  if (refreshing.value) {
+    store.setArticleData([...res.data, ...ArticleListData.value])
+  } else {
+    store.setArticleData([...ArticleListData.value, ...res.data])
+  }
   ArticleListData.value = toRaw(store.getArticleList)
   Num += 5
+  loading.value = false
+  refreshing.value = false
 }
-// 如果触底获取文章方法
-let throttleTimer: any = null;
-const isBottomGetArticle = () => {
-  if (throttleTimer) return; // 如果已经有定时器在等待执行，则直接返回
-  throttleTimer = setTimeout(() => {
-    let scrollHeight = document.documentElement.scrollHeight;
-    let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-    let clientHeight = document.documentElement.clientHeight;
-    // windows桌面计算
-    if (window.innerWidth > 755 && scrollTop + clientHeight >= scrollHeight - 1) {
-      getNewArticleList();
-    } else if (window.innerWidth < 755 && scrollTop + clientHeight >= scrollHeight / 1.2) {
-      // 如果是手机的话
-      getNewArticleList();
-    }
-    throttleTimer = null; // 重置定时器
-  }, 800); // 设置节流时间间隔，这里设置为500毫秒
-};
-
+// 加载到本地时数据存入Store
 onMounted(() => {
   setTimeout(() => {
     if (ArticleListData.value.length !== 0) {
       store.setArticleData([...ArticleListData.value])
     }
-  }, 800);
-  if (process.env.NODE_ENV === 'development') {
-    window.addEventListener('scroll', isBottomGetArticle)
-  }
+  }, 800)
 })
 </script>
 
 <template>
   <div id="" class="left_box">
-    <Lunbo></Lunbo>
+    <ClientOnly><Lunbo></Lunbo></ClientOnly>
     <div class="article_ListView">
       <p class="article_alltitle st">
         <span>最新文章</span>
         <span>New article</span>
       </p>
-      <!-- 文章列表 -->
-      <div v-for="item in ArticleListData" :key="item" class="ArticleListItem">
-        <ArticleList :data="item"></ArticleList>
-      </div>
-      <div v-loading="true">
-        加载中...
-      </div>
+      <van-pull-refresh v-model="refreshing" @refresh="getNewArticleList">
+        <van-list
+          v-model:loading="loading"
+          :finished="finished"
+          finished-text="没有更多了"
+          @load="getNewArticleList"
+        >
+          <ArticleList
+            v-for="(item, index) in ArticleListData"
+            :key="index"
+            class="ArticleListItem"
+            :data="item"
+          ></ArticleList>
+        </van-list>
+      </van-pull-refresh>
     </div>
   </div>
 </template>
