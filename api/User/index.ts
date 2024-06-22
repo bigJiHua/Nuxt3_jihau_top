@@ -1,7 +1,7 @@
 import request from '../request'
 // 文章页面获取作者信息
-const getAuthData = (user: string): any => {
-  return request.get('/data/authData?user=' + user)
+const getAuthData = (id: string): any => {
+  return request.get('/data/authData?id=' + id)
 }
 
 // 获取用户信息

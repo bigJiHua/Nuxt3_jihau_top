@@ -1,62 +1,29 @@
 <script setup lang="ts">
-import GetNotifyData from '@/api/Article'
+// import GetNotifyData from '@/api/Article'
 import { useRoute } from 'vue-router'
 import { useAuthorDataStore } from '@/stores/useUserData'
 const router = useRoute()
 const store = useAuthorDataStore()
-const NotifyData: any = reactive({
+const NotifyData: any = ref({
   title: '',
   username: '',
   pub_date: '',
   content: '',
   keyword: '',
-  describ: '',
+  describes: '',
 })
-const isBad = ref(false)
-const goodpage = ref(true)
-// router.params.id
 const NUrl = `${reqConfig.baseUrl}/data/page/`
-const SystemNReq = async (): Promise<void> => {
-  useFetch(NUrl, {
-    method: 'get',
-    params: {
-      id: router.params.id,
-    },
-  })
-    .then((response) => {
-      const res: any = response.data.value
-      NotifyData.title = res.data.title
-      NotifyData.username = res.data.username
-      NotifyData.pub_date = res.data.pub_date
-      NotifyData.content = res.data.content
-      NotifyData.keyword = res.data.keyword
-      NotifyData.describes = res.data.describes
-      goodpage.value = false
-    })
-    .catch((error) => {
-      goodpage.value = true
-      NotifyData.title = 404
-      NotifyData.username = 404
-      NotifyData.pub_date = 404
-      NotifyData.content = 404
-      console.error('Request failed:', error)
-    })
-}
-await SystemNReq()
-// 获取通知数据
-// const getNotify = async (id: string): Promise<void> => {
-//   const { data: res } = await GetNotifyData.getPageData(id)
-//   if (res.status !== 404) {
-//     goodpage.value = false
-//     NotifyData.title = res.data.title
-//     NotifyData.username = res.data.username
-//     NotifyData.pub_date = res.data.pub_date
-//     NotifyData.content = res.data.content
-//     store.setArticleAuthor(res.data.username)
-//   } else {
-//     goodpage.value = true
-//   }
-// }
+const { data } = await uFetch.useCustomFetch(NUrl, {
+  method: 'get',
+  params: {
+    id: router.params.id,
+  },
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+  key: `post-${router.params.id}`,
+})
+const res: any = data.value
+NotifyData.value = res.data
+
 onMounted(() => {
   setTimeout(() => {
     store.setArticleAuthor(toRaw(NotifyData.username))
@@ -74,20 +41,15 @@ onMounted(() => {
       <Meta name="copyright" :content="NotifyData.username" />
     </Head>
     <div class="leftContent">
-      <div v-if="goodpage" style="text-align: center">
-        <h1>404 NOT FOUNT/无权查看</h1>
-        <nuxt-link to="/">返回主页</nuxt-link>
-      </div>
-      <div v-else>
-        <div class="content st">
-          <header class="headerText">
-            <h1>{{ NotifyData.title }}</h1>
-            <p class="ContentMessage">
-              <span>管理员：{{ NotifyData.username }}</span>
-              <span>时间：{{ NotifyData.pub_date }}</span>
-            </p>
-          </header>
-          <p v-html="NotifyData.content"></p>
+      <div class="content st">
+        <header class="headerText">
+          <h1>{{ NotifyData.title }}</h1>
+          <p class="ContentMessage">
+            <span>管理员：{{ NotifyData.username }}</span>
+            <span>时间：{{ NotifyData.pub_date }}</span>
+          </p>
+        </header>
+        <div v-html="NotifyData.content">
         </div>
       </div>
     </div>

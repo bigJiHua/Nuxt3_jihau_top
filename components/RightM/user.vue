@@ -1,19 +1,14 @@
 <script lang="ts" setup>
-import { useAuthorDataStore } from '@/stores/useUserData'
+import { useRoute } from 'vue-router'
 import getAuthorApi from '@/api/User'
+// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 const props = defineProps({
-  user: {
-    type: String,
-    default: '',
-  },
   isCtrl: {
     type: Boolean,
     default: false,
-  }
+  },
 })
-const store = useAuthorDataStore()
-const author: any = ref(store.ArticleAuthor ? store.ArticleAuthor : props.user)
-const isLoding = ref(true)
+const isLoding = ref(false)
 const Users: any = reactive({
   fans: 0,
   user_content: '',
@@ -26,10 +21,13 @@ const Userdata: any = reactive({
   articles: 0,
   goodnums: 0,
   collects: 0,
-  comments: 0
+  comments: 0,
 })
-const getauthData = async () => {
-  const { data: res } = await getAuthorApi.getAuthData(author.value)
+const router = useRoute()
+const getauthData = async (): Promise<void> => {
+  const { data: res } = await getAuthorApi.getAuthData(
+    router.params.id as string
+  )
   Users.fans = res.data.Users.fans
   Users.user_content = res.data.Users.user_content
   Users.user_id = res.data.Users.user_id
@@ -43,30 +41,24 @@ const getauthData = async () => {
   isLoding.value = false
 }
 onMounted(() => {
-  const getAuthData = setInterval(() => {
-    if (props.user) author.value = props.user
-    else author.value = store.ArticleAuthor
-    if (author.value) {
-      clearInterval(getAuthData)
-      getauthData()
-    }
-  }, 200)
+  void getauthData()
 })
 </script>
 
 <template>
-  <div id="" class="UserArea" v-if="!isLoding">
+  <div id="" class="UserArea">
     <!-- 背景板 -->
     <div class="background">
       <!-- 背景板 -->
-      <div class="image">
-      </div>
+      <div class="image"></div>
       <!-- logo -->
       <div class="authorLogo" v-if="Users.user_pic">
-        <img :src="Users.user_pic" alt="logo" class="logo">
+        <img :src="Users.user_pic" alt="logo" class="logo" />
       </div>
       <div class="username">
-        <nuxt-link :to="'/space/' + Users.username">{{ Users.username }}</nuxt-link>
+        <nuxt-link :to="'/space/' + Users.username">{{
+          Users.username
+        }}</nuxt-link>
       </div>
     </div>
     <!-- 数据展示 -->
@@ -87,12 +79,12 @@ onMounted(() => {
     <!-- 用户操作区域 -->
     <div class="UserActionArea">
       <!-- TODO待开发事件 -->
-      <div v-if="!isCtrl">
+      <!-- <div v-if="!isCtrl">
         <el-button color="#76A9F5" plain>关注我</el-button>
       </div>
       <div v-else>
         <el-button color="#76A9F5" plain>编辑个人资料</el-button>
-      </div>
+      </div> -->
     </div>
     <!-- 未来开发区域 -->
   </div>
@@ -113,7 +105,7 @@ onMounted(() => {
 .image {
   height: 50%;
   border-radius: 5px 5px 0 0;
-  background-color: #ECF4FD;
+  background-color: #ecf4fd;
   color: #1c1c1c;
   text-align: center;
   white-space: break-spaces;
@@ -121,7 +113,7 @@ onMounted(() => {
 }
 
 .image::after {
-  content: "⁶⁶ ⁶⁶⁶⁶⁶⁶   ⁶⁶66⁶⁶⁶⁶   ₆₆₆₆  可以啊.这 波  ₆₆₆₆ ⁶⁶⁶⁶⁶  ⁶⁶⁶⁶⁶⁶⁶  ⁶⁶⁶⁶⁶⁶⁶  66⁶⁶⁶⁶ 卧槽⁶⁶⁶⁶⁶⁶  ⁶⁶⁶⁶⁶⁶⁶ 666₆₆₆₆ ₆₆₆ 666 666 ⁶⁶⁶⁶ ⁶⁶₆₆₆ ₆₆₆₆⁶⁶⁶⁶⁶ ⁶⁶⁶⁶ ⁶⁶⁶⁶⁶⁶ ⁶⁶⁶⁶ ⁶⁶⁶⁶";
+  content: '⁶⁶ ⁶⁶⁶⁶⁶⁶   ⁶⁶66⁶⁶⁶⁶   ₆₆₆₆  可以啊.这 波  ₆₆₆₆ ⁶⁶⁶⁶⁶  ⁶⁶⁶⁶⁶⁶⁶  ⁶⁶⁶⁶⁶⁶⁶  66⁶⁶⁶⁶ 卧槽⁶⁶⁶⁶⁶⁶  ⁶⁶⁶⁶⁶⁶⁶ 666₆₆₆₆ ₆₆₆ 666 666 ⁶⁶⁶⁶ ⁶⁶₆₆₆ ₆₆₆₆⁶⁶⁶⁶⁶ ⁶⁶⁶⁶ ⁶⁶⁶⁶⁶⁶ ⁶⁶⁶⁶ ⁶⁶⁶⁶';
 }
 
 .authorLogo {
@@ -147,7 +139,7 @@ onMounted(() => {
   margin-top: 40px;
   font-size: 2.5rem;
 
-  >a {
+  > a {
     color: #1c1c1c;
   }
 }
@@ -157,16 +149,16 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   text-align: center;
-
+  margin: 10px 0;
   .showNumDataItem {
     margin: 0 15px;
 
-    >p:first-child {
+    > p:first-child {
       font-size: 1.2rem;
       font-weight: 600;
     }
 
-    >p:last-child {
+    > p:last-child {
       color: rgba(146, 146, 146, 0.82);
       font-size: 1.1rem;
       font-weight: 300;
@@ -181,7 +173,7 @@ onMounted(() => {
   align-items: center;
   flex-wrap: nowrap;
 
-  >div>button {
+  > div > button {
     margin: 25px;
   }
 }

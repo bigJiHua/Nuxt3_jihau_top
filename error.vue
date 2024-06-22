@@ -462,6 +462,7 @@
     <div class="centerBox">
       404
     </div>
+    <p><nuxt-link to="/">返回主页</nuxt-link></p>
   </div>
 </template>
 

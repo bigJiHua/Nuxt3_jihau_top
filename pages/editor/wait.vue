@@ -42,11 +42,12 @@ onMounted(() => {
       </el-empty>
     </div>
     <div class="ArticleListArea" v-else>
-      <ArticleForMyCard
+      <ArticleListCard v-for="(item, index) in MyArticleListData" :key="index" :data="item" :title="'未发布'" :type="'WColor'" />
+      <!-- <ArticleForMyCard
         v-for="(item, index) in MyArticleListData"
         :key="index"
         :data="(item)"
-      />
+      /> -->
     </div>
     <div class="pagBtnArea">
       <el-pagination

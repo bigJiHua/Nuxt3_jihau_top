@@ -1,23 +1,40 @@
 <script setup lang="ts">
+import getArc from '@/api/Article'
 const props = defineProps({
   month: {
     type: Number,
     required: true
   },
-  data: {
-    type: Array,
+  year: {
+    type: Number,
     required: true
   }
-},)
+})
 const misOpen = ref(false)
+const isLoading = ref(false)
+const ArticleListData = ref([])
+const downData = async (): Promise<void> => {
+  misOpen.value = !misOpen.value
+  if (ArticleListData.value.length !== 0) return
+  const key = props.year + (props.month < 10 ? '-0' : '-') + props.month + '%'
+  const { data: res } = await getArc.getArchive('get', key)
+  if (res.status === 200) {
+    ArticleListData.value = res.data
+    isLoading.value = true
+  }
+}
 </script>
 
 <template>
   <div id="" class="month">
-    <span class="mnumber" @click="misOpen = !misOpen ">{{ month }}月</span>
-    <ol>
-      <li :class="{ daylists: misOpen, daylist: !misOpen }" v-for="(obj, index) in data" :key="index">
-        <router-link :to="'/article/' + obj.hurl" @click="misOpen = !misOpen">
+    <span class="mnumber" @click="downData">{{ props.month }}月</span>
+    <ol v-if="isLoading">
+      <li
+        :class="{ daylists: misOpen, daylist: !misOpen }"
+        v-for="(obj, index) in ArticleListData"
+        :key="index"
+      >
+        <router-link :to="'/article/' + obj.article_id" @click="misOpen = !misOpen">
           {{ obj.title }}
         </router-link>
       </li>
@@ -50,7 +67,7 @@ const misOpen = ref(false)
 .daylists:hover {
   background-color: rgb(200, 227, 255);
 
-  >a {
+  > a {
     color: rgb(108, 174, 240);
   }
 }
@@ -72,4 +89,3 @@ const misOpen = ref(false)
   font-weight: bolder;
 }
 </style>
-

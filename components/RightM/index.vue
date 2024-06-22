@@ -6,9 +6,15 @@ const RightBox = () => {
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   if (RightBox && boxHeight?.clientHeight) {
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    const scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop
+    const scrollTop =
+      document.documentElement.scrollTop ||
+      window.pageYOffset ||
+      document.body.scrollTop
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    const docWidth = document.body.clientWidth || document.body.offsetWidth || document.body.scrollWidth
+    const docWidth =
+      document.body.clientWidth ||
+      document.body.offsetWidth ||
+      document.body.scrollWidth
     if (docWidth > 970) {
       if (scrollTop >= boxHeight.clientHeight) {
         istop.value = true
@@ -20,7 +26,7 @@ const RightBox = () => {
   }
 }
 onMounted(() => {
-  if (process.env.NODE_ENV === 'development') {
+  if (process.client) {
     window.addEventListener('scroll', RightBox)
   }
 })
@@ -29,11 +35,13 @@ onMounted(() => {
 <template>
   <div class="RightBox">
     <RightMMe class="RightMoudle"></RightMMe>
-    <div :class="['icpArea', 'RightArea', { icpAreatop: istop }]">
-      <RightMArticleList></RightMArticleList>
-      <RightMNotifyList></RightMNotifyList>
-      <RightMIcp></RightMIcp>
-    </div>
+    <el-affix :offset="60">
+      <div :class="['icpArea', 'RightArea', { icpAreatop: istop }]">
+        <RightMArticleList></RightMArticleList>
+        <RightMNotifyList></RightMNotifyList>
+        <RightMIcp></RightMIcp>
+      </div>
+    </el-affix>
   </div>
 </template>
 
@@ -44,8 +52,8 @@ onMounted(() => {
 
 .RightMoudle {
   background-color: #fff;
-  ;
-  box-shadow: rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 10%) 0px 10px 15px -3px, rgb(0 0 0 / 5%) 0px 4px 6px -2px;
+  box-shadow: rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 0%) 0px 0px 0px 0px,
+    rgb(0 0 0 / 10%) 0px 10px 15px -3px, rgb(0 0 0 / 5%) 0px 4px 6px -2px;
   border-radius: 5px;
 }
 

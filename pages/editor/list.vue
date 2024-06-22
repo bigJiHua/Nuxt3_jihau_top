@@ -33,7 +33,8 @@ onMounted(() => {
 <template>
   <div class="MyArticleList">
     <div class="ArticleListArea">
-      <ArticleForMyCard v-for="(item, index) in MyArticleListData" :key="index" :data="item" />
+      <ArticleListCard v-for="(item, index) in MyArticleListData" :key="index" :data="item" />
+      <!-- <ArticleForMyCard v-for="(item, index) in MyArticleListData" :key="index" :data="item" /> -->
     </div>
     <div class="pagBtnArea">
       <el-pagination background layout="prev, pager, next" :total="AllNum" @current-change="prevNum"

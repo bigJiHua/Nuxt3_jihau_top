@@ -11,7 +11,7 @@ import { useRouter } from 'vue-router'
 const store = useUserDataStore()
 const router = useRouter()
 const isLogin = ref(false)
-const userData: any = reactive(store.Userdata.Users)
+const userData: any = ref(store.Userdata.Users)
 const LoginOut = (): void => {
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   if (process.client) {
@@ -20,8 +20,18 @@ const LoginOut = (): void => {
     localStorage.removeItem('Useridentity')
     localStorage.removeItem('UserData')
     store.setUserData([])
-    void router.push('/')
-    location.reload()
+    userData.value = []
+    isLogin.value = false
+    const routerPath = router.currentRoute.value.path
+    if (
+      routerPath.match(/^\/(Users|my|editor)\//) != null ||
+      Boolean(routerPath.match(/^\/(Users|my|editor)/))
+    ) {
+      void router.push('/')
+    }
+    // setTimeout(() => {
+    //   location.reload()
+    // }, 200)
   }
 }
 const getUserData = async (): Promise<void> => {
@@ -36,9 +46,11 @@ const getUserData = async (): Promise<void> => {
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   if (process.client) {
-    isLogin.value = localStorage.getItem('token') !== null
+    isLogin.value =
+      localStorage.getItem('token') !== null &&
+      localStorage.getItem('token') !== 'undefined'
   }
-  if (userData.username === '' && store.Userdata.Users.username === '') {
+  if (isLogin.value && userData !== undefined) {
     void getUserData()
   }
   setInterval(() => {
@@ -55,7 +67,7 @@ onMounted(() => {
 <template>
   <client-only v-if="isLogin">
     <el-dropdown trigger="click">
-      <img :src="store.Userdata.Users.user_pic" alt="Logo" class="userLogo" />
+      <img alt="用户头像" :src="store.Userdata.Users.user_pic" class="userLogo" />
       <template #dropdown>
         <el-dropdown-menu>
           <nuxt-link to="/Users/msg">

@@ -3,7 +3,6 @@ import { useUserDataStore } from '@/stores/useUserData'
 import cagUserAPi from '@/api/User'
 const store = useUserDataStore()
 const UserData: any = ref(store.Userdata.Users.UserPower)
-console.log(UserData.value)
 const UserPrivacy = ref([
   {
     class: 'isspace',
@@ -31,7 +30,6 @@ const UserPrivacy = ref([
     value: store.Userdata.Users.UserPower.iscol === 1
   }
 ])
-console.log(UserPrivacy.value);
 const ChangUserPower = async (key: number, is: boolean): void => {
   if (await WarningTips('你确定要改变改权限吗？')) {
     for (const item in store.Userdata.Users.UserPower) {

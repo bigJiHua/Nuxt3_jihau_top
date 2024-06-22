@@ -6,10 +6,13 @@ import gemoji from '@bytemd/plugin-gemoji'
 import breaks from '@bytemd/plugin-breaks'
 import footnotes from '@bytemd/plugin-footnotes'
 import mediumZoom from '@bytemd/plugin-medium-zoom'
+// eslint-disable-next-line @typescript-eslint/quotes
 import zhHans from "bytemd/locales/zh_Hans.json"
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Editor, Viewer } from '@bytemd/vue-next'
 import 'juejin-markdown-themes/dist/juejin.min.css'
 const emit = defineEmits(['cagEditorData'])
+// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 const props = defineProps({
   content: {
     type: String,
@@ -31,7 +34,7 @@ const plugins = ref([
   mediumZoom()
 ])
 const mdContent = ref('')
-const handleChange = (v: string) => {
+const handleChange = (v: string): void => {
   mdContent.value = v
   if (mdContent.value !== '' && mdContent.value !== props.content) {
     emit('cagEditorData', mdContent.value)

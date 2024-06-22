@@ -279,22 +279,22 @@ onMounted(async () => {
         </p>
       </div>
       <div class="EditorArea" v-if="!isMd">
-        <ClientOnly>
+        <client-only>
           <Cekditor
             :content="editorData.content"
             @cagEditorData="cagEditorData"
             :type="'set'"
           />
-        </ClientOnly>
+        </client-only>
       </div>
       <div class="EditorArea" v-else>
-        <ClientOnly>
+        <client-only>
           <CekditorMd
             :content="editorData.content"
             @cagEditorData="cagEditorData"
             :type="'set'"
           />
-        </ClientOnly>
+        </client-only>
       </div>
     </div>
   </div>
@@ -323,11 +323,15 @@ onMounted(async () => {
 .ArticleDataPanel {
   flex: 1;
   width: 20vw;
-  margin: 10px;
+  margin: 5px;
   padding: 5px;
   background-color: #ffffff;
+  height: calc(100vh - 130px);
+  overflow: scroll;
 }
-
+.ArticleDataPanel::-webkit-scrollbar {
+  display: none;
+}
 .itemBox {
   flex: 1.5;
   display: flex;

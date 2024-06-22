@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = defineProps({
-  year: {
+  index: {
     type: Number,
     default: 0
   },
@@ -16,14 +16,12 @@ const isOpen = ref(true)
 
 <template>
   <div id="">
-    <span class="list_year" @click.prevent="isOpen=!isOpen">{{ props.year }}年</span>
+    <span class="list_year" @click.prevent="isOpen=!isOpen">{{ props.AllData[index].year }}年</span>
     <div :class="{ list_down: isOpen, 'list_open': !isOpen }" id="new_article_list_m">
-      <RightMArticleListMonthitem v-for="(art, index) in props.AllData" :key="index" :month="art.month" :data="art.data">
-      </RightMArticleListMonthitem>
+      <RightMArticleListMonthitem v-for="art in props.AllData[index].data" :key="art" :month="art.month" :year="art.year"/>
     </div>
   </div>
 </template>
-
 
 <style lang="less" scoped>
 span.list_year {

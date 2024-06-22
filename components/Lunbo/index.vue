@@ -16,7 +16,7 @@ import 'swiper/less/navigation'
 import 'swiper/less/pagination'
 
 const modules = [Navigation, Pagination, Scrollbar, Autoplay, A11y]
-let swiperOption = {
+const swiperOption = {
   spaceBetween: 0,
   slidesPerView: 1, // 一屏显示的slide个数  'auto'
   slidesPerGroup: 1, // 每组多少个swiper滑块
@@ -40,9 +40,7 @@ let swiperOption = {
   //   disabledClass: "button-disabled", //不可用时的class
   // },
   // 使用分页器导航
-  pagination: {
-    clickable: true,
-  },
+  pagination: { clickable: true },
 }
 const store = useIndexLunBoStore()
 const images = ref(toRaw(store.getLunBoList))
@@ -64,7 +62,9 @@ const getLunBoList = async (): Promise<void> => {
   images.value = res.data
 }
 onMounted(() => {
-  void getLunBoList()
+  if (Object.keys(images.value).length === 0) {
+    void getLunBoList()
+  }
   setTimeout(() => {
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (images.value) {
@@ -80,7 +80,7 @@ onMounted(() => {
   <div class="swiper-wrap">
     <swiper :modules="modules" class="mySwiper LunboArea" v-bind="swiperOption">
       <swiper-slide v-for="(image, index) in images" :key="index">
-        <img :src="image.set_difault" class="lunbo_img" />
+        <img :src="image.set_difault" class="lunbo_img" :alt="image.set_title !== '' ? image.set_title : '轮播图' " />
         <a :href="image.set_url" class="Lunbo_title">{{ image.set_title }}</a>
       </swiper-slide>
     </swiper>

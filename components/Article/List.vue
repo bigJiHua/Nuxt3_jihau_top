@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 const props = defineProps({
   data: {
     type: Object,
@@ -11,6 +12,7 @@ const isdemo = ref(false)
 const { $copyUrl } = useNuxtApp()
 // 用于判断是否带贴图
 const ifcov = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   if (props.data.cover_img.match(/^http/)) {
     return true
   }
@@ -37,7 +39,7 @@ onMounted(() => {
     </p>
     <div class="article_area">
       <div class="article_img" v-if="ifcov">
-        <img class="article_img_item" :src="data.cover_img" />
+        <img :alt="data.title" class="article_img_item" :src="data.cover_img" />
       </div>
       <div class="article_doc">
         <nuxt-link class="article_doc_txt togolink" :to="{ path: '/article/' + data.article_id }">

@@ -9,6 +9,7 @@ import mediumZoom from '@bytemd/plugin-medium-zoom'
 import { Viewer } from '@bytemd/vue-next'
 import zhHans from "bytemd/locales/zh_Hans.json"
 import 'juejin-markdown-themes/dist/simplicity-green.min.css'
+// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 const props = defineProps({
   content: {
     type: String,

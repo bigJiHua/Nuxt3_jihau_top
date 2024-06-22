@@ -2,7 +2,7 @@
 import getNotifyAPI from '@/api/Article'
 const notifyList: any = ref([])
 const getNotifyData = async (): Promise<void> => {
-  const { data: res } = await getNotifyAPI.getNotifyList(10)
+  const { data: res } = await getNotifyAPI.getNotifyList(0)
   notifyList.value = res.data
 }
 onMounted(() => {
@@ -15,7 +15,7 @@ onMounted(() => {
     <p class="ararc_title Cookie">
       <nuxt-link to="/Notify">通知</nuxt-link>
     </p>
-    <ClientOnly>
+    <client-only>
       <van-notice-bar left-icon="volume-o" :scrollable="false">
         <van-swipe
           vertical
@@ -31,7 +31,7 @@ onMounted(() => {
           </van-swipe-item>
         </van-swipe>
       </van-notice-bar>
-    </ClientOnly>
+    </client-only>
   </div>
 </template>
 

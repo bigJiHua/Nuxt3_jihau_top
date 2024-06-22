@@ -44,9 +44,8 @@ onMounted(() => {
     <div class="HeaderLeft">
       <div>
         <h1 class="HeaderTitle coker">
-          <nuxt-link to="/">JiHua的web和js开发数据</nuxt-link>
+          <a href="/">JiHua的web和js开发数据</a>
         </h1>
-        <!-- <img src="https://jihau.top/img/logo.png" alt="Logo" class="logo"> -->
       </div>
       <div class="RightMenu">
         <el-button :icon="Menu" @click="drawer = true"></el-button>

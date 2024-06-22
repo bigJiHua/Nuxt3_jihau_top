@@ -5,8 +5,8 @@ const router = useRouter()
 const code = ref(router.currentRoute.value.params.code)
 const user = ref(router.currentRoute.value.params.user)
 const data = reactive({
-  user: router.currentRoute.value.params.code,
-  code: router.currentRoute.value.params.user
+  user: router.currentRoute.value.params.user,
+  code: router.currentRoute.value.params.code
 })
 // 提交检查验证
 const subCheckCode = async (): Promise<void> => {
@@ -14,7 +14,7 @@ const subCheckCode = async (): Promise<void> => {
     const { data: res } = await checkMail.checkVer(data)
     if (res.status === 200) {
       setTimeout(() => {
-        router.push('/Login')
+        void router.push('/Login')
       }, 2000)
     }
   } else {
@@ -28,8 +28,6 @@ const subCheckCode = async (): Promise<void> => {
 onMounted(() => {
   if (user !== undefined && code !== undefined) {
     void subCheckCode()
-  } else {
-    void router.push('/checkVel')
   }
 })
 </script>

@@ -6,50 +6,57 @@ const ArticleListData: any = ref(toRaw(store.getArticleList))
 const refreshing: Ref<boolean> = ref(false)
 const loading: Ref<boolean> = ref(false)
 const finished: Ref<boolean> = ref(false)
-let Num = 5
+const Num = ref(10)
 const AUrl = `${reqConfig.baseUrl}/data/list`
-useFetch(AUrl, {
-  method: 'get',
-  params: {
-    page: 0,
-  },
-})
-  .then((response) => {
-    const res: any = response.data.value
-    ArticleListData.value = res.data
+const ssrGetArticle = async (): Promise<void> => {
+  await useFetch(AUrl, {
+    method: 'get',
+    params: {
+      page: 0,
+    },
   })
-  .catch((error) => {
-    console.error('Request failed:', error)
-  })
+    .then((response) => {
+      const res: any = response.data.value
+      ArticleListData.value = res.data
+      store.setArticleData(res.data)
+    })
+    .catch((error) => {
+      console.error('Request failed:', error)
+    })
+}
+await ssrGetArticle()
 
 // 获取新的文章列表
-const getNewArticleList = async () => {
-  const { data: res } = await ArticleAPI.getArticleList(Num)
-  if (res.data.length === 0) finished.value = true
-  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-  if (refreshing.value) {
-    store.setArticleData([...res.data, ...ArticleListData.value])
-  } else {
-    store.setArticleData([...ArticleListData.value, ...res.data])
-  }
-  ArticleListData.value = toRaw(store.getArticleList)
-  Num += 5
-  loading.value = false
-  refreshing.value = false
+const getNewArticleList = async (): Promise<void> => {
+  await ArticleAPI.getArticleList(Num.value)
+    .then((response) => {
+      Num.value += 10
+      const { data: res } = response
+      if (res.data.length === 0) {
+        Num.value -= 10
+        finished.value = true
+      }
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+      if (refreshing.value) {
+        store.setArticleData([...res.data, ...ArticleListData.value])
+      } else {
+        store.setArticleData([...ArticleListData.value, ...res.data])
+      }
+      ArticleListData.value = toRaw(store.getArticleList)
+      loading.value = false
+      refreshing.value = false
+    })
+    .catch(() => {
+      finished.value = true
+      loading.value = false
+      refreshing.value = false
+    })
 }
-// 加载到本地时数据存入Store
-onMounted(() => {
-  setTimeout(() => {
-    if (ArticleListData.value.length !== 0) {
-      store.setArticleData([...ArticleListData.value])
-    }
-  }, 800)
-})
 </script>
 
 <template>
   <div id="" class="left_box">
-    <ClientOnly><Lunbo></Lunbo></ClientOnly>
+    <client-only><Lunbo></Lunbo></client-only>
     <div class="article_ListView">
       <p class="article_alltitle st">
         <span>最新文章</span>
@@ -93,6 +100,7 @@ onMounted(() => {
 
   .article_alltitle span:nth-child(2) {
     top: 18px;
+    font-size: 1rem;
   }
 }
 

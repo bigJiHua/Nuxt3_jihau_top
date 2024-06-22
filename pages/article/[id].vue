@@ -16,7 +16,6 @@ const isLogin = ref(false)
 const showLogin = ref(false)
 const goodpage = ref(true)
 const isMd = ref(false)
-const isBad = ref(false)
 const Active: any = reactive({
   goodnum: false,
   collect: false,
@@ -43,32 +42,20 @@ const Move = reactive({
   goodnum: false,
   collect: false,
 })
-// router.params.id
-const AUrl = `${reqConfig.baseUrl}/data/article/`
-const SystemRqu = async (): Promise<void> => {
-  await useFetch(AUrl, {
-    method: 'get',
-    params: {
-      id: router.params.id,
-    },
-  })
-    .then((response) => {
-      if (/\bmd[A-Z0-9]+\b/g.test(router.params.id as string)) isMd.value = true
-      const res: any = response.data.value
-      if (response.data.value === null) isBad.value = true
-      ArticleData.article = res.data.article
-      goodpage.value = false
-      // ArticleData.article.lable = res.data.article.lable.split('、')
-    })
-    .catch((error) => {
-      goodpage.value = true
-      ArticleData.article.title = '404'
-      ArticleData.article.username = '404'
-      ArticleData.article.keyword = '404'
-      console.error('Request failed:', error)
-    })
-}
-await SystemRqu()
+const Aurl = `${reqConfig.baseUrl}/data/article/`
+const { data } = await uFetch.useCustomFetch(Aurl, {
+  method: 'get',
+  params: {
+    id: router.params.id,
+  },
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+  key: `post-${router.params.id}`,
+})
+if (/\bmd[A-Z0-9]+\b/g.test(router.params.id as string)) isMd.value = true
+const res: any = data.value
+ArticleData.article = res.data.article
+goodpage.value = false
+// ArticleData.article.lable = res.data.article.lable.split('、')
 // 获取评论等等...
 const getArchives = async (): Promise<void> => {
   const { data: res } = await getArticleApi.getArchives(
@@ -80,24 +67,6 @@ const getArchives = async (): Promise<void> => {
   Move.goodnum = res.data.acgoodnum
   Move.collect = res.data.accollect
 }
-
-// 获取文章 二次加载时调用
-// const getArticle = async (id: string): Promise<void> => {
-//   const { data: res } = await getArticleApi.getArticle(
-//     router.params.id as string
-//   )
-//   if (/\bmd[A-Z0-9]+\b/g.test(id)) isMd.value = true
-//   if (res.status === 200) {
-//     ArticleData.article = res.data.article
-//     goodpage.value = false
-//     ArticleData.article.lable = res.data.article.lable.split('、')
-//   } else if (res.data === null) {
-//     goodpage.value = true
-//     ArticleData.article.title = '404'
-//     ArticleData.article.username = '404'
-//     ArticleData.article.keyword = '404'
-//   }
-// }
 
 // 点赞
 const goodnum = async (artid: string): Promise<any> => {
@@ -198,6 +167,7 @@ const commont = async (artid: string): Promise<void> => {
         }
         const { data: res } = await UserAction.UserActive(data)
         if (res.status === 200) {
+          // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
           Active.collect = !Active.collect
           await getArchives()
           Active.comTXT = ''
@@ -237,9 +207,6 @@ const shareSay = async (): Promise<void> => {
   })
 }
 onMounted(() => {
-  // if (isBad.value) {
-  //   void getArticle(router.params.id as string)
-  // }
   if (!goodpage.value) {
     void getArchives()
   }
@@ -290,7 +257,7 @@ onMounted(() => {
           </div>
         </div>
         <div class="content" v-if="!isMd">
-          <p v-html="ArticleData.article.content" v-highlight></p>
+          <div v-html="ArticleData.article.content" v-highlight></div>
         </div>
         <div class="content" v-else>
           <CekditorViewsMd
@@ -331,7 +298,7 @@ onMounted(() => {
             <span>收藏</span>
             <img
               src="~assets/icon/star_FILL0_wght400_GRAD0_opsz24.svg"
-              alt="点赞"
+              alt="收藏"
               style="width: 1em; height: 1em; margin-right: 8px"
             />
             <span>{{ ArticleData.collect }}</span>
@@ -373,55 +340,53 @@ onMounted(() => {
         </div>
         <div class="tabLable">
           <span style="font-size: 0.7rem">标签：</span>
-          <!-- <el-tag
-            v-for="(item, index) in ArticleData.article.lable"
-            class="lable-tag"
-            :key="index"
-            >{{ item }}</el-tag
-          > -->
-          <el-tag class="lable-tag">{{ ArticleData.article.lable }}</el-tag>
+          <el-tag>{{ArticleData.article.lable}}</el-tag>
         </div>
-        <div class="commentArea">
-          <p>全部评论</p>
-          <div
-            class="comment"
-            v-for="(item, index) in ArticleData.commont"
-            :key="index"
-          >
-            <p class="comment_user">
-              <router-link :to="'/space/' + item.username"
-                >{{ item.username }}：</router-link
-              >{{ item.comment }}
-            </p>
-            <p class="comment_time">时间:{{ item.pub_date }}</p>
-          </div>
-          <div class="textarea">
-            <textarea
-              name=""
-              id="comtext"
-              placeholder="友善发言，留下美好瞬间   (最多输入150个字符)"
-              maxlength="150"
-              @keyup.enter="commont(ArticleData.article.article_id)"
-              v-model="Active.comTXT"
-            ></textarea>
-            <el-button
-              type="primary"
-              plain
-              :disabled="isLogin"
-              @click="commont(ArticleData.article.article_id)"
-              >留言</el-button
+        <client-only>
+          <div class="commentArea">
+            <p>全部评论</p>
+            <div
+              class="comment"
+              v-for="(item, index) in ArticleData.commont"
+              :key="index"
             >
+              <p class="comment_user">
+                <router-link :to="'/space/' + item.username"
+                  >{{ item.username }}：</router-link
+                >{{ item.comment }}
+              </p>
+              <p class="comment_time">时间:{{ item.pub_date }}</p>
+            </div>
+            <div class="textarea">
+              <textarea
+                name=""
+                id="comtext"
+                placeholder="友善发言，留下美好瞬间   (最多输入150个字符)"
+                maxlength="150"
+                @keyup.enter="commont(ArticleData.article.article_id)"
+                v-model="Active.comTXT"
+              ></textarea>
+              <el-button
+                type="primary"
+                plain
+                :disabled="isLogin"
+                @click="commont(ArticleData.article.article_id)"
+                >留言</el-button
+              >
+            </div>
           </div>
-        </div>
+        </client-only>
       </div>
     </div>
     <div class="ArticleRightPanel">
       <RightMArticle></RightMArticle>
     </div>
-    <ArticleLoginBox
-      @closePanel="closePanel"
-      v-if="showLogin"
-    ></ArticleLoginBox>
+    <client-only>
+      <ArticleLoginBox
+        @closePanel="closePanel"
+        v-if="showLogin"
+      ></ArticleLoginBox
+    ></client-only>
   </div>
 </template>
 

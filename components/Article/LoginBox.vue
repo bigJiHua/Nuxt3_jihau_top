@@ -78,7 +78,7 @@ const close = () => {
     <!-- 遮罩层 -->
     <div class="overlay" @click="close"></div>
     <div class="login_conten_box">
-      <img class="login_img" src="https://jihau.top/api/public/uploads/undraw_Login_re_4vu2.png" />
+      <img alt="登录" class="login_img" src="https://jihau.top/api/public/uploads/undraw_Login_re_4vu2.png" />
       <div class="user_input_eara">
         <div class="close" @click="close">
           <el-icon class="closeBtn">
@@ -88,10 +88,10 @@ const close = () => {
         <h2>登录 <small>Login</small></h2>
         <el-form :label-position="'left'" label-width="100px">
           <el-form-item label="用户名">
-            <el-input v-model="username" />
+            <el-input v-model="username" placeholder="请输入用户名" />
           </el-form-item>
           <el-form-item label="密码">
-            <el-input v-model="password" type="password" placeholder="Please input password" show-password />
+            <el-input v-model="password" type="password" placeholder="请输入密码" show-password />
           </el-form-item>
         </el-form>
         <div class="btnmenu">

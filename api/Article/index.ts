@@ -5,8 +5,8 @@ const getArticleList = function (page: number | string) {
 }
 
 // 文章归档
-const getArchive = function () {
-  return request.get('/data/archive')
+const getArchive = (type?: string, key?: string): any => {
+  return request.get('/data/archive?type=' + type + '&key=' + key)
 }
 // 通知列表
 const getNotifyList = function (Num: number) {

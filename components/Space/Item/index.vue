@@ -30,6 +30,7 @@ const defaultUserLogo: Ref<string> = ref(
 )
 // 编辑用户背景图片
 const EditorBgc = (): void => {
+  const bgcOrigin =  ref(UserData.value.user_bgc)
   if (!isSelf.value) return
   ElMessageBox.prompt('请输入图片 URL or Base64格式', '提示', {
     confirmButtonText: '变更',
@@ -63,7 +64,7 @@ const EditorBgc = (): void => {
         type: 'info',
         message: '取消操作',
       })
-      UserData.value.user_bgc = ''
+      UserData.value.user_bgc = bgcOrigin.value
     })
 }
 

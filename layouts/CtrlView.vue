@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 const isSHow = ref(false)
 onMounted(() => {
@@ -13,21 +12,26 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div class="CtrlViewLayout">
-    <el-container>
-      <el-header class="CtrlHeader" style="padding: 0;background-color: white; ">
-        <Header></Header>
-      </el-header>
-      <el-container class="CtrlContent">
-        <el-aside class="menu" width="200px" v-if="isSHow">
-          <CtrlPanelAside></CtrlPanelAside>
-        </el-aside>
-        <el-main class="main">
-          <slot />
-        </el-main>
+  <client-only>
+    <div class="CtrlViewLayout">
+      <el-container>
+        <el-header
+          class="CtrlHeader"
+          style="padding: 0; background-color: white"
+        >
+          <Header></Header>
+        </el-header>
+        <el-container class="CtrlContent">
+          <el-aside class="menu" width="200px" v-if="isSHow">
+            <CtrlPanelAside></CtrlPanelAside>
+          </el-aside>
+          <el-main class="main">
+            <slot />
+          </el-main>
+        </el-container>
       </el-container>
-    </el-container>
-  </div>
+    </div>
+  </client-only>
 </template>
 
 <style lang="less" scoped>
@@ -66,6 +70,6 @@ onMounted(() => {
     width: 95vw;
     margin: 0 auto;
     overflow: scroll;
-  }  
+  }
 }
 </style>

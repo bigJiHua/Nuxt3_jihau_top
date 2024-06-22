@@ -4,15 +4,15 @@ import { useRouter } from 'vue-router'
 const props = defineProps({
   user: {
     type: String,
-    default: () => ''
+    default: () => '',
   },
   istop: {
     type: Boolean,
-    default: () => false
+    default: () => false,
   },
   isSelf: {
     type: Boolean,
-    default: () => false
+    default: () => false,
   },
 })
 const router = useRouter()
@@ -95,7 +95,7 @@ onMounted(() => {
             <el-menu class="el-menu-demo menu-container" mode="horizontal">
               <el-menu-item class="HeaderLeft">
                 <h1 class="HeaderTitle coker">
-                  <nuxt-link to="/">JiHua的web和js开发数据</nuxt-link>
+                  <a href="/">JiHua的web和js开发数据</a>
                 </h1>
                 <img
                   src="https://jihau.top/img/logo.png"

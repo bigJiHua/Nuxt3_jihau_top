@@ -16,7 +16,7 @@ const options = [
   { value: '长沙', label: '长沙' },
   { value: '台湾', label: '台湾' },
   { value: '香港', label: '香港' },
-  { value: '澳门', label: '澳门' }
+  { value: '澳门', label: '澳门' },
 ]
 const uploadImg = ref(false)
 // 修改用户信息
@@ -35,7 +35,7 @@ const ChangeUserData = async (type: string): Promise<void> => {
       message = '确定要修改生日吗？'
       break
     case 'sex':
-      data.sex = UserData.sex
+      data.sex = UserData.sex === '' ? '男' : UserData.sex
       message = '确定要修改性别吗？'
       break
     case 'city':
@@ -63,7 +63,7 @@ const cagUserPic = (e: any): any | undefined => {
   if (e.file.size > 1024 * 1024 * 5) {
     ElMessage({
       message: '图片大小不能超过5M',
-      type: 'error'
+      type: 'error',
     })
     uploadImg.value = false
     return
@@ -86,23 +86,23 @@ onMounted(() => {
   <div class="Card">
     <div class="title">基本信息</div>
     <div class="CardItem">
-      <span
-        >用户名：<el-tag>{{ store.Userdata.Users.username }}</el-tag>
-        <nuxt-link
+      <div>
+        用户:<nuxt-link
           :to="'/space/' + store.Userdata.Users.username"
           style="color: #fb7299; margin-left: 10px"
-          >前往空间</nuxt-link
+          >{{ store.Userdata.Users.username }}</nuxt-link
         >
-      </span>
-      <span
-        >UID： <el-tag> {{ store.Userdata.Users.user_id }}</el-tag></span
-      >
-      <span
-        >身份： <el-tag>{{ store.Userdata.Users.useridentity }}</el-tag></span
-      >
+      </div>
+      <div>
+        UID： <el-tag> {{ store.Userdata.Users.user_id }}</el-tag>
+      </div>
+      <div>
+        身份： <el-tag>{{ store.Userdata.Users.useridentity }}</el-tag>
+      </div>
     </div>
     <div class="CardItem">
       <img
+        alt="用户头像"
         v-if="store.Userdata.Users.user_pic"
         :src="store.Userdata.Users.user_pic"
         class="avatar"
@@ -156,8 +156,8 @@ onMounted(() => {
       <span>性别</span>
       <div class="ItemSelect">
         <el-radio-group v-model="store.Userdata.Users.sex" class="ml-4">
-          <el-radio value="男" size="large">男</el-radio>
-          <el-radio value="女" size="large">女</el-radio>
+          <el-radio :label="'男'" size="large">男</el-radio>
+          <el-radio :label="'女'" size="large">女</el-radio>
         </el-radio-group>
       </div>
       <div class="Item">

@@ -32,7 +32,7 @@ onMounted(() => {
       <el-menu class="el-menu-demo menu-container" mode="horizontal">
         <el-menu-item class="HeaderLeft">
           <h1 class="HeaderTitle coker">
-            <nuxt-link to="/">JiHua的web和js开发数据</nuxt-link>
+            <a href="/">JiHua的web和js开发数据</a>
           </h1>
           <img src="https://jihau.top/img/logo.png" alt="Logo" class="logo" />
         </el-menu-item>
@@ -50,9 +50,9 @@ onMounted(() => {
         </el-input>
       </div>
       <div class="User">
-        <ClientOnly>
+        <client-only>
           <HeaderLogoMenu></HeaderLogoMenu>
-        </ClientOnly>
+        </client-only>
         <div class="User" v-if="!isLogin">
           <nuxt-link to="/Login"
             ><el-button type="primary" plain>登录</el-button></nuxt-link

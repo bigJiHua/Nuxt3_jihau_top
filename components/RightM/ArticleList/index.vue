@@ -10,41 +10,46 @@ const getdata = async (): Promise<void> => {
   const { data: res } = await getArc.getArchive()
   const getArticleData = res.data
   // 筛出年份
-  const articleListYear = [...new Set(getArticleData.map((data: any) => data.year))].filter(year => year !== 0)
+  const articleListYear = [
+    ...new Set(getArticleData.map((data: any) => data.year)),
+  ].filter((year) => year !== 0)
   // 筛出月份
-  const articleListMonth = [...new Set(getArticleData.map((data: any) => data.month))]
-  // 筛出不同年份
+  const articleListMonth = [
+    ...new Set(getArticleData.map((data: any) => data.month)),
+  ]
+  /*  筛出不同年份对应的数据
+  [
+    [
+      year: '',
+      data: [{
+        year: '',
+        month: ''
+      }]
+    ]
+  ]
+  */
   for (let i = 0; i < articleListYear.length; i++) {
-    const filterYearData = getArticleData.filter((word: any) => word.year === articleListYear[i])
+    const filterYearData = getArticleData.filter(
+      (word: any) => word.year === articleListYear[i]
+    )
     if (filterYearData.length !== 0) {
       ArticleData.value.push({
         year: articleListYear[i],
-        data: filterYearData
+        data: filterYearData,
       })
     }
   }
-  // 根据年份更新数据
-  const filterData = []
-  for (let i = 0; i < articleListYear.length; i++) {
-    for (let j = 1; j <= 12; j++) {
-      const Data = ArticleData.value[i].data.filter((data: any) => Number(data.month) === j)
-      if (Data.length !== 0) {
-        filterData.push({
-          year: articleListYear[i],
-          month: j,
-          data: Data
-        })
-      }
-    }
-    AllArticleData.value.push(filterData.filter(data => Number(data.year) === Number(articleListYear[i])))
-  }
   yearlist.value = articleListYear
   monthlist.value = articleListMonth
-  store.setArchive({ Archive: AllArticleData, YearListData: articleListYear })
+  AllArticleData.value = ArticleData.value.reverse()
+  store.setArchive({
+    Archive: AllArticleData.value,
+    YearListData: yearlist.value
+  })
   AllArticleData.value = toRaw(store.getArchive.ArchiveListData)
 }
 onMounted(() => {
-  if (AllArticleData.value.length === 0 || yearlist.value.length === 0) {
+  if (Object.keys(AllArticleData.value).length === 0) {
     void getdata()
   }
 })
@@ -54,8 +59,7 @@ onMounted(() => {
   <div class="ararc">
     <p class="ararc_title Cookie">文章归档</p>
     <div class="ararc_list" v-for="(year, index) in yearlist" :key="index">
-      <RightMArticleListYearitem :index="index" :year="year" :AllData="AllArticleData[index].slice()">
-      </RightMArticleListYearitem>
+      <RightMArticleListYearitem :index="index" :AllData="AllArticleData" />
     </div>
   </div>
 </template>
@@ -65,7 +69,8 @@ onMounted(() => {
   min-height: 120px;
   background-color: #fff;
   margin: 10px 0 15px 0;
-  box-shadow: rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 10%) 0px 10px 15px -3px, rgb(0 0 0 / 5%) 0px 4px 6px -2px;
+  box-shadow: rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 0%) 0px 0px 0px 0px,
+    rgb(0 0 0 / 10%) 0px 10px 15px -3px, rgb(0 0 0 / 5%) 0px 4px 6px -2px;
   border-radius: 5px;
   border-radius: 5px;
   padding: 10px;

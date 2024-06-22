@@ -58,7 +58,8 @@ const login = async () => {
   if (validata('username') && validata('password')) {
     // 发起请求
     const { data: res } = await Login.LoginMenu(username.value, password.value)
-    if (res.token !== '') {
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    if (res.token) {
       // 判断返回状态码是否成功
       localStorage.setItem('token', res.token)
       localStorage.setItem('Username', res.data.Users.username)
@@ -68,7 +69,7 @@ const login = async () => {
         show.value = false
         loading.value = false
         localStorage.removeItem('VerCode')
-        router.push('/Users')
+        void router.push('/Users')
       }, 1500)
     } else {
       setTimeout(() => {
@@ -96,12 +97,12 @@ useHead({
 <template>
   <div class="container">
     <div class="login_conten_box">
-      <img class="login_img" src="https://jihau.top/api/public/uploads/undraw_Login_re_4vu2.png" />
+      <img slt="登录" class="login_img" src="https://jihau.top/api/public/uploads/undraw_Login_re_4vu2.png" />
       <div class="user_input_eara">
         <h2>登录 <small>Login</small></h2>
         <el-form :label-position="'left'" label-width="100px">
           <el-form-item label="用户名">
-            <el-input v-model="username" />
+            <el-input v-model="username" placeholder="请输入用户名"/>
           </el-form-item>
           <el-form-item label="密码">
             <el-input v-model="password" type="password" placeholder="请输入密码" show-password />

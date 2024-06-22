@@ -1,7 +1,7 @@
 // 首页文章列表
 export const useArticleListStore = defineStore('ArticleData', {
   state: () => ({
-    ArticleList: [] as Array<any>,
+    ArticleList: [] as any[]
   }),
   actions: {
     setArticleData(data: any) {
@@ -9,18 +9,18 @@ export const useArticleListStore = defineStore('ArticleData', {
     }
   },
   getters: {
-    getArticleList(): Array<any> {
+    getArticleList(): any[] {
       return this.ArticleList
     }
-  },
+  }
 })
 // 文章归档
 export const useArchiveListStore = defineStore('ArchiveList', {
   state: () => ({
     ArchiveList: {
-      ArchiveListData: [] as Array<any>,
-      YearListData: [] as Array<any>
-    },
+      ArchiveListData: [] as any[],
+      YearListData: [] as any[]
+    }
   }),
   actions: {
     setArchive(data: any) {
@@ -32,5 +32,5 @@ export const useArchiveListStore = defineStore('ArchiveList', {
     getArchive(): any {
       return this.ArchiveList
     }
-  },
+  }
 })

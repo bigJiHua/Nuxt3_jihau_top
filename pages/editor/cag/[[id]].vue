@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
-import { useRouter } from '#vue-router';
+import { useRouter } from '#vue-router'
 import postArticleApi from '@/api/CtrlMenu'
 const router = useRouter()
 definePageMeta({
@@ -17,32 +17,32 @@ const editorData: any = ref({
   keyword: '',
   article_id: '',
   describes: '',
-  state: 0
+  state: 0,
 })
 // 校验规则
 const rules: any = reactive({
   title: {
     rule: /\S/,
-    msg: '文章标题不能为空'
+    msg: '文章标题不能为空',
   },
   content: {
     rule: /.{50,}/,
-    msg: '不能水文章哦！字数大于等于50！'
+    msg: '不能水文章哦！字数大于等于50！',
   },
   lable: {
     rule: /\S/,
-    msg: '忘记填标签咯！'
+    msg: '忘记填标签咯！',
   },
   keyword: {
     rule: /\S/,
-    msg: '填一下关键字吧！'
-  }
+    msg: '填一下关键字吧！',
+  },
 })
 const elContent = ref('') // 备份修改之前的
 const isTrue = ref(false) // 接收数据
 const isMd = ref(false) // 切换编辑器
 const isget = ref(false) // 是否渲染组件
-const searchId = ref('')// 搜索ID
+const searchId = ref('') // 搜索ID
 
 // 同步子组件对服务组件的数据
 let setCount = 0
@@ -56,16 +56,19 @@ const cagEditorData = (cagData: string) => {
   }
   setTimeout(() => {
     isTrue.value = false
-  }, 500);
+  }, 500)
 }
 // 清空当前所有编辑
 const deleteEditor = async (): Promise<void> => {
-  if (await WarningTips('你确定要删除这篇文章吗？') ) {
-    if (editorData.value.id === '') ElMessage({
-      message: '错误！请刷新页面重试',
-      type: 'warning'
-    })
-    const { data: res } = await postArticleApi.UserdelArticle(editorData.value.id)
+  if (await WarningTips('你确定要删除这篇文章吗？')) {
+    if (editorData.value.id === '')
+      ElMessage({
+        message: '错误！请刷新页面重试',
+        type: 'warning',
+      })
+    const { data: res } = await postArticleApi.UserdelArticle(
+      editorData.value.id
+    )
     if (res.status === 200) {
       editorData.value = {
         username: '',
@@ -76,27 +79,27 @@ const deleteEditor = async (): Promise<void> => {
         content: '',
         describes: '',
         state: 0,
-        pub_date: ''
+        pub_date: '',
       }
       setTimeout(() => {
         router.push('/editor/list')
-      }, 500);
+      }, 500)
     }
   }
 }
 // 重新发布文章
 const PostNewArticle = async (isDraft: boolean | number) => {
   if (isDraft === true && editorData.value.state === 0) {
-    if (await WarningTips('你确定要保存为草稿吗？') ) {
-      editorData.value.state = "2"
+    if (await WarningTips('你确定要保存为草稿吗？')) {
+      editorData.value.state = '2'
     } else return
   } else if (parseInt(editorData.value.state) !== 0 && !isDraft) {
-    if (await WarningTips('准备好发布了吗？') ) {
-      editorData.value.state = "0"
+    if (await WarningTips('准备好发布了吗？')) {
+      editorData.value.state = '0'
     } else return
   } else if (isDraft === 1) {
-    if (await WarningTips('准备好更新该文章了吗？') ) {
-      editorData.value.state = "0"
+    if (await WarningTips('准备好更新该文章了吗？')) {
+      editorData.value.state = '0'
     } else return
   }
   let push = 0
@@ -106,21 +109,24 @@ const PostNewArticle = async (isDraft: boolean | number) => {
     }
   }
   if (push === Object.keys(rules).length) {
-    if (isMd.value) editorData.value.content = JSON.stringify({
-      data: editorData.value.content
-    })
+    if (isMd.value)
+      editorData.value.content = JSON.stringify({
+        data: editorData.value.content,
+      })
     const { data: res } = await postArticleApi.UsercagArticle(editorData.value)
     if (res.status === 200) {
       setTimeout(() => {
         router.push('/editor/list')
-      }, 500);
+      }, 500)
     }
   }
 }
 // 获取文章内容
 const getArticle = async (id?: string) => {
   const queryId = id ? id : searchId.value
-  const { data: res } = await postArticleApi.UsergetArticleData(queryId as string)
+  const { data: res } = await postArticleApi.UsergetArticleData(
+    queryId as string
+  )
   if (res.status === 404) {
     isget.value = true
     router.push('/editor/cag/')
@@ -137,19 +143,19 @@ const searchArticle = async () => {
   if (searchId.value === '') {
     ElMessage({
       message: '文章ID不能为空',
-      type: 'error'
+      type: 'error',
     })
   } else {
     getArticle()
   }
 }
-// 校验规则 
+// 校验规则
 const validata = function (key: string) {
   let bool = true
   if (!rules[key].rule.test(editorData.value[key])) {
     ElMessage({
       message: rules[key].msg,
-      type: 'error'
+      type: 'error',
     })
     bool = false
   }
@@ -170,19 +176,34 @@ onMounted(() => {
     <div class="HeaderBox">
       <div class="itemBox">
         <div class="serachBox">
-          <el-input v-model="searchId" placeholder="查找ID获取你编辑的文章" class="input-with-select">
+          <el-input
+            v-model="searchId"
+            placeholder="查找ID获取你编辑的文章"
+            class="input-with-select"
+          >
             <template #append>
               <el-button @click="searchArticle()" :icon="Search" />
             </template>
           </el-input>
         </div>
-        <el-button type="danger" plain @click="deleteEditor">删除文章</el-button>
-        <el-button type="success" plain @click="PostNewArticle(true)">存草稿</el-button>
+        <el-button type="danger" plain @click="deleteEditor"
+          >删除文章</el-button
+        >
+        <el-button type="success" plain @click="PostNewArticle(true)"
+          >存草稿</el-button
+        >
       </div>
       <div class="postBtn">
         <el-button type="success" v-show="isTrue">同步</el-button>
-        <el-button type="primary" v-if="editorData.state === 0" @click="PostNewArticle(1)">更新</el-button>
-        <el-button type="primary" v-else @click="PostNewArticle(false)">发布</el-button>
+        <el-button
+          type="primary"
+          v-if="editorData.state === 0"
+          @click="PostNewArticle(1)"
+          >更新</el-button
+        >
+        <el-button type="primary" v-else @click="PostNewArticle(false)"
+          >发布</el-button
+        >
       </div>
     </div>
     <div class="editor-container">
@@ -191,52 +212,69 @@ onMounted(() => {
           <div>
             <h3>当前状态：</h3>
             <el-tag v-if="editorData.state === 0" type="success">已发布</el-tag>
-            <el-tag v-else-if="editorData.state === 2" type="warning">草稿</el-tag>
+            <el-tag v-else-if="editorData.state === 2" type="warning"
+              >草稿</el-tag
+            >
             <el-tag v-else type="danger">未发布</el-tag>
           </div>
         </div>
-        <el-form :label-position="'top'" label-width="100px" :model="editorData" style="max-width: 460px">
+        <el-form
+          :label-position="'top'"
+          label-width="100px"
+          :model="editorData"
+          style="max-width: 460px"
+        >
           <el-form-item>
             <template #label>
-              标题<span style="color: red;">*</span>---设置文章标题
+              标题<span style="color: red">*</span>---设置文章标题
             </template>
             <el-input v-model="editorData.title" />
           </el-form-item>
           <el-form-item>
             <template #label>
-              标签<span style="color: red;">*</span>---设置文章标签(以中文顿号分隔)
+              标签<span style="color: red">*</span
+              >---设置文章标签(以中文顿号分隔)
             </template>
             <el-input v-model="editorData.lable" />
           </el-form-item>
           <el-form-item>
             <template #label>
-              关键词<span style="color: red;">*</span>---设置文章关键词(以中文顿号分隔)
+              关键词<span style="color: red">*</span
+              >---设置文章关键词(以中文顿号分隔)
             </template>
             <el-input v-model="editorData.keyword" />
           </el-form-item>
           <el-form-item>
             <template #label>
-              文章描述<span style="color: red;">*</span>---设置文章描述(可选)
+              文章描述<span style="color: red">*</span>---设置文章描述(可选)
             </template>
             <el-input v-model="editorData.describes" />
           </el-form-item>
           <el-form-item>
-            <template #label>
-              封面---设置文章封面(可选)
-            </template>
+            <template #label> 封面---设置文章封面(可选) </template>
             <el-input v-model="editorData.cover_img" />
           </el-form-item>
         </el-form>
         <dev class="cover_img" v-if="editorData.cover_img !== 'undefined'">
-          <img :src="editorData.cover_img" alt="Cover_img">
+          <img :src="editorData.cover_img" alt="Cover_img" />
         </dev>
-        <p><span style="color: red;">*</span>为必填项</p>
-        <p><span style="color: red;">*</span>不能设置图片封面为base64格式！</p>
-        <p><span style="color: red;">注意：</span>标签关键词用中文顿号间隔！</p>
+        <p><span style="color: red">*</span>为必填项</p>
+        <p><span style="color: red">*</span>不能设置图片封面为base64格式！</p>
+        <p><span style="color: red">注意：</span>标签关键词用中文顿号间隔！</p>
       </div>
       <div class="EditorArea" v-if="isget">
-        <Cekditor v-if="!isMd" :content="editorData.content" @cagEditorData="cagEditorData" :type="'cag'" />
-        <CekditorMd v-else :content="editorData.content" @cagEditorData="cagEditorData" :type="'cag'" />
+        <Cekditor
+          v-if="!isMd"
+          :content="editorData.content"
+          @cagEditorData="cagEditorData"
+          :type="'cag'"
+        />
+        <CekditorMd
+          v-else
+          :content="editorData.content"
+          @cagEditorData="cagEditorData"
+          :type="'cag'"
+        />
       </div>
     </div>
   </div>
@@ -265,9 +303,14 @@ onMounted(() => {
 .ArticleDataPanel {
   flex: 1;
   width: 20vw;
-  margin: 10px;
+  margin: 5px;
   padding: 5px;
   background-color: #ffffff;
+  height: calc(100vh - 130px);
+  overflow: scroll;
+}
+.ArticleDataPanel::-webkit-scrollbar {
+  display: none;
 }
 
 .itemBox {
@@ -281,7 +324,7 @@ onMounted(() => {
 .postBtn {
   flex: 1;
 
-  >button:last-child {
+  > button:last-child {
     float: right;
   }
 }
@@ -295,7 +338,7 @@ onMounted(() => {
 .cover_img {
   padding: 5px;
 
-  >img {
+  > img {
     width: 80%;
     height: 90px;
   }
@@ -304,7 +347,7 @@ onMounted(() => {
 .articleState {
   padding: 10px;
 
-  >div {
+  > div {
     display: flex;
   }
 }
@@ -330,7 +373,7 @@ onMounted(() => {
       align-items: center;
       padding: 15px 2.5px 5px 2.5px;
 
-      >button {
+      > button {
         float: none;
       }
     }

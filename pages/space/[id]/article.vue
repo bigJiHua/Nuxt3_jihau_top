@@ -2,9 +2,8 @@
 import getArtDataApi from '@/api/Space'
 import { useRouter } from 'vue-router'
 import { View, Star, Share } from '@element-plus/icons-vue'
-
 definePageMeta({
-  layout: 'space-view',
+  layout: 'space-view'
 })
 const router = useRouter()
 const user: Ref<string> = ref(
@@ -75,7 +74,7 @@ onMounted(() => {
             ><el-icon><Star /></el-icon>{{ item.collectNum }}</span
           >
           <span
-            ><el-icon><Share /></el-icon>{{ item.collectNum }}</span
+            ><el-icon><Share /></el-icon>{{ item.share_num }}</span
           >
         </div>
       </div>

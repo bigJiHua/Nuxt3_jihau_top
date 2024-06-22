@@ -34,30 +34,22 @@ export default defineNuxtPlugin((nuxtApp: any) => {
         })
       },
       copyUrl: (url: string) => {
-        if (process.env.NODE_ENV === 'development') {
-          navigator.clipboard.writeText(url).then(
-            () => {
-              ElNotification({
-                title: '成功',
-                message: '已成功将链接复制到剪贴板！',
-                type: 'success',
-              })
-            },
-            () => {
-              ElNotification({
-                title: '失败',
-                message: '失败，无法将文章链接复制到剪贴板',
-                type: 'warning',
-              })
-            }
-          )
-        } else {
-          ElNotification({
-            title: '错误！',
-            message: '失败，无法将文章链接复制到剪贴板',
-            type: 'error',
-          })
-        }
+        navigator.clipboard.writeText(url).then(
+          () => {
+            ElNotification({
+              title: '成功',
+              message: '已成功将链接复制到剪贴板！',
+              type: 'success'
+            })
+          },
+          () => {
+            ElNotification({
+              title: '失败',
+              message: '失败，无法将文章链接复制到剪贴板',
+              type: 'warning'
+            })
+          }
+        )
       }
     }
   }
