@@ -43,11 +43,26 @@ const isTrue = ref(false) // 接收数据
 const isMd = ref(false) // 切换编辑器
 const isget = ref(false) // 是否渲染组件
 const searchId = ref('') // 搜索ID
+// 当前选中的主题
+const selectedTheme = ref('simplicity-green')
+const selectedCodeTheme = ref('default')
+useHead({
+  link: [
+    {
+      rel: 'stylesheet',
+      href: '/css/file/simplicity-green.min.css',
+      id: 'dynamic-theme',
+    },
+    {
+      rel: 'stylesheet',
+      href: '/css/code/styles/default.css',
+      id: 'dynamic-code',
+    },
+  ],
+})
 
 // 同步子组件对服务组件的数据
-let setCount = 0
-const cagEditorData = (cagData: string) => {
-  setCount += 1
+const cagEditorData = (cagData: string): void => {
   if (cagData === '') return
   elContent.value = editorData.value.content
   if (editorData.value.content !== cagData) {
@@ -61,11 +76,13 @@ const cagEditorData = (cagData: string) => {
 // 清空当前所有编辑
 const deleteEditor = async (): Promise<void> => {
   if (await WarningTips('你确定要删除这篇文章吗？')) {
-    if (editorData.value.id === '')
+    if (editorData.value.id === '') {
       ElMessage({
-        message: '错误！请刷新页面重试',
+        message: 'ID 获取失败 无法执行删除该文章！',
         type: 'warning',
       })
+      return
+    }
     const { data: res } = await postArticleApi.UserdelArticle(
       editorData.value.id
     )
@@ -88,7 +105,7 @@ const deleteEditor = async (): Promise<void> => {
   }
 }
 // 重新发布文章
-const PostNewArticle = async (isDraft: boolean | number) => {
+const PostNewArticle = async (isDraft: boolean | number): Promise<void> => {
   if (isDraft === true && editorData.value.state === 0) {
     if (await WarningTips('你确定要保存为草稿吗？')) {
       editorData.value.state = '2'
@@ -102,6 +119,7 @@ const PostNewArticle = async (isDraft: boolean | number) => {
       editorData.value.state = '0'
     } else return
   }
+  // 校验数据完整性
   let push = 0
   for (const key in rules) {
     if (validata(key)) {
@@ -109,48 +127,61 @@ const PostNewArticle = async (isDraft: boolean | number) => {
     }
   }
   if (push === Object.keys(rules).length) {
-    if (isMd.value)
+    // 如果是md
+    if (isMd.value) {
       editorData.value.content = JSON.stringify({
         data: editorData.value.content,
+        theme: selectedTheme.value,
+        codeTheme: selectedCodeTheme.value,
       })
+    }
     const { data: res } = await postArticleApi.UsercagArticle(editorData.value)
     if (res.status === 200) {
       setTimeout(() => {
-        router.push('/editor/list')
+        void router.push('/editor/list')
       }, 500)
     }
   }
 }
 // 获取文章内容
-const getArticle = async (id?: string) => {
-  const queryId = id ? id : searchId.value
-  const { data: res } = await postArticleApi.UsergetArticleData(
-    queryId as string
-  )
+const getArticle = async (queryId: string): Promise<void> => {
+  const { data: res } = await postArticleApi.UsergetArticleData(queryId)
   if (res.status === 404) {
     isget.value = true
-    router.push('/editor/cag/')
+    void router.push('/editor/cag/')
   }
   if (res.status === 200 && res !== undefined) {
-    router.replace('/editor/cag/' + queryId)
+    void router.replace('/editor/cag/' + queryId)
     editorData.value = { ...res.data.article }
-    if (/\bmd[A-Z0-9]+\b/g.test(queryId as string)) isMd.value = true
+    if (/\bmd[A-Z0-9]+\b/g.test(queryId)) isMd.value = true
     isget.value = true
-    return
+    // 在得到数据时展示现有的主题
+    if (isMd.value) {
+      selectedTheme.value =
+        JSON.parse(editorData.value.content).theme !== undefined
+          ? JSON.parse(editorData.value.content).theme
+          : 'simplicity-green'
+      selectedCodeTheme.value =
+        JSON.parse(editorData.value.content).codeTheme !== undefined
+          ? JSON.parse(editorData.value.content).codeTheme
+          : 'default'
+      loadTheme(JSON.parse(editorData.value.content).theme)
+    }
   }
 }
-const searchArticle = async () => {
+// 获取文章
+const searchArticle = async (): Promise<void> => {
   if (searchId.value === '') {
     ElMessage({
       message: '文章ID不能为空',
       type: 'error',
     })
   } else {
-    getArticle()
+    void getArticle(searchId.value)
   }
 }
 // 校验规则
-const validata = function (key: string) {
+const validata = (key: string): Boolean => {
   let bool = true
   if (!rules[key].rule.test(editorData.value[key])) {
     ElMessage({
@@ -162,8 +193,146 @@ const validata = function (key: string) {
   return bool
 }
 
+// 样式名称数组
+const themes = [
+  'simplicity-green',
+  'arknights',
+  'awesome-green',
+  'channing-cyan',
+  'Chinese-red',
+  'condensed-night-purple',
+  'cyanosis',
+  'devui-blue',
+  'fancy',
+  'geek-black',
+  'github',
+  'greenwillow',
+  'healer-readable',
+  'hydrogen',
+  'juejin',
+  'jzman',
+  'mk-cute',
+  'nico',
+  'orange',
+  'qklhk-chocolate',
+  'scrolls-light',
+  'serene-rose',
+  'smartblue',
+  'v-green',
+  'vue-pro',
+  'vuepress',
+  'z-blue',
+]
+const codeTheme = [
+  'a11y-dark',
+  'a11y-light',
+  'agate',
+  'an-old-hope',
+  'androidstudio',
+  'arduino-light',
+  'arta',
+  'ascetic',
+  'atom-one-dark-reasonable',
+  'atom-one-dark',
+  'atom-one-light',
+  'brown-paper',
+  'codepen-embed',
+  'color-brewer',
+  'dark',
+  'default',
+  'devibeans',
+  'docco',
+  'far',
+  'felipec',
+  'foundation',
+  'github-dark-dimmed',
+  'github-dark',
+  'github',
+  'gml',
+  'googlecode',
+  'gradient-dark',
+  'gradient-light',
+  'grayscale',
+  'hybrid',
+  'idea',
+  'intellij-light',
+  'ir-black',
+  'isbl-editor-dark',
+  'isbl-editor-light',
+  'kimbie-dark',
+  'kimbie-light',
+  'lightfair',
+  'lioshi',
+  'magula',
+  'mono-blue',
+  'monokai-sublime',
+  'monokai',
+  'night-owl',
+  'nnfx-dark',
+  'nnfx-light',
+  'nord',
+  'obsidian',
+  'paraiso-dark',
+  'paraiso-light',
+  'pojoaque',
+  'purebasic',
+  'qtcreator-dark',
+  'qtcreator-light',
+  'rainbow',
+  'routeros',
+  'school-book',
+  'shades-of-purple',
+  'srcery',
+  'stackoverflow-dark',
+  'stackoverflow-light',
+  'sunburst',
+  'tokyo-night-dark',
+  'tokyo-night-light',
+  'tomorrow-night-blue',
+  'tomorrow-night-bright',
+  'vs',
+  'vs2015',
+  'xcode',
+  'xt256',
+]
+
+// 动态创建/更新 link 标签来加载 CSS 文件
+const loadTheme = (theme: string, type: string = 'css'): void => {
+  if (type === 'code' && theme === undefined) theme = 'default'
+  if (theme === '' || (theme === undefined && type === 'css'))
+    theme = 'simplicity-green'
+  const label = type === 'css' ? 'dynamic-theme' : 'dynamic-code'
+  let link = document.getElementById(`${label}`) as HTMLLinkElement | null
+  if (!link) {
+    // 创建新的 link 标签
+    link = document.createElement('link')
+    link.id = label
+    link.rel = 'stylesheet'
+    document.head.appendChild(link)
+  }
+  // 设置 link 的 href 指向新的 CSS 文件
+  link.href =
+    type === 'css'
+      ? `/css/file/${theme}.min.css`
+      : `/css/code/styles/${theme}.css`
+  // 保存到 localStorage
+  localStorage.removeItem('theme')
+}
+// 切换主题时调用
+const onThemeChange = (theme: string, type: string = 'css'): void => {
+  if (type === 'css') selectedTheme.value = theme
+  else selectedCodeTheme.value = theme
+  loadTheme(theme, type)
+}
+// 返回
+const comeBack = async (): Promise<void> => {
+  if (await WarningTips('你确定要返回吗？数据不会被保存/更改')) {
+    void router.back()
+  }
+}
 onMounted(() => {
-  if (router.currentRoute.value.params.id) {
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+  if (router.currentRoute.value.params.id as string) {
     getArticle(router.currentRoute.value.params.id as string)
   } else {
     isget.value = true
@@ -192,9 +361,7 @@ onMounted(() => {
         <el-button type="success" plain @click="PostNewArticle(true)"
           >存草稿</el-button
         >
-      </div>
-      <div class="postBtn">
-        <el-button type="success" v-show="isTrue">同步</el-button>
+        <el-button type="warning" plain @click="comeBack">返回</el-button>
         <el-button
           type="primary"
           v-if="editorData.state === 0"
@@ -204,6 +371,42 @@ onMounted(() => {
         <el-button type="primary" v-else @click="PostNewArticle(false)"
           >发布</el-button
         >
+      </div>
+      <div class="postBtn">
+        <el-button type="success" v-show="isTrue">同步</el-button>
+      </div>
+      <!-- Select框切换主题 -->
+      <div class="SelectThemeBox" v-if="isMd">
+        <div>
+          <p class="title">主题</p>
+          <el-select
+            v-model="selectedTheme"
+            placeholder="选择样式"
+            @change="onThemeChange"
+          >
+            <el-option
+              v-for="theme in themes"
+              :key="theme"
+              :label="theme"
+              :value="theme"
+            />
+          </el-select>
+        </div>
+        <div>
+          <p class="title">Code样式</p>
+          <el-select
+            v-model="selectedCodeTheme"
+            placeholder="选择样式"
+            @change="onThemeChange(selectedCodeTheme, 'code')"
+          >
+            <el-option
+              v-for="theme in codeTheme"
+              :key="theme"
+              :label="theme"
+              :value="theme"
+            />
+          </el-select>
+        </div>
       </div>
     </div>
     <div class="editor-container">
@@ -314,7 +517,7 @@ onMounted(() => {
 }
 
 .itemBox {
-  flex: 1.5;
+  flex: 4;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -337,10 +540,9 @@ onMounted(() => {
 
 .cover_img {
   padding: 5px;
-
   > img {
-    width: 80%;
-    height: 90px;
+    width: 150px;
+    height: 80px;
   }
 }
 
@@ -349,6 +551,33 @@ onMounted(() => {
 
   > div {
     display: flex;
+  }
+}
+.SelectThemeBox {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  > div {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    margin-right: 10px;
+  }
+  > div > p {
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 1px 15px;
+    background-color: #ecf5ff;
+    border: 1px solid #a0cfff;
+    color: #409eff;
+    text-align: center;
+  }
+  > div > .el-select {
+    width: 10vw;
   }
 }
 
@@ -377,6 +606,19 @@ onMounted(() => {
         float: none;
       }
     }
+  }
+  .itemBox {
+    display: block;
+  }
+  .SelectThemeBox {
+    margin: 0 0 10px 0;
+    justify-content: space-between;
+    > div > .el-select {
+      width: 25vw;
+    }
+  }
+  .serachBox {
+    margin: 0 0 15px 0;
   }
 }
 </style>

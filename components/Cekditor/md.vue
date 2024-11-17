@@ -7,11 +7,12 @@ import breaks from '@bytemd/plugin-breaks'
 import footnotes from '@bytemd/plugin-footnotes'
 import mediumZoom from '@bytemd/plugin-medium-zoom'
 // eslint-disable-next-line @typescript-eslint/quotes
-import zhHans from "bytemd/locales/zh_Hans.json"
+import zhHans from 'bytemd/locales/zh_Hans.json'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Editor, Viewer } from '@bytemd/vue-next'
 import 'juejin-markdown-themes/dist/juejin.min.css'
-const emit = defineEmits(['cagEditorData'])
+import 'highlight.js/styles/default.css'
+
 // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 const props = defineProps({
   content: {
@@ -31,9 +32,11 @@ const plugins = ref([
   frontmatter(),
   breaks(),
   footnotes(),
-  mediumZoom()
+  mediumZoom(),
 ])
 const mdContent = ref('')
+const emit = defineEmits(['cagEditorData'])
+
 const handleChange = (v: string): void => {
   mdContent.value = v
   if (mdContent.value !== '' && mdContent.value !== props.content) {
@@ -49,7 +52,13 @@ onMounted(() => {
 })
 </script>
 <template>
-  <Editor class="mdEditor" :locale="zhHans" :value="mdContent" :plugins="plugins" @change="handleChange" />
+  <Editor
+    class="mdEditor"
+    :locale="zhHans"
+    :value="mdContent"
+    :plugins="plugins"
+    @change="handleChange"
+  />
 </template>
 
 <style lang="less" scoped>

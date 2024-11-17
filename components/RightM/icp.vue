@@ -3,12 +3,12 @@
     <div id="icp">
       <p>
         <img
-          src="https://jihau.top/img/logo.png"
+          :src="reqConfig.LogoPic"
           alt="站点logo"
           width="30"
           height="25"
         />
-        ICP备案号:<a href="https://beian.miit.gov.cn">桂ICP备123456</a>
+        ICP备案号:<a href="https://beian.miit.gov.cn">{{reqConfig.icpNumber}}</a>
       </p>
       <p class="icp_alt">
         Power By <a href="http://github.com/bigjihua">BigJiHua</a> | © 2021

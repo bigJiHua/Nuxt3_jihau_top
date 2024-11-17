@@ -22,7 +22,7 @@ export default defineNuxtConfig({
       }
     ],
     '@element-plus/nuxt',
-    '@vant/nuxt',
+    '@vant/nuxt'
   ],
   experimental: {
     reactivityTransform: true,
@@ -30,9 +30,9 @@ export default defineNuxtConfig({
   },
   css: [
     '@/assets/css/index.css',
-    '@/assets/css/typeface.css',
+    // '@/assets/css/typeface.css',
     'element-plus/dist/index.css',
-    'highlight.js/styles/monokai-sublime.css',
+    // 'highlight.js/styles/monokai-sublime.css',
     'bytemd/dist/index.css'
   ],
   app: {
@@ -43,7 +43,7 @@ export default defineNuxtConfig({
       link: [
         { rel: 'shortcut icon', type: 'image/x-icon', href: '/favicon.ico' }
       ],
-      script: [{ src: '/ckeditor/ckeditor.js' }],
+      // script: [{ src: '' }],
       meta: [
         {
           name: 'keywords',

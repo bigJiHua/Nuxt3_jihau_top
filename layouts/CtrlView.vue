@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const isSHow = ref(false)
+
 onMounted(() => {
   if (window.innerWidth > 756) {
     isSHow.value = true
@@ -22,7 +23,7 @@ onMounted(() => {
           <Header></Header>
         </el-header>
         <el-container class="CtrlContent">
-          <el-aside class="menu" width="200px" v-if="isSHow">
+          <el-aside class="menu" v-if="isSHow">
             <CtrlPanelAside></CtrlPanelAside>
           </el-aside>
           <el-main class="main">
@@ -49,8 +50,9 @@ onMounted(() => {
   overflow: hidden;
 }
 .menu {
-  width: 200px;
   height: calc(100vh - 60px);
+  width: auto;
+  background-color: #ffffff;
 }
 .CtrlContent {
   width: 100vw;

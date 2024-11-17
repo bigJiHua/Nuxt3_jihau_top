@@ -31,10 +31,10 @@ onMounted(() => {
     <client-only>
       <el-menu class="el-menu-demo menu-container" mode="horizontal">
         <el-menu-item class="HeaderLeft">
-          <h1 class="HeaderTitle coker">
+          <h1 class="HeaderTitle ">
             <a href="/">JiHua的web和js开发数据</a>
           </h1>
-          <img src="https://jihau.top/img/logo.png" alt="Logo" class="logo" />
+          <img :src="reqConfig.LogoPic" alt="Logo" class="logo" />
         </el-menu-item>
         <el-menu-item v-for="(item, index) in MenuItem" :key="index">
           <NuxtLink :to="item.path" class="text-x2">{{ item.text }}</NuxtLink>

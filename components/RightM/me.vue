@@ -3,16 +3,16 @@
     <div class="phone_Viewset">
       <div class="author_logobox">
         <a href="http://me.jihau.top">
-          <img src="https://www.jihau.top/img/logo.png" class="author_logo" alt="logo" />
+          <img :src="reqConfig.LogoPic" class="author_logo" alt="logo" />
         </a>
       </div>
-      <div class="author_name coker ">
+      <div class="author_name  ">
         <a href="http://me.jihau.top">JiHua</a>
       </div>
     </div>
     <div class="introduce_doc" id="introduce_doc">
       <p>
-        Hi! 我是此网站的站长: <a href="http://me.jihau.top" class="coker name-pink">JiHua</a>，很高兴认识你!
+        Hi! 我是此网站的站长: <a href="http://me.jihau.top" class=" name-pink">JiHua</a>，很高兴认识你!
         也很荣幸您能访问我的网站，目前网站正在陆续搭建中，更多新功能即将上线！
       </p>
       <p>站点将陆续完成主页、分页及内容界面搭建，敬请期待！</p>

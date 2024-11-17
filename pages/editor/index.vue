@@ -43,6 +43,23 @@ const isTrue = ref(false)
 const isAutoSafe = ref(false) // 自动保存
 const isMd = ref(false) // 切换编辑器
 const showPanel = ref(false) // 面板开关
+// 当前选中的主题
+const selectedTheme = ref('simplicity-green')
+const selectedCodeTheme = ref('default')
+useHead({
+  link: [
+    {
+      rel: 'stylesheet',
+      href: '/css/file/simplicity-green.min.css',
+      id: 'dynamic-theme',
+    },
+    {
+      rel: 'stylesheet',
+      href: '/css/code/styles/default.css',
+      id: 'dynamic-code',
+    },
+  ],
+})
 
 // 同步子组件对服务组件的数据
 const cagEditorData = (cagData: string): void => {
@@ -97,6 +114,8 @@ const PostNewArticle = async (isSet?: boolean): Promise<void> => {
     if (isMd.value) {
       editorData.value.content = JSON.stringify({
         data: editorData.value.content,
+        theme: selectedTheme.value,
+        codeTheme: selectedCodeTheme.value
       })
     }
     if (isSet) editorData.value.state = '2'
@@ -150,6 +169,137 @@ setInterval(() => {
   }
 }, 2500)
 
+// 样式名称数组
+const themes = [
+  'simplicity-green',
+  'arknights',
+  'awesome-green',
+  'channing-cyan',
+  'Chinese-red',
+  'condensed-night-purple',
+  'cyanosis',
+  'devui-blue',
+  'fancy',
+  'geek-black',
+  'github',
+  'greenwillow',
+  'healer-readable',
+  'hydrogen',
+  'juejin',
+  'jzman',
+  'mk-cute',
+  'nico',
+  'orange',
+  'qklhk-chocolate',
+  'scrolls-light',
+  'serene-rose',
+  'smartblue',
+  'v-green',
+  'vue-pro',
+  'vuepress',
+  'z-blue',
+]
+const codeTheme = [
+  'a11y-dark',
+  'a11y-light',
+  'agate',
+  'an-old-hope',
+  'androidstudio',
+  'arduino-light',
+  'arta',
+  'ascetic',
+  'atom-one-dark-reasonable',
+  'atom-one-dark',
+  'atom-one-light',
+  'brown-paper',
+  'codepen-embed',
+  'color-brewer',
+  'dark',
+  'default',
+  'devibeans',
+  'docco',
+  'far',
+  'felipec',
+  'foundation',
+  'github-dark-dimmed',
+  'github-dark',
+  'github',
+  'gml',
+  'googlecode',
+  'gradient-dark',
+  'gradient-light',
+  'grayscale',
+  'hybrid',
+  'idea',
+  'intellij-light',
+  'ir-black',
+  'isbl-editor-dark',
+  'isbl-editor-light',
+  'kimbie-dark',
+  'kimbie-light',
+  'lightfair',
+  'lioshi',
+  'magula',
+  'mono-blue',
+  'monokai-sublime',
+  'monokai',
+  'night-owl',
+  'nnfx-dark',
+  'nnfx-light',
+  'nord',
+  'obsidian',
+  'paraiso-dark',
+  'paraiso-light',
+  'pojoaque',
+  'purebasic',
+  'qtcreator-dark',
+  'qtcreator-light',
+  'rainbow',
+  'routeros',
+  'school-book',
+  'shades-of-purple',
+  'srcery',
+  'stackoverflow-dark',
+  'stackoverflow-light',
+  'sunburst',
+  'tokyo-night-dark',
+  'tokyo-night-light',
+  'tomorrow-night-blue',
+  'tomorrow-night-bright',
+  'vs',
+  'vs2015',
+  'xcode',
+  'xt256',
+]
+// 动态创建/更新 link 标签来加载 CSS 文件
+// 默认type为txt则文档主题样式 如果不是则加载 Code高亮样式
+const loadTheme = (theme: string, type: string = 'css'): void => {
+  if (theme === '' || (theme === undefined && type === 'css'))
+    theme = 'simplicity-green'
+  const label = type === 'css' ? 'dynamic-theme' : 'dynamic-code'
+  let link = document.getElementById(`${label}`) as HTMLLinkElement | null
+  if (!link) {
+    // 创建新的 link 标签
+    link = document.createElement('link')
+    link.id = label
+    link.rel = 'stylesheet'
+    document.head.appendChild(link)
+  }
+  // 设置 link 的 href 指向新的 CSS 文件
+  link.href =
+    type === 'css'
+      ? `/css/file/${theme}.min.css`
+      : `/css/code/styles/${theme}.css`
+  // 保存到 localStorage
+  localStorage.removeItem('theme')
+}
+// 切换主题时调用
+const onThemeChange = (theme: string, type: string = 'css'): void => {
+  if (type === 'css') selectedTheme.value = theme
+  else selectedCodeTheme.value = theme
+  loadTheme(theme, type)
+}
+
 onMounted(async () => {
   if (process.client) {
     // 监测本地是否有数据
@@ -180,46 +330,69 @@ onMounted(async () => {
 <template>
   <div class="postArticleArea">
     <div class="HeaderBox">
-      <div class="itemBox">
-        <el-button type="danger" plain @click="deleteEditor">删除</el-button>
-        <el-button type="success" plain @click="PostNewArticle(true)"
-          >存草稿</el-button
-        >
-        <el-button
-          type="primary"
-          plain
-          v-if="!showPanel"
-          @click="showPanel = true"
-          >展开面板</el-button
-        >
-        <el-button type="primary" plain v-else @click="showPanel = false"
-          >关闭面板</el-button
-        >
-        <div class="phone-none">
-          备份保存到本地：<el-switch
-            v-model="isAutoSafe"
-            class="ml-2"
-            style="
-              --el-switch-on-color: #13ce66;
-              --el-switch-off-color: #ff4949;
-            "
-          />
+      <el-button type="danger" plain @click="deleteEditor">删除</el-button>
+      <el-button type="success" plain @click="PostNewArticle(true)"
+        >存草稿</el-button
+      >
+      <el-button
+        type="primary"
+        plain
+        v-if="!showPanel"
+        @click="showPanel = true"
+        >展开面板</el-button
+      >
+      <el-button type="primary" plain v-else @click="showPanel = false"
+        >关闭面板</el-button
+      >
+      <div class="phone-none">
+        备份保存到本地：<el-switch
+          v-model="isAutoSafe"
+          class="ml-2"
+          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+        />
+      </div>
+      <div class="window-none phone-item1">
+        自动存草稿：<el-switch
+          v-model="isAutoSafe"
+          class="ml-2"
+          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+        />
+      </div>
+      <el-button type="success" :icon="Check" circle v-show="isTrue" />
+      <!-- Select框切换主题 -->
+      <div class="SelectThemeBox" v-if="isMd">
+        <div>
+          <p class="title">主题</p>
+          <el-select
+            v-model="selectedTheme"
+            placeholder="选择样式"
+            @change="onThemeChange"
+          >
+            <el-option
+              v-for="theme in themes"
+              :key="theme"
+              :label="theme"
+              :value="theme"
+            />
+          </el-select>
+        </div>
+        <div>
+          <p class="title">Code样式</p>
+          <el-select
+            v-model="selectedCodeTheme"
+            placeholder="选择样式"
+            @change="onThemeChange(selectedCodeTheme, 'code')"
+          >
+            <el-option
+              v-for="theme in codeTheme"
+              :key="theme"
+              :label="theme"
+              :value="theme"
+            />
+          </el-select>
         </div>
       </div>
-      <div class="postBtn">
-        <div class="window-none">
-          自动存草稿：<el-switch
-            v-model="isAutoSafe"
-            class="ml-2"
-            style="
-              --el-switch-on-color: #13ce66;
-              --el-switch-off-color: #ff4949;
-            "
-          />
-        </div>
-        <el-button type="success" :icon="Check" circle v-show="isTrue" />
-        <el-button type="primary" @click="PostNewArticle()">发布</el-button>
-      </div>
+      <el-button type="primary" @click="PostNewArticle()">发布</el-button>
     </div>
     <div class="editor-container">
       <div class="ArticleDataPanel" v-show="showPanel">
@@ -361,6 +534,34 @@ onMounted(async () => {
   }
 }
 
+.SelectThemeBox {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  > div {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    margin-right: 10px;
+  }
+  > div > p {
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 1px 15px;
+    background-color: #ecf5ff;
+    border: 1px solid #a0cfff;
+    color: #409eff;
+    text-align: center;
+  }
+  > div > .el-select {
+    width: 10vw;
+  }
+}
+
 @media screen and(max-width: 755px) {
   .ArticleDataPanel {
     width: 95vw;
@@ -375,6 +576,9 @@ onMounted(async () => {
   .HeaderBox {
     display: block;
     padding: 0;
+    width: 100vw;
+    box-sizing: content-box;
+    position: relative;
 
     .postBtn {
       display: flex;
@@ -386,6 +590,29 @@ onMounted(async () => {
         float: none;
       }
     }
+
+    > :deep(.el-button):last-child {
+      float: right;
+      margin: 10px;
+      width: 98%;
+    }
   }
+  .phone-item1 {
+    position: absolute;
+    right: 15px;
+    top: 0;
+  }
+  .SelectThemeBox {
+    margin: 10px 0 0 0;
+    justify-content: space-between;
+    padding: 0 5px;
+    > div > .el-select {
+      width: 25vw;
+    }
+  }
+}
+
+:deep(.el-form-item__label) {
+  font-size: 0.75rem;
 }
 </style>

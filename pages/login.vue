@@ -11,18 +11,18 @@ const show = ref(false)
 const rules: any = ref({
   username: {
     rule: /^(?=(.*[a-zA-Z].*))(?=(.*\d.*))[\w]{5,12}$|^(?=(.*[a-zA-Z].*))(?=(.*_.*))[\w]{5,12}$|^(?=(.*\d.*))(?=(.*_.*))[\w]{5,12}$|^(?=.*[a-zA-Z\d_].*[a-zA-Z\d_])[\w]{5,12}$/,
-    msg: '用户名不能为空!且长度为5-12位'
+    msg: '用户名不能为空!且长度为5-12位',
   },
   password: {
     rule: /^[^\u4e00-\u9fa5]{6,15}$/,
-    msg: '密码不能为空!且长度为6-12位'
-  }
+    msg: '密码不能为空!且长度为6-12位',
+  },
 })
 const register = () => {
   if (localStorage.getItem('token')) {
     ElMessage({
       message: '已经登录啦！请勿重复登录',
-      type: 'warning'
+      type: 'warning',
     })
     setTimeout(() => {
       router.push('/Users')
@@ -36,7 +36,7 @@ const validata = (key: string) => {
   if (!rules.value[key].rule.test([key])) {
     ElMessage({
       message: rules.value[key].msg,
-      type: 'error'
+      type: 'error',
     })
     bool = false
     return bool
@@ -49,7 +49,7 @@ const login = async () => {
   if (localStorage.getItem('token') != null) {
     ElMessage({
       message: '已经登录啦！请勿重复登录',
-      type: 'warning'
+      type: 'warning',
     })
     router.push('/Users')
     return
@@ -84,43 +84,52 @@ useHead({
   meta: [
     {
       name: 'keywords',
-      content: '登录、Login、JiHua、jihau.top、登录页面'
+      content: '登录、Login、JiHua、jihau.top、登录页面',
     },
     {
       name: 'description',
-      content: '这是jihau_top网站的登录页面，欢迎您访问此网站！'
-    }
-  ]
+      content: '这是jihau_top网站的登录页面，欢迎您访问此网站！',
+    },
+  ],
 })
 </script>
 
 <template>
   <div class="container">
     <div class="login_conten_box">
-      <img slt="登录" class="login_img" src="https://jihau.top/api/public/uploads/undraw_Login_re_4vu2.png" />
+      <img
+        slt="登录"
+        class="login_img"
+        :src="reqConfig.LoginPic"
+      />
       <div class="user_input_eara">
         <h2>登录 <small>Login</small></h2>
         <el-form :label-position="'left'" label-width="100px">
           <el-form-item label="用户名">
-            <el-input v-model="username" placeholder="请输入用户名"/>
+            <el-input v-model="username" placeholder="请输入用户名" />
           </el-form-item>
           <el-form-item label="密码">
-            <el-input v-model="password" type="password" placeholder="请输入密码" show-password />
+            <el-input
+              v-model="password"
+              type="password"
+              placeholder="请输入密码"
+              show-password
+            />
           </el-form-item>
         </el-form>
         <div class="btnmenu">
           <el-button type="primary" plain @click="register">注册</el-button>
-          <el-button type="primary" plain @click="login" :loading="loading">登录</el-button>
+          <el-button type="primary" plain @click="login" :loading="loading"
+            >登录</el-button
+          >
         </div>
       </div>
     </div>
   </div>
 </template>
 
-
 <style scoped lang="less">
 @media only screen and (min-width: 755px) {
-
   .container {
     width: 100vw;
     height: calc(100vh - 60px);
@@ -153,7 +162,7 @@ useHead({
     padding: 20px 25px;
   }
 
-  .user_input_eara>h2 {
+  .user_input_eara > h2 {
     margin-bottom: 15px;
     font-weight: bolder;
   }
@@ -166,7 +175,7 @@ useHead({
     margin: 5px 0 20px 0;
   }
 
-  .user_input_eara>form>[name='button'] {
+  .user_input_eara > form > [name='button'] {
     float: right;
   }
 }
@@ -203,7 +212,7 @@ useHead({
     padding: 20px 25px;
   }
 
-  .user_input_eara>h2 {
+  .user_input_eara > h2 {
     margin-bottom: 15px;
     font-weight: bolder;
   }

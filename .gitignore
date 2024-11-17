@@ -26,3 +26,5 @@ logs
 assets/font
 public/ckeditor
 public/html
+/public/css/code/
+/public/css/file/

@@ -68,14 +68,14 @@ useHead({
               <img :src="item.set_difault" class="author_logo" alt="logo" />
             </a>
           </div>
-          <div class="author_name coker">
+          <div class="author_name ">
             <a :href="item.set_url">{{ item.set_title }}</a>
           </div>
         </div>
         <div class="introduce_doc" id="introduce_doc">
           <div class="priceArea" v-if="+item.set_difault01">
             <p class="rmbicon">好朋友{{ item.set_title }} 支持了 :</p>
-            <span class="price">{{ item.set_difault01 }}</span>
+            <span class="price">￥{{ item.set_difault01 }}</span>
           </div>
           <div class="priceArea" v-else>
             <p>我们是好朋友嗷！</p>
@@ -86,7 +86,7 @@ useHead({
             赞助时间<br />{{ item.set_time }}
           </p>
           <p class="settiem" v-else>认识时间<br />{{ item.set_time }}</p>
-          <a :href="item.set_url" class="LinkBtn"><el-button>访问 {{ item.set_title }} 的博客</el-button></a>
+          <a :href="item.set_url" target="_blank" class="LinkBtn"><el-button>访问 {{ item.set_title }} 的博客</el-button></a>
         </div>
       </div>
     </div>
@@ -131,12 +131,6 @@ useHead({
 
 .author_logoset {
   overflow: hidden;
-}
-
-.rmbicon::after {
-  content: '￥';
-  font-size: 1.2rem;
-  color: rgb(221, 78, 98);
 }
 
 .price {
