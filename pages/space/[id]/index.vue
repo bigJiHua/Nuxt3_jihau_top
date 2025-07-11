@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 definePageMeta({
-  layout: 'space-view',
+  layout: 'space-view'
 })
 const router = useRouter()
 onMounted(() => {

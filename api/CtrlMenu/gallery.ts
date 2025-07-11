@@ -1,13 +1,16 @@
 import request from '../request'
 // 获取图片
-const getImage = function (data: {
+const getImage = (data: {
   picusername: string,
   Num: string | number
-}) {
-  return request.post('/article/img', data)
+}): any => {
+  const params = new URLSearchParams()
+  params.append('picusername', data.picusername)
+  params.append('Num', data.Num)
+  return request.post('/article/img', params)
 }
 // 上传图片
-const upImage = function (file: File) {
+const upImage = (file: File): any => {
   const formData = new FormData()
   formData.append('file', file, file.name)
   return request.post('/article/upimg/', formData, {
@@ -17,7 +20,7 @@ const upImage = function (file: File) {
   })
 }
 // 删除图片
-const delImage = function (id: string) {
+const delImage = (id: string): any => {
   const params = new URLSearchParams()
   params.append('id', id)
   return request.post('/article/imgdel', params)

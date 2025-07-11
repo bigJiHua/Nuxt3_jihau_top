@@ -6,6 +6,7 @@ import {
   Picture as IconPicture,
 } from '@element-plus/icons-vue'
 import setdata from '@/api/CtrlMenu/gallery'
+
 definePageMeta({
   layout: 'ctrl-view',
 })
@@ -15,10 +16,12 @@ const AllNum: Ref<number> = ref(0)
 const isUp = ref(false)
 const UploadImg: any = ref(null)
 const localNum: Ref<number> = ref(0)
+const uploadProgress = ref(0)
+const isUploading = ref(false)
+
 // 获取图片分页
 const getGallery = async (num: number): Promise<void> => {
   imgGallery.value = []
-  if (num === 0) num = 0
   const usdata = {
     picusername: localStorage.getItem('Username') as string,
     Num: num,
@@ -27,10 +30,12 @@ const getGallery = async (num: number): Promise<void> => {
   imgGallery.value = res.data
   AllNum.value = res.Num
 }
+
 // 复制Url
 const copyUrl = (url: string): void => {
-  $copyUrl(url)
+  void $copyUrl(url)
 }
+
 // 删除照片
 const deleteImg = async (id: string) => {
   if (await WarningTips('你确定要删除这张照片码？')) {
@@ -40,36 +45,50 @@ const deleteImg = async (id: string) => {
     }, 1000)
   }
 }
+
 // 上传图片
 const upImg = async (e: any): Promise<any> => {
   UploadImg.value.clearFiles()
   let uploadImgData = null
   let qNum = 0
+  isUploading.value = true
+  uploadProgress.value = 0
+
   if (e.file.size > 1024 * 1024 * 30) {
+    isUploading.value = false
     return ElMessage({
       message: '文件超过最大值',
-      type: 'error'
+      type: 'error',
     })
   }
-  if (e.file.size > 1024 * 1024) {
-    qNum = 0.4
-  } else {
-    qNum = 0.6
-  }
+  qNum = e.file.size > 1024 * 1024 ? 0.4 : 0.6
   $setBase64Avator(e.file, false, qNum)
     .then(async (res: any) => {
       uploadImgData = res
+
+      const fakeProgress = setInterval(() => {
+        if (uploadProgress.value < 90) {
+          uploadProgress.value += 10
+        }
+      }, 150)
+
       if (uploadImgData !== null) {
         const { data: res } = await setdata.upImage(uploadImgData)
+        clearInterval(fakeProgress)
+        uploadProgress.value = 100
+
         if (res.status === 200) {
-          UploadImg.value.clearFiles()
           setTimeout(() => {
+            UploadImg.value.clearFiles()
             void getGallery(0)
-          }, 800)
+            isUploading.value = false
+            uploadProgress.value = 0
+          }, 500)
         }
       }
     })
     .catch((err) => {
+      isUploading.value = false
       ElNotification({
         title: '错误',
         message: err,
@@ -77,26 +96,31 @@ const upImg = async (e: any): Promise<any> => {
       })
     })
 }
-// 上一页
-const prevNum = (num: number) => {
-  localNum.value = (num - 1) * 20
-  void getGallery((num - 1) * 20)
+
+// 分页相关
+const pageChanged = (page: number) => {
+  localNum.value = (page - 1) * 20
+  void getGallery(localNum.value)
 }
-// 数字
-const pagerNum = (num: number) => {
-  localNum.value = (num - 1) * 20
-  void getGallery((num - 1) * 20)
-}
-// 下一页
-const nextNum = (num: number) => {
-  localNum.value = (num - 1) * 20
-  void getGallery((num - 1) * 20)
-}
+
+useHead({
+  title: '我的图库',
+  meta: [
+    {
+      name: 'keywords',
+      content: 'JiHua,jihua,JiHua的Web和JS开发数据,个人网站',
+    },
+    {
+      name: 'description',
+      content: '一个神奇的个人网站，展示 Web/JS 开发、图像处理等内容。',
+    },
+  ],
+})
+
 onMounted(() => {
   void getGallery(0)
 })
 </script>
-
 <template>
   <div class="MyGalleryList">
     <div class="GalleryListArea">
@@ -109,29 +133,35 @@ onMounted(() => {
             :multiple="false"
             :limit="1"
             :http-request="upImg"
-            accept="image"
+            accept="image/*"
           >
             <el-icon class="el-icon--upload">
               <Plus />
             </el-icon>
             <div class="el-upload__text">
-              拖拽文件或<em>点击上传</em>
-              jpg/png 格式 不要超过5M
+              拖拽文件或<em>点击上传</em> jpg/png 格式 不超过 5M
             </div>
+            <!-- 上传进度条 -->
+            <el-progress
+              v-if="isUploading"
+              :percentage="uploadProgress"
+              :text-inside="true"
+              :stroke-width="16"
+              color="#409eff"
+              status="success"
+              style="margin-top: 10px"
+            />
           </el-upload>
         </div>
       </div>
+
       <div class="galleryItem" v-for="(item, index) in imgGallery" :key="index">
-        <!-- <img class="galleryImg" :src="item.userimage" alt="用户图片"> -->
         <el-image
           class="galleryImg"
           :src="item.userimage"
-          :zoom-rate="1.2"
-          :max-scale="7"
-          :min-scale="0.2"
-          :initial-index="4"
           fit="cover"
-          :loading="'lazy'"
+          lazy
+          style="width: 100%; height: 100%"
         >
           <template #error>
             <div class="image-slot">
@@ -140,25 +170,25 @@ onMounted(() => {
             </div>
           </template>
         </el-image>
+
         <div class="shadow">
           <el-icon @click="deleteImg(item.id)">
             <Delete />
           </el-icon>
-          <el-icon>
-            <DocumentCopy @click="copyUrl(item.userimage)" />
+          <el-icon @click="copyUrl(item.userimage)">
+            <DocumentCopy />
           </el-icon>
         </div>
       </div>
     </div>
+
     <div class="pagBtnArea">
       <el-pagination
         background
         layout="prev, pager, next"
         :total="AllNum"
         :default-page-size="20"
-        @current-change="prevNum"
-        @prev-click="pagerNum"
-        @next-click="nextNum"
+        @current-change="pageChanged"
       />
     </div>
   </div>
@@ -166,7 +196,6 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .MyGalleryList {
-  width: calc(100vw - 200px);
   height: calc(100vh - 60px);
   background-color: #f5f5f5;
 }
@@ -283,7 +312,6 @@ onMounted(() => {
   height: 100%;
   background: var(--el-fill-color-light);
   color: var(--el-text-color-secondary);
-  font-size: 30px;
   font-size: 1.8rem;
 }
 </style>

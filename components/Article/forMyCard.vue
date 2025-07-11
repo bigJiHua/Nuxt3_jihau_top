@@ -4,8 +4,8 @@ import { Edit } from '@element-plus/icons-vue'
 const props = defineProps({
   data: {
     type: Object,
-    default: () => ({}),
-  },
+    default: () => ({})
+  }
 })
 const lable = ref([])
 const keyword = ref([])

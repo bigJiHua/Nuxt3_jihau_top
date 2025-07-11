@@ -4,46 +4,51 @@ import { useUserDataStore } from '@/stores/useUserData'
 import Login from '@/api/Page'
 const store = useUserDataStore()
 const router = useRouter()
-const username = ref('')
-const password = ref('')
 const loading = ref(false)
 const show = ref(false)
-const rules: any = ref({
-  username: {
-    rule: /^(?=(.*[a-zA-Z].*))(?=(.*\d.*))[\w]{5,12}$|^(?=(.*[a-zA-Z].*))(?=(.*_.*))[\w]{5,12}$|^(?=(.*\d.*))(?=(.*_.*))[\w]{5,12}$|^(?=.*[a-zA-Z\d_].*[a-zA-Z\d_])[\w]{5,12}$/,
-    msg: '用户名不能为空!且长度为5-12位',
-  },
-  password: {
-    rule: /^[^\u4e00-\u9fa5]{6,15}$/,
-    msg: '密码不能为空!且长度为6-12位',
-  },
+const loginForm = ref({
+  username: '',
+  password: '',
 })
-const register = () => {
+const loginFormRef = ref()
+// 定义表单验证规则
+const rules = reactive({
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    {
+      pattern:
+        /^(?=(.*[a-zA-Z].*))(?=(.*\d.*))[\w]{5,12}$|^(?=(.*[a-zA-Z].*))(?=(.*_.*))[\w]{5,12}$|^(?=(.*\d.*))(?=(.*_.*))[\w]{5,12}$|^(?=.*[a-zA-Z\d_].*[a-zA-Z\d_])[\w]{5,12}$/,
+      message: '用户名不能为空!且长度为5-12位',
+      trigger: 'blur',
+    },
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    {
+      pattern: /^[^\u4e00-\u9fa5]{6,15}$/,
+      message: '密码不能为空，且长度为6-15位，不能包含中文',
+      trigger: 'blur',
+    },
+  ],
+})
+
+const register = (): any => {
   if (localStorage.getItem('token')) {
     ElMessage({
       message: '已经登录啦！请勿重复登录',
       type: 'warning',
     })
     setTimeout(() => {
-      router.push('/Users')
+      void router.push('/Users')
     }, 1000)
   } else {
-    router.push('/register')
+    void router.push('/register')
   }
 }
-const validata = (key: string) => {
-  let bool = true
-  if (!rules.value[key].rule.test([key])) {
-    ElMessage({
-      message: rules.value[key].msg,
-      type: 'error',
-    })
-    bool = false
-    return bool
-  }
-  return bool
-}
-const login = async () => {
+// 添加一个路由方法
+const isArt = ref(router.currentRoute.value.params.id === 'art')
+// 登录方法
+const login = async (): any => {
   loading.value = true
   // 验证是否已经拥有token 输入的用户名是否合法 输入的密码是否合法
   if (localStorage.getItem('token') != null) {
@@ -51,13 +56,18 @@ const login = async () => {
       message: '已经登录啦！请勿重复登录',
       type: 'warning',
     })
-    router.push('/Users')
+    void router.push('/Users')
     return
   }
+  if (!loginFormRef.value) return
   // 验证
-  if (validata('username') && validata('password')) {
+  try {
+    await loginFormRef.value?.validate()
     // 发起请求
-    const { data: res } = await Login.LoginMenu(username.value, password.value)
+    const { data: res } = await Login.LoginMenu(
+      loginForm.value.username,
+      loginForm.value.password
+    )
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (res.token) {
       // 判断返回状态码是否成功
@@ -69,16 +79,22 @@ const login = async () => {
         show.value = false
         loading.value = false
         localStorage.removeItem('VerCode')
-        void router.push('/Users')
+        if (isArt.value) {
+          void router.back()
+        } else {
+          void router.push('/Users')
+        }
       }, 1500)
     } else {
       setTimeout(() => {
         loading.value = false
       }, 2000)
     }
+  } catch (err) {
+    // 表单验证未通过
+    loading.value = false // 解除加载状态
   }
 }
-
 useHead({
   title: '登录--欢迎登录jihau.top',
   meta: [
@@ -97,29 +113,44 @@ useHead({
 <template>
   <div class="container">
     <div class="login_conten_box">
-      <img
-        slt="登录"
-        class="login_img"
-        :src="reqConfig.LoginPic"
-      />
+      <img slt="登录" class="login_img" :src="reqConfig.LoginPic" />
       <div class="user_input_eara">
         <h2>登录 <small>Login</small></h2>
-        <el-form :label-position="'left'" label-width="100px">
-          <el-form-item label="用户名">
-            <el-input v-model="username" placeholder="请输入用户名" />
+        <el-form
+          :label-position="'top'"
+          label-width="100px"
+          :model="loginForm"
+          :rules="rules"
+          ref="loginFormRef"
+        >
+          <el-form-item label="用户名" prop="username">
+            <el-input v-model="loginForm.username" placeholder="请输入用户名" minlength="5" maxlength="15" />
           </el-form-item>
-          <el-form-item label="密码">
+          <el-form-item label="密码" prop="password">
             <el-input
-              v-model="password"
+              v-model="loginForm.password"
               type="password"
               placeholder="请输入密码"
               show-password
+              minlength="6"
+              maxlength="15"
             />
           </el-form-item>
         </el-form>
         <div class="btnmenu">
-          <el-button type="primary" plain @click="register">注册</el-button>
-          <el-button type="primary" plain @click="login" :loading="loading"
+          <el-button
+            type="primary"
+            class="divbtn btn-register"
+            plain
+            @click="register"
+            >注册</el-button
+          >
+          <el-button
+            type="primary"
+            class="divbtn btn-register"
+            plain
+            @click="login"
+            :loading="loading"
             >登录</el-button
           >
         </div>
@@ -138,7 +169,8 @@ useHead({
 
   .login_conten_box {
     background-color: rgba(244, 244, 244, 0.4);
-    width: 50vw;
+    width: 65%;
+    height: 50%;
     border-radius: 12px;
     box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
     display: flex;
@@ -154,6 +186,7 @@ useHead({
 
   .login_img {
     width: 50%;
+    height: 100%;
     border-radius: 12px 0 0 12px;
   }
 
@@ -232,9 +265,50 @@ useHead({
   justify-content: space-between;
 }
 
-.res-btn {
-  padding: 10px 15px;
-  border: 0;
-  border-radius: 8px;
+// DIV BTN
+.divbtn {
+  width: 120px;
+  padding: 20px 0;
+  background-color: #fff;
+  border: 1px solid #5291d1;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.btn-register {
+  background: linear-gradient(135deg, #9dcdf7 0%, #4c93ff 100%);
+  color: white;
+  box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+}
+
+.btn-register:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(67, 97, 238, 0.4);
+}
+
+.btn-register:active {
+  transform: translateY(0);
+}
+
+.btn-register.loading {
+  position: relative;
+  color: transparent;
+}
+
+.btn-register.loading::after {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+// DIV INPUT
+:deep(.el-input__wrapper) {
+  border-radius: 50px;
+  padding: 10px;
 }
 </style>

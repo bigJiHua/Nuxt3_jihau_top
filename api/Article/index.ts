@@ -1,6 +1,6 @@
 import request from '../request'
 // 首页获取文章
-const getArticleList = function (page: number | string) {
+const getArticleList = (page: number | string): any => {
   return request.get('/data/list?page=' + page)
 }
 
@@ -9,7 +9,7 @@ const getArchive = (type?: string, key?: string): any => {
   return request.get('/data/archive?type=' + type + '&key=' + key)
 }
 // 通知列表
-const getNotifyList = function (Num: number) {
+const getNotifyList = (Num: number): any => {
   const user = localStorage.getItem('Username')
   if (user) {
     return request.get('/data/notify?user=' + user + '&Num=' + Num)
@@ -17,21 +17,21 @@ const getNotifyList = function (Num: number) {
   return request.get('/data/notify?Num=' + Num)
 }
 // 获取文章内容
-const getArticle = (id: string): Promise<any> => {
+const getArticle = (id: string): any => {
   return request.get('/data/article?id=' + id)
 }
 // 获取文章内容(评论点赞收藏等)
-const getArchives = (id: string): Promise<any> => {
+const getArchives = (id: string): any => {
   return request.get('/data/artdata?id=' + id)
 }
 
 // 获取通知内容
-const getPageData = function (id: string) {
+const getPageData = (id: string): any => {
   const params = new URLSearchParams()
   params.append('id', id)
   const username = localStorage.getItem('Username')
   if (username !== null) {
-    params.append('user', username as string)
+    params.append('user', username)
   }
   return request.get('/data/page/', { params })
 }
@@ -48,7 +48,7 @@ const UpdatedReadNum = async (id: string): Promise<void> => {
 }
 
 // 搜索接口
-const SearchApi = function (key: string, type: string) {
+const SearchApi = (key: string, type: string): any => {
   const params = new URLSearchParams()
   params.append('key', key)
   params.append('type', type)

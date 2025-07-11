@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import getArticleApi from '@/api/Article'
 import UserAction from '@/api/Article/Action'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthorDataStore } from '@/stores/useUserData'
 import {
   Share,
@@ -11,11 +11,15 @@ import {
   Promotion,
 } from '@element-plus/icons-vue'
 const store = useAuthorDataStore()
-const router = useRoute()
+const route = useRoute()
+const router = useRouter()
 const isLogin = ref(false)
-const showLogin = ref(false)
-const goodpage = ref(true)
 const isMd = ref(false)
+const htmlContentRef = ref(null)
+const btntype = ref({
+  goodnum: '',
+  collect: '',
+})
 const Active: any = reactive({
   goodnum: false,
   collect: false,
@@ -34,113 +38,101 @@ const ArticleData: any = reactive({
     pub_date: '',
     read_num: '',
   },
-  goodnum: '',
-  collect: '',
+  goodnum: 0,
+  collect: 0,
   commont: [],
-})
-const Move = reactive({
-  goodnum: false,
-  collect: false,
+  accollect: false,
+  acgoodnum: false,
 })
 const Aurl = `${reqConfig.baseUrl}/data/article/`
 const { data } = await uFetch.useCustomFetch(Aurl, {
   method: 'get',
   params: {
-    id: router.params.id,
+    id: route.params.id,
   },
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-  key: `post-${router.params.id}`,
+  key: `post-${route.params.id}`,
 })
-if (/\bmd[A-Z0-9]+\b/g.test(router.params.id as string)) isMd.value = true
+if (/\bmd[A-Z0-9]+\b/g.test(route.params.id as string)) isMd.value = true
 const res: any = data.value
 ArticleData.article = res.data.article
-goodpage.value = false
 // ArticleData.article.lable = res.data.article.lable.split('、')
+const tagcmp = (item: any): string[] => {
+  if (typeof item !== 'string') {
+    return item
+  } else {
+    return item.split(/[、,，]/)
+  }
+}
+
 // 获取评论等等...
 const getArchives = async (): Promise<void> => {
   const { data: res } = await getArticleApi.getArchives(
-    router.params.id as string
+    route.params.id as string
   )
   ArticleData.goodnum = res.data.goodnum
   ArticleData.collect = res.data.collect
   ArticleData.commont = res.data.comment
-  Move.goodnum = res.data.acgoodnum
-  Move.collect = res.data.accollect
+  ArticleData.accollect = res.data.accollect
+  ArticleData.acgoodnum = res.data.acgoodnum
+  // 判断本人是否点赞
+  btntype.value.goodnum = res.data.acgoodnum ? 'success' : ''
+  btntype.value.collect = res.data.accollect ? 'success' : ''
 }
 
 // 点赞
-const goodnum = async (artid: string): Promise<any> => {
+const goodnum = async (): Promise<any> => {
   if (localStorage.getItem('Username') === null) {
-    ElMessage({
-      message: '登录才能点赞哦！',
-      type: 'warning',
-    })
-    showLogin.value = true
-    localStorage.setItem('met', 'goodnum')
+    if (await WarningTips('登录后才能操作哦！是否跳转登录？')) {
+      return await router.push('/Login/art')
+    } else return
   } else {
-    if (artid === undefined) {
-      ElMessage({
-        message: 'ArticleID 不能为undefined!',
-        type: 'warning',
-      })
-      return false
+    const data = {
+      articleid: route.params.id as string,
+      type: 'goodnum',
+    }
+    await UserAction.UserActive(data).then(() => {
+      ArticleData.acgoodnum = !ArticleData.acgoodnum
+    })
+    if (!ArticleData.acgoodnum) {
+      ArticleData.goodnum -= 1
+      btntype.value.goodnum = ''
     } else {
-      const data = {
-        username: localStorage.getItem('Username'),
-        articleid: artid,
-        type: 'goodnum',
-      }
-      Move.goodnum = !Move.goodnum
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      setTimeout(async (): Promise<void> => {
-        const { data: res } = await UserAction.UserActive(data)
-        if (res.status === 200) {
-          await getArchives()
-        }
-      }, 1500)
+      ArticleData.goodnum += 1
+      btntype.value.goodnum = 'success'
     }
   }
 }
 // 收藏
-const collect = async (artid: string): Promise<void> => {
+const collect = async (): Promise<void> => {
   if (localStorage.getItem('Username') === null) {
-    ElMessage({
-      message: '登录才能点赞收藏哦！',
-      type: 'warning',
-    })
-    showLogin.value = true
-    localStorage.setItem('met', 'collect')
+    if (await WarningTips('登录后才能操作哦！是否跳转登录？')) {
+      return await router.push('/Login/art')
+    } else return
   } else {
-    if (artid === undefined) {
-      ElMessage({
-        message: 'ArticleID是必须的',
-        type: 'warning',
-      })
+    const data = {
+      username: localStorage.getItem('Username'),
+      articleid: route.params.id as string,
+      type: 'collect',
+    }
+    await UserAction.UserActive(data).then(() => {
+      ArticleData.accollect = !ArticleData.accollect
+    })
+    if (!ArticleData.accollect) {
+      ArticleData.collect -= 1
+      btntype.value.collect = ''
     } else {
-      Move.collect = !Move.collect
-      const data = {
-        username: localStorage.getItem('Username'),
-        articleid: artid,
-        type: 'collect',
-      }
-      const { data: res } = await UserAction.UserActive(data)
-      if (res.status === 200) {
-        await getArchives()
-      }
+      ArticleData.collect += 1
+      btntype.value.collect = 'success'
     }
   }
 }
 // 评论
 const commont = async (artid: string): Promise<void> => {
   if (localStorage.getItem('Username') === null) {
-    ElMessage({
-      message: '登录才能评论哦！',
-      type: 'warning',
-    })
-    showLogin.value = true
-    if (Active.comTXT !== '') {
-      localStorage.setItem('commont', Active.comTXT)
-    }
+    if (await WarningTips('登录后才能操作哦！是否跳转登录？')) {
+      return router.push('/Login/art')
+    } else return
   } else {
     if (artid === undefined) {
       ElMessage({
@@ -176,29 +168,12 @@ const commont = async (artid: string): Promise<void> => {
     }
   }
 }
-// 关闭登录页面
-const closePanel = (): void => {
-  showLogin.value = false
-}
+const { $copyUrl } = useNuxtApp()
 // 分享 TODO分享统计事件
 const share = (): void => {
   const copyw = `https://jihau.top/article/${ArticleData.article.article_id}`
-  navigator.clipboard.writeText(copyw).then(
-    () => {
-      ElMessage({
-        message: '复制成功,赶快去分享吧!',
-        type: 'success',
-      })
-    },
-    () => {
-      ElMessage({
-        message: '复制失败,请刷新页面后重试吧',
-        type: 'warning',
-      })
-    }
-  )
+  $copyUrl(copyw)
 }
-// 分享到动态事件
 // TODO 分享到动态
 const shareSay = async (): Promise<void> => {
   ElMessage({
@@ -206,17 +181,40 @@ const shareSay = async (): Promise<void> => {
     type: 'warning',
   })
 }
-onMounted(() => {
-  if (!goodpage.value) {
-    void getArchives()
+// v-html图片点击放大
+const handleImageClick = async (e: MouseEvent): any => {
+  const target = e.target as HTMLElement
+  if (target.tagName === 'IMG') {
+    const src = (target as HTMLImageElement).src
+    try {
+      await ElMessageBox({
+        message: h('img', {
+          src,
+          style:
+            'max-width: 350px; height: 250px;display: block; margin: 0 auto; ',
+        }),
+        showConfirmButton: false,
+        showCancelButton: false,
+        closeOnClickModal: true,
+      })
+    } catch (error) {
+      // 忽略用户取消的错误（特定错误信息为"cancel"）
+      if (error !== 'cancel') {
+        console.error('Unhandled error in ElMessageBox:', error)
+      }
+    }
   }
+}
+
+onMounted(() => {
+  void getArchives()
   setTimeout(() => {
     store.setArticleAuthor(toRaw(ArticleData.article.username))
   }, 800)
   // 5秒后请求增加阅读数
   setTimeout(() => {
-    if (!goodpage.value && router.params.id !== undefined) {
-      void getArticleApi.UpdatedReadNum(router.params.id as string)
+    if (route.params.id !== undefined) {
+      void getArticleApi.UpdatedReadNum(route.params.id as string)
     }
   }, 5000)
 })
@@ -233,163 +231,136 @@ onMounted(() => {
       <Meta name="ogImage" :content="ArticleData.article.cover_img" />
     </Head>
     <div class="leftContent">
-      <div v-if="goodpage" style="text-align: center">
-        <h1>404 NOT FOUNT</h1>
-        <nuxt-link to="/">返回主页</nuxt-link>
-      </div>
-      <div v-else>
-        <div class="tabmenu">
-          <h1>{{ ArticleData.article.title }}</h1>
-          <div class="tabArea">
-            {{ ArticleData.article.username }}
-            <div class="tabItem">
-              <el-icon>
-                <Calendar />
-              </el-icon>
-              {{ ArticleData.article.pub_date }}
-            </div>
-            <div class="tabItem">
-              <el-icon>
-                <View />
-              </el-icon>
-              {{ ArticleData.article.read_num }}
-            </div>
+      <div class="tabmenu">
+        <h1>{{ ArticleData.article.title }}</h1>
+        <div class="tabArea">
+          <nuxt-link
+            :to="'/space/' + ArticleData.article.username"
+            target="_blank"
+            >{{ ArticleData.article.username }}</nuxt-link
+          >
+          <div class="tabItem">
+            <el-icon>
+              <Calendar />
+            </el-icon>
+            {{ ArticleData.article.pub_date }}
+          </div>
+          <div class="tabItem">
+            <el-icon>
+              <View />
+            </el-icon>
+            {{ ArticleData.article.read_num }}
           </div>
         </div>
-        <div class="content" v-if="!isMd">
-          <div v-html="ArticleData.article.content" v-highlight></div>
-        </div>
-        <div class="content" v-else>
-          <CekditorViewsMd
-            :content="ArticleData.article.content"
-          ></CekditorViewsMd>
-        </div>
-        <div class="btn_active">
-          <el-button
-            type="primary"
-            plain
-            class="goodnum"
-            v-if="!Move.goodnum"
-            @click="goodnum(ArticleData.article.article_id)"
-          >
-            <span>点赞</span>
-            <img
-              src="~assets/icon/thumb_up_FILL0_wght400_GRAD0_opsz24.svg"
-              alt="点赞"
-              style="width: 1em; height: 1em; margin-right: 8px"
-            />
-            <span>{{ ArticleData.goodnum }}</span>
+      </div>
+      <!-- html文章 -->
+      <div class="content" ref="htmlContentRef" v-if="!isMd">
+        <div
+          v-html="ArticleData.article.content"
+          v-highlight
+          class="html-content"
+          @click="handleImageClick"
+        ></div>
+      </div>
+      <!-- md文章 -->
+      <div class="content" v-else>
+        <CekditorViewsMd
+          :content="ArticleData.article.content"
+        ></CekditorViewsMd>
+      </div>
+      <!-- 操作区域 -->
+      <div class="btn_active">
+        <el-button plain class="acbtn" @click="goodnum" :type="btntype.goodnum">
+          <van-icon name="good-job-o" />
+          &nbsp;
+          {{ ArticleData.goodnum }}
+        </el-button>
+        <el-button class="acbtn" plain @click="collect" :type="btntype.collect">
+          <van-icon name="star-o" />
+          &nbsp;{{ ArticleData.collect }}
+        </el-button>
+        <!-- 分享 -->
+        <el-dropdown trigger="click">
+          <el-button plain class="acbtn"
+            ><arrow-down />
+            <el-icon class="no-inherit">
+              <Share />
+            </el-icon>
           </el-button>
-          <el-button
-            type="primary"
-            class="goodnum"
-            v-else
-            @click="goodnum(ArticleData.article.article_id)"
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item>
+                <span type="primary" plain class="collect" @click="share"
+                  >分享
+                  <el-icon color="#409EFC" class="no-inherit">
+                    <Share />
+                  </el-icon> </span
+              ></el-dropdown-item>
+              <el-dropdown-item
+                ><span type="primary" plain class="collect" @click="shareSay"
+                  >转发
+                  <el-icon color="#409EFC" class="no-inherit">
+                    <Promotion />
+                  </el-icon> </span
+              ></el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
+      <!-- 标签 -->
+      <div class="tabLable">
+        <span style="font-size: 0.7rem">标签：</span>
+        <el-tag
+          v-for="tag in tagcmp(ArticleData.article.lable)"
+          :key="tag"
+          class="tag"
+          style="margin-right: 10px"
+          ><nuxt-link :to="'/search/' + tag">{{ tag }}</nuxt-link></el-tag
+        >
+      </div>
+      <!-- 评论 -->
+      <client-only>
+        <div class="commentArea">
+          <p>全部评论</p>
+          <div
+            class="comment"
+            v-for="(item, index) in ArticleData.commont"
+            :key="index"
           >
-            <span>已点赞</span>
-          </el-button>
-          <el-button
-            type="primary"
-            plain
-            class="collect"
-            v-if="!Move.collect"
-            @click="collect(ArticleData.article.article_id)"
-          >
-            <span>收藏</span>
-            <img
-              src="~assets/icon/star_FILL0_wght400_GRAD0_opsz24.svg"
-              alt="收藏"
-              style="width: 1em; height: 1em; margin-right: 8px"
-            />
-            <span>{{ ArticleData.collect }}</span>
-          </el-button>
-          <el-button
-            type="primary"
-            class="collect"
-            v-else
-            @click="collect(ArticleData.article.article_id)"
-          >
-            <span>已收藏</span>
-          </el-button>
-          <el-dropdown trigger="click">
-            <el-button type="primary" plain class="collect"
-              ><arrow-down />
-              <el-icon class="no-inherit">
-                <Share />
-              </el-icon>
-            </el-button>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item>
-                  <span type="primary" plain class="collect" @click="share"
-                    >分享
-                    <el-icon color="#409EFC" class="no-inherit">
-                      <Share />
-                    </el-icon> </span
-                ></el-dropdown-item>
-                <el-dropdown-item
-                  ><span type="primary" plain class="collect" @click="shareSay"
-                    >转发
-                    <el-icon color="#409EFC" class="no-inherit">
-                      <Promotion />
-                    </el-icon> </span
-                ></el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </div>
-        <div class="tabLable">
-          <span style="font-size: 0.7rem">标签：</span>
-          <el-tag>{{ArticleData.article.lable}}</el-tag>
-        </div>
-        <client-only>
-          <div class="commentArea">
-            <p>全部评论</p>
-            <div
-              class="comment"
-              v-for="(item, index) in ArticleData.commont"
-              :key="index"
+            <p class="comment_user">
+              <router-link :to="'/space/' + item.username"
+                >{{ item.username }}：</router-link
+              >{{ item.comment }}
+            </p>
+            <p class="comment_time">时间:{{ item.pub_date }}</p>
+          </div>
+          <div class="textarea">
+            <textarea
+              name=""
+              id="comtext"
+              placeholder="友善发言，留下美好瞬间   (最多输入150个字符)"
+              maxlength="150"
+              @keyup.enter="commont(ArticleData.article.article_id)"
+              v-model="Active.comTXT"
+            ></textarea>
+            <el-button
+              type="primary"
+              plain
+              :disabled="isLogin"
+              @click="commont(ArticleData.article.article_id)"
+              >留言</el-button
             >
-              <p class="comment_user">
-                <router-link :to="'/space/' + item.username"
-                  >{{ item.username }}：</router-link
-                >{{ item.comment }}
-              </p>
-              <p class="comment_time">时间:{{ item.pub_date }}</p>
-            </div>
-            <div class="textarea">
-              <textarea
-                name=""
-                id="comtext"
-                placeholder="友善发言，留下美好瞬间   (最多输入150个字符)"
-                maxlength="150"
-                @keyup.enter="commont(ArticleData.article.article_id)"
-                v-model="Active.comTXT"
-              ></textarea>
-              <el-button
-                type="primary"
-                plain
-                :disabled="isLogin"
-                @click="commont(ArticleData.article.article_id)"
-                >留言</el-button
-              >
-            </div>
           </div>
-        </client-only>
-      </div>
+        </div>
+      </client-only>
     </div>
     <div class="ArticleRightPanel">
       <RightMArticle></RightMArticle>
     </div>
-    <client-only>
-      <ArticleLoginBox
-        @closePanel="closePanel"
-        v-if="showLogin"
-      ></ArticleLoginBox
-    ></client-only>
   </div>
 </template>
 
+<style src="@/assets/css/article.css"></style>
 <style lang="less" scoped>
 .article {
   word-wrap: break-word;
@@ -453,6 +424,10 @@ onMounted(() => {
 }
 
 .tabmenu {
+  h1 {
+    font-size: 1.5rem;
+    color: black;
+  }
   .tabArea {
     display: flex;
     align-items: center;
@@ -471,17 +446,6 @@ onMounted(() => {
 
 .lable-tag {
   margin: 5px;
-}
-
-.btn_active {
-  button {
-    margin: 10px;
-  }
-}
-
-.goodnum,
-.collect {
-  letter-spacing: 5px;
 }
 
 .commentArea {
@@ -534,5 +498,13 @@ onMounted(() => {
   > button {
     float: right;
   }
+}
+
+.btn_active {
+  width: 100%;
+  display: flex;
+}
+.acbtn {
+  margin: 10px 20px;
 }
 </style>

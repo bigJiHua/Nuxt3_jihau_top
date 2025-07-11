@@ -1,5 +1,6 @@
 <!-- 搜索功能的展示卡片 -->
 <script setup lang="ts">
+// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 const props = defineProps({
   item: {
     type: Object,
@@ -9,12 +10,23 @@ const props = defineProps({
   },
 })
 const id = ref(
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   props.item.article_id ? props.item.article_id : props.item.notify_id
 )
 const link = ref(
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   props.item.article_id ? `/article/${id.value}  ` : `/Notify/${id.value}`
 )
 const isUser = ref(props.item.user_id ? true : false)
+// 计算标签
+const tagcmp = (item: string): string[] => {
+  if (typeof item !== 'string') {
+    return item
+  } else {
+    return item.split(/[、,，]/)
+  }
+}
+
 onMounted(() => {
   if (/、/.test(props.item.keyword)) {
     props.item.keyword = props.item.keyword.split('、')
@@ -23,7 +35,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="" class="itemarea" v-if="isUser">
+  <div class="itemarea" v-if="isUser">
+    <!-- 用户卡片 -->
     <div class="Usercard">
       <div class="UserData">
         <div class="UserImg">
@@ -36,13 +49,20 @@ onMounted(() => {
         </div>
         <div class="UserContent">
           <p class="username">
-            <nuxt-link :to="'/space/' + item.username">{{
+            <nuxt-link :to="'/space/' + item.username" target="_blank">{{
               item.username
             }}</nuxt-link>
           </p>
           <div>
             <p class="useridentity">
-              <el-tag size="small">{{ item.useridentity }}</el-tag>
+              <el-tag
+                v-for="tag in tagcmp(item.useridentity)"
+                :key="tag"
+                class="tag"
+                size="small"
+                style="margin-right: 10px"
+                ><nuxt-link :to="'/search/' + tag">{{ tag }}</nuxt-link></el-tag
+              >
             </p>
             <p class="content">
               {{ item.user_content }}
@@ -52,32 +72,45 @@ onMounted(() => {
       </div>
     </div>
   </div>
-  <div id="" class="itemarea" v-else>
+  <div class="itemarea" v-else>
     <div class="card">
       <div class="card_title">
+        <nuxt-link :to="link">
+          <h3>{{ item.title }}</h3>
+        </nuxt-link>
         <div class="User">
           <nuxt-link :to="{ path: '/space/' + item.username }">
             {{ item.username }}</nuxt-link
           >
           <span>发布于{{ item.pub_date }}</span>
         </div>
-        <nuxt-link :to="link">
-          <h3>{{ item.title }}</h3>
-        </nuxt-link>
       </div>
       <article>
         <nuxt-link :to="link"> {{ item.content }}... </nuxt-link>
       </article>
       <div class="details">
         <p>
+          <span class="tag-title">关键词：</span>
           <el-tag
+            v-for="tag in tagcmp(item.keyword)"
+            :key="tag"
+            class="tag"
             size="small"
-            v-for="(word, index) in item.keyword"
-            :key="index"
-            >{{ word }}</el-tag
+            style="margin-right: 5px"
+            ><nuxt-link :to="'/search/' + tag">{{ tag }}</nuxt-link></el-tag
           >
         </p>
-        <el-tag size="small">标签：{{ item.lable }}</el-tag>
+        <p>
+          <span class="tag-title">标签：</span>
+          <el-tag
+            v-for="tag in tagcmp(item.lable)"
+            :key="tag"
+            class="tag"
+            size="small"
+            style="margin-right: 5px"
+            ><nuxt-link :to="'/search/' + tag">{{ tag }}</nuxt-link></el-tag
+          >
+        </p>
       </div>
     </div>
   </div>
@@ -85,10 +118,10 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .itemarea {
+  background-color: #f1f8ff;
+  margin: 10px 0;
   border-radius: 5px;
-  background-color: rgba(240, 243, 246, 0.4);
-  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-    rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+  box-shadow: inset rgba(70, 142, 230, 0.8) 0 0 2px 0.8px;
   overflow: scroll;
 }
 
@@ -139,6 +172,11 @@ onMounted(() => {
   }
 }
 
+.tag-title {
+  font-size: 0.8rem;
+  color: #383838;
+}
+
 @media only screen and (min-width: 755px) {
   .card {
     padding: 10px;
@@ -155,8 +193,7 @@ onMounted(() => {
 
 @media only screen and (max-width: 755px) {
   .card {
-    margin: 8px 0;
-    padding: 5px;
+    padding: 8px 10px;
   }
 
   .details {

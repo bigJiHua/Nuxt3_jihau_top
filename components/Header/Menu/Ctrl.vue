@@ -3,35 +3,25 @@ import { Menu, Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 const key: any = ref('')
-const SearchFunc = (): void => {
-  void router.push('/Search/' + key.value)
-  key.value = ''
-}
-const MenuItem = reactive([
-  { path: '/Notify', text: '通知' },
-  { path: '/DevProcess', text: '发展历程' },
-  { path: '/SpsList', text: '友链' },
-  { path: '/checkver', text: '激活账户' },
-  { path: 'https://www.jihau.com', text: '主站博客页面' },
-  { path: '/notify/YSZC', text: '隐私政策' },
-  { path: '/html/goods/10010.html', text: '物品寻求页面' },
-  { path: '/error/type-phone', text: '错误页面测试-phone' },
-  { path: '/error/type-window', text: '错误页面测试-Windows' },
-])
-const CtrlMenuItem = reactive([
-  { path: '/Users', text: '个人设置' },
-  { path: '/Users/msg', text: '我的消息' },
-  { path: '/editor/list', text: '我的文章' },
-  { path: '/editor/gallery', text: '图片资源' },
-  { path: '/editor', text: '发布文章' },
-  { path: '/editor/wait', text: '草稿箱' },
-  { path: '/editor/cag', text: '修改文章' },
-  { path: '/Users/Setting', text: '个性设置' },
-])
-
 const drawer = ref(false)
 const innerDrawer = ref(false)
 const isLogin = ref(false)
+
+const CtrlMenuItem = reactive([
+  { path: '/Users', text: '个人设置' },
+  { path: '/editor/list', text: '我的文章' },
+  { path: '/editor', text: '发布文章' },
+  { path: '/editor/wait', text: '草稿箱' },
+  { path: '/editor/gallery', text: '图片资源' },
+  { path: '/Users/msg', text: '我的消息' },
+  { path: '/editor/cag', text: '修改文章' },
+  // { path: '/Users/Setting', text: '个性设置' },
+])
+const SearchFunc = (): void => {
+  void router.push('/Search/' + key.value)
+  key.value = ''
+  drawer.value = false
+}
 onMounted(() => {
   if (process.client ?? false) {
     isLogin.value = localStorage.getItem('token') !== null
@@ -63,7 +53,7 @@ onMounted(() => {
         <div class="defalutMenu">
           <div
             class="MenuItem"
-            v-for="(item, index) in MenuItem"
+            v-for="(item, index) in reqConfig.MenuItem"
             :key="index"
             @click="drawer = false"
           >

@@ -7,40 +7,26 @@ const SearchFunc = (): void => {
   void router.push('/Search/' + key.value)
   key.value = ''
 }
-const MenuItem = reactive([
-  { path: '/Notify', text: '通知' },
-  { path: '/DevProcess', text: '发展历程' },
-  { path: '/SpsList', text: '友链' },
-  { path: '/checkver', text: '激活账户' },
-  { path: 'https://www.jihau.com', text: '主站博客页面' },
-  { path: '/notify/YSZC', text: '隐私政策' },
-  { path: '/html/goods/10010.html', text: '物品寻求页面' },
-  { path: '/error/type-phone', text: '错误页面测试-phone' },
-  { path: '/error/type-window', text: '错误页面测试-Windows' },
-])
-const isLogin = ref(false)
-onMounted(() => {
-  if (process.client ?? false) {
-    isLogin.value = localStorage.getItem('token') !== null
-  }
-})
 </script>
 
 <template>
   <div class="Header">
-    <client-only>
-      <el-menu class="el-menu-demo menu-container" mode="horizontal">
-        <el-menu-item class="HeaderLeft">
-          <h1 class="HeaderTitle ">
-            <a href="/">JiHua的web和js开发数据</a>
-          </h1>
-          <img :src="reqConfig.LogoPic" alt="Logo" class="logo" />
-        </el-menu-item>
-        <el-menu-item v-for="(item, index) in MenuItem" :key="index">
+    <div class="HeaderLeft">
+      <!-- <img
+        :src="reqConfig.LogoPic"
+        alt="Logo"
+        class="logo"
+        style="width: 35px; height: 25px"
+      /> -->
+      <h1 class="HeaderTitle">
+        <a href="/">JiHua的web和js开发数据</a>
+      </h1>
+      <div class="items">
+        <span v-for="(item, index) in reqConfig.MenuItem" :key="index" class="MenuItem">
           <NuxtLink :to="item.path" class="text-x2">{{ item.text }}</NuxtLink>
-        </el-menu-item>
-      </el-menu>
-    </client-only>
+        </span>
+      </div>
+    </div>
     <div class="LoginBtn">
       <div class="SearchBox">
         <el-input v-model="key" placeholder="搜搜搜~" class="input-with-select">
@@ -53,11 +39,6 @@ onMounted(() => {
         <client-only>
           <HeaderLogoMenu></HeaderLogoMenu>
         </client-only>
-        <div class="User" v-if="!isLogin">
-          <nuxt-link to="/Login"
-            ><el-button type="primary" plain>登录</el-button></nuxt-link
-          >
-        </div>
       </div>
     </div>
   </div>
@@ -67,11 +48,6 @@ onMounted(() => {
 a {
   text-decoration: none;
   color: gray;
-}
-
-.logo {
-  width: 45px;
-  height: 35px;
 }
 
 .Header {
@@ -88,8 +64,8 @@ a {
 }
 
 .HeaderTitle {
-  font-size: 2rem;
-  font-weight: 100;
+  font-size: 1.2rem;
+  font-weight: 500;
   color: rgb(141, 141, 141);
 }
 
@@ -99,26 +75,26 @@ a {
   justify-content: flex-start;
   flex-wrap: nowrap;
 }
-
-.menu-container {
-  height: 50px;
-  width: 60vw;
+.items {
+  display: flex;
   align-items: center;
-  --tw-bg-opacity: 1;
-  // background-color: rgb(229 231 235 / var(--tw-bg-opacity));
-  background-color: rgba(244, 244, 244, 0);
-  border: 0;
+  margin-left: 15px;
 }
-
 .MenuItem {
-  padding: 5px;
-  border-radius: 5px;
-  background-color: #f9fafb;
-  margin: 5px;
+  font-size: 0.8rem;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
 }
 
 .MenuItem:hover {
-  background-color: #f9fafbe5;
+  border-bottom: 2px solid rgb(116, 181, 255);
+}
+@media screen and (min-width: 755px) and (max-width: 1000px) {
+  .MenuItem {
+    display: none;
+  }
 }
 
 .LoginBtn {

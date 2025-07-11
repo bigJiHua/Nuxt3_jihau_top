@@ -6,6 +6,12 @@ const router = useRouter()
 definePageMeta({
   layout: 'ctrl-view',
 })
+const elContent = ref('') // 备份修改之前的
+const isTrue = ref(false)
+const isAutoSafe = ref(false) // 自动保存
+const isMd = ref(true) // 切换编辑器
+const showPanel = ref(true) // 面板开关
+const isLoading = ref(true) // 是否加载中
 // 编辑数据
 const editorData: any = ref({
   username: '',
@@ -17,7 +23,7 @@ const editorData: any = ref({
   describes: '',
   state: 0,
   pub_date: '',
-  isMd: false,
+  isMd: true, // 默认是markdown编辑器
 })
 // 校验规则
 const rules: any = reactive({
@@ -38,40 +44,51 @@ const rules: any = reactive({
     msg: '填一下关键字吧！',
   },
 })
-const elContent = ref('') // 备份修改之前的
-const isTrue = ref(false)
-const isAutoSafe = ref(false) // 自动保存
-const isMd = ref(false) // 切换编辑器
-const showPanel = ref(false) // 面板开关
 // 当前选中的主题
-const selectedTheme = ref('simplicity-green')
-const selectedCodeTheme = ref('default')
+const selectedTheme = ref('nico')
+const selectedCodeTheme = ref('googlecode')
 useHead({
   link: [
     {
       rel: 'stylesheet',
-      href: '/css/file/simplicity-green.min.css',
+      href: '/css/file/nico.min.css',
       id: 'dynamic-theme',
     },
     {
       rel: 'stylesheet',
-      href: '/css/code/styles/default.css',
+      href: '/css/code/styles/googlecode.css',
       id: 'dynamic-code',
     },
   ],
+  title: '正在发布文章',
 })
 
 // 同步子组件对服务组件的数据
 const cagEditorData = (cagData: string): void => {
   if (cagData === '') return
+  // 备份之前的内容
   elContent.value = editorData.value.content
+  // 如果数据产生了变化
   if (editorData.value.content !== cagData) {
     editorData.value.content = cagData
+    // 如果开启了自动保存
+    if (isAutoSafe.value) {
+      void AutoSaveEditor()
+    }
     isTrue.value = true
   }
   setTimeout(() => {
     isTrue.value = false
   }, 500)
+}
+// 自动保存编辑器内容
+const AutoSaveEditor = async (): Promise<void> => {
+  if (
+    process.env.NODE_ENV === 'development' &&
+    editorData.value.content !== ''
+  ) {
+    localStorage.setItem('setArtData', JSON.stringify(editorData.value))
+  }
 }
 // 清空当前所有编辑
 const deleteEditor = async (): Promise<void> => {
@@ -94,8 +111,10 @@ const deleteEditor = async (): Promise<void> => {
 const ChangeEditormd = async (isChange: boolean): Promise<void> => {
   if (isChange && (await WarningTips('你确定要切换成markdown编辑器吗？'))) {
     isMd.value = true
+    editorData.value.isMd = true
   } else if (await WarningTips('你确定要切换成富文本编辑器吗？')) {
     isMd.value = false
+    editorData.value.isMd = false
   }
 }
 // 发布文章
@@ -115,7 +134,7 @@ const PostNewArticle = async (isSet?: boolean): Promise<void> => {
       editorData.value.content = JSON.stringify({
         data: editorData.value.content,
         theme: selectedTheme.value,
-        codeTheme: selectedCodeTheme.value
+        codeTheme: selectedCodeTheme.value,
       })
     }
     if (isSet) editorData.value.state = '2'
@@ -156,19 +175,6 @@ const validata = (key: string): boolean => {
   }
   return bool
 }
-// 自动保存到本地
-setInterval(() => {
-  if (isAutoSafe.value) {
-    if (process.env.NODE_ENV === 'development') {
-      localStorage.setItem('setArtData', JSON.stringify(editorData.value))
-      isTrue.value = true
-      setTimeout(() => {
-        isTrue.value = false
-      }, 200)
-    }
-  }
-}, 2500)
-
 // 样式名称数组
 const themes = [
   'simplicity-green',
@@ -302,26 +308,36 @@ const onThemeChange = (theme: string, type: string = 'css'): void => {
 
 onMounted(async () => {
   if (process.client) {
-    // 监测本地是否有数据
-    if (localStorage.getItem('setArtData') !== null) {
-      if (
-        await WarningTips(
-          '检测到本地存在历史文章数据，确认加载吗？还是取消删除'
-        )
-      ) {
-        editorData.value = JSON.parse(
-          localStorage.getItem('setArtData') as string
-        )
-        isAutoSafe.value = true
-      } else {
-        localStorage.removeItem('setArtData')
-        if (localStorage.getItem('setArtData') === null) {
+    try {
+      // 监测本地是否有数据
+      const locData = JSON.parse(localStorage.getItem('setArtData') as string)
+      if (locData.content !== '') {
+        isLoading.value = true
+        if (
+          await WarningTips(
+            '检测到本地存在历史文章数据，确认加载吗？还是取消删除'
+          )
+        ) {
+          const locData = JSON.parse(
+            localStorage.getItem('setArtData') as string
+          )
+          editorData.value = locData
+          isMd.value = locData.isMd
+          isAutoSafe.value = true
+          isLoading.value = false
+        } else {
+          localStorage.removeItem('setArtData')
           ElMessage({
             message: '删除成功！',
             type: 'success',
           })
         }
+      } else {
+        localStorage.removeItem('setArtData')
+        isLoading.value = false
       }
+    } catch (error) {
+      isLoading.value = false
     }
   }
 })
@@ -330,7 +346,9 @@ onMounted(async () => {
 <template>
   <div class="postArticleArea">
     <div class="HeaderBox">
-      <el-button type="danger" plain @click="deleteEditor">删除</el-button>
+      <el-button type="danger" plain @click="deleteEditor"
+        >我不想写了</el-button
+      >
       <el-button type="success" plain @click="PostNewArticle(true)"
         >存草稿</el-button
       >
@@ -344,25 +362,17 @@ onMounted(async () => {
       <el-button type="primary" plain v-else @click="showPanel = false"
         >关闭面板</el-button
       >
-      <div class="phone-none">
-        备份保存到本地：<el-switch
+      <div class="phone-item1">
+        自动保存到本地：<el-switch
           v-model="isAutoSafe"
           class="ml-2"
           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
         />
       </div>
-      <div class="window-none phone-item1">
-        自动存草稿：<el-switch
-          v-model="isAutoSafe"
-          class="ml-2"
-          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-        />
-      </div>
-      <el-button type="success" :icon="Check" circle v-show="isTrue" />
       <!-- Select框切换主题 -->
       <div class="SelectThemeBox" v-if="isMd">
         <div>
-          <p class="title">主题</p>
+          <el-button type="primary" plain disabled>主题</el-button>
           <el-select
             v-model="selectedTheme"
             placeholder="选择样式"
@@ -377,7 +387,7 @@ onMounted(async () => {
           </el-select>
         </div>
         <div>
-          <p class="title">Code样式</p>
+          <el-button type="primary" plain disabled>Code样式</el-button>
           <el-select
             v-model="selectedCodeTheme"
             placeholder="选择样式"
@@ -404,70 +414,73 @@ onMounted(async () => {
         >
           <el-form-item>
             <template #label>
-              标题<span style="color: red">*</span>---设置文章标题
+              <b>标题</b><span style="color: red">*</span>---设置文章标题
             </template>
-            <el-input v-model="editorData.title" />
+            <el-input v-model="editorData.title" maxlength="30" />
           </el-form-item>
           <el-form-item>
             <template #label>
-              标签<span style="color: red">*</span
-              >---设置文章标签(以中文顿号分隔)
+              <b>标签</b
+              ><span style="color: red">*</span>---设置文章标签(以中文顿号分隔)
             </template>
-            <el-input v-model="editorData.lable" />
+            <el-input v-model="editorData.lable" maxlength="30" />
           </el-form-item>
           <el-form-item>
             <template #label>
-              关键词<span style="color: red">*</span
+              <b>关键词</b
+              ><span style="color: red">*</span
               >---设置文章关键词(以中文顿号分隔)
             </template>
-            <el-input v-model="editorData.keyword" />
+            <el-input v-model="editorData.keyword" maxlength="30" />
           </el-form-item>
           <el-form-item>
             <template #label>
-              文章描述<span style="color: red">*</span>---设置文章描述(可选)
+              <b>文章描述</b><span style="color: red">*</span>---设置文章描述
             </template>
-            <el-input v-model="editorData.describes" />
+            <el-input v-model="editorData.describes" maxlength="50" />
           </el-form-item>
           <el-form-item>
-            <template #label> 封面---设置文章封面(可选) </template>
-            <el-input v-model="editorData.cover_img" />
+            <template #label> <b>封面</b>---设置文章封面(可选) </template>
+            <el-input v-model="editorData.cover_img" maxlength="255" />
           </el-form-item>
         </el-form>
-        <dev class="cover_img" v-show="editorData.cover_img">
+        <div class="cover_img" v-show="editorData.cover_img">
           <img :src="editorData.cover_img" alt="Cover_img" />
-        </dev>
+        </div>
         <p><span style="color: red">*</span>为必填项</p>
         <p><span style="color: red">注意：</span>标签关键词用中文顿号间隔！</p>
-        <p v-if="!isMd">
-          不喜欢富文本？<el-button type="primary" @click="ChangeEditormd(true)"
-            >切换编辑器</el-button
-          >
-        </p>
-        <p v-else>
+        <p v-if="isMd">
           不喜欢MarkDown？<el-button
             type="primary"
             @click="ChangeEditormd(false)"
             >切换编辑器</el-button
           >
         </p>
+        <p v-else>
+          不喜欢富文本?<el-button type="primary" @click="ChangeEditormd(true)"
+            >切换编辑器</el-button
+          >
+        </p>
+        <span style="font-size: 1em; color: red"
+          >⚠正在编辑时 切换编辑器 内容 会出现错乱，请谨慎操作！</span
+        >
+        <!-- 输入 状态 -->
+        <el-button type="success" :icon="Check" circle v-show="isTrue" />
       </div>
       <div class="EditorArea" v-if="!isMd">
-        <client-only>
-          <Cekditor
-            :content="editorData.content"
-            @cagEditorData="cagEditorData"
-            :type="'set'"
-          />
-        </client-only>
+        <Cekditor
+          :content="editorData.content"
+          @cagEditorData="cagEditorData"
+          :type="'set'"
+        />
       </div>
       <div class="EditorArea" v-else>
-        <client-only>
-          <CekditorMd
-            :content="editorData.content"
-            @cagEditorData="cagEditorData"
-            :type="'set'"
-          />
-        </client-only>
+        <CekditorMd
+          v-if="!isLoading"
+          :content="editorData.content"
+          @cagEditorData="cagEditorData"
+          :type="'set'"
+        />
       </div>
     </div>
   </div>
@@ -548,15 +561,6 @@ onMounted(async () => {
     align-items: center;
     margin-right: 10px;
   }
-  > div > p {
-    font-size: 1rem;
-    font-weight: 600;
-    padding: 1px 15px;
-    background-color: #ecf5ff;
-    border: 1px solid #a0cfff;
-    color: #409eff;
-    text-align: center;
-  }
   > div > .el-select {
     width: 10vw;
   }
@@ -596,11 +600,6 @@ onMounted(async () => {
       margin: 10px;
       width: 98%;
     }
-  }
-  .phone-item1 {
-    position: absolute;
-    right: 15px;
-    top: 0;
   }
   .SelectThemeBox {
     margin: 10px 0 0 0;

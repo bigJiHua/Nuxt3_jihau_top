@@ -1,25 +1,12 @@
 <script setup lang="ts">
-const isSHow = ref(false)
-onMounted(() => {
-  if (process.client) {
-    if (window.innerWidth > 756) {
-      isSHow.value = true
-    }
-    window.onresize = () => {
-      if (window.innerWidth > 756) {
-        isSHow.value = true
-      }
-    }
-  }
-})
 </script>
 
 <template>
   <div id="HeaderBox">
     <!-- Window的Header -->
-    <HeaderMenuDefalut v-if="isSHow" />
+    <HeaderMenuDefalut class="phone-none"/>
     <!-- 手机的Header -->
-    <HeaderMenuCtrl v-else />
+    <HeaderMenuCtrl class="window-none" />
   </div>
 </template>
 

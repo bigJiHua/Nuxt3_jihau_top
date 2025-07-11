@@ -4,28 +4,35 @@ import { View, Star, Share, Edit } from '@element-plus/icons-vue'
 const props = defineProps({
   data: {
     type: Object,
-    default: () => ({})
+    default: () => ({}),
   },
   type: {
     type: String,
-    default: 'SColor'
+    default: 'SColor',
   },
   title: {
     type: String,
-    default: '已推送'
-  }
+    default: '已推送',
+  },
 })
 </script>
 
 <template>
   <div class="articleDetail">
     <h3 class="title">
-      <nuxt-link :to="'/article/' + data.article_id">{{ data.title }}</nuxt-link>
+      <nuxt-link v-if="type !== 'WColor'" :to="'/article/' + data.article_id">{{
+        data.title
+      }}</nuxt-link>
+      <span v-else>{{ data.title }}</span>
     </h3>
+    <div class="content">{{ data.content }}...</div>
     <p class="Tip">
       <NodeItemCard :title="title" :type="type" />
       <span class="Pillar">|</span>
-      <span>发布于{{ data.pub_date }}</span>
+      <span
+        >{{ type === 'WColor' ? '更新于 ' : '发布于 '
+        }}{{ data.pub_date }}</span
+      >
     </p>
     <p class="articleCount">
       <span
@@ -57,9 +64,6 @@ const props = defineProps({
         >{{ item }}</el-tag
       >
     </div>
-    <div class="content">
-      文章描述: <span> {{ data.content }}</span>...
-    </div>
     <nuxt-link :to="'/editor/cag/' + data.article_id" class="action">
       <el-icon :size="15">
         <Edit />
@@ -69,12 +73,12 @@ const props = defineProps({
 </template>
 
 <style lang="less" scoped>
-@media screen and (min-width: 755px) { 
+@media screen and (min-width: 755px) {
   .articleDetail {
     width: 300px;
   }
 }
-@media screen and (max-width: 755px) { 
+@media screen and (max-width: 755px) {
   .articleDetail {
     width: 100%;
   }
@@ -134,14 +138,17 @@ const props = defineProps({
     }
   }
   .content {
-    span {
-      font-size: 0.6rem;
-    }
+    margin: 0 0 5px 0;
+    font-size: 0.6rem;
   }
 }
 .action {
   position: absolute;
   top: 5px;
   right: 5px;
+}
+.lableItem,
+.keywordItem {
+  overflow: hidden;
 }
 </style>

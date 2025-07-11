@@ -40,34 +40,34 @@ onMounted(() => {
       <Meta name="author" :content="NotifyData.username" />
       <Meta name="copyright" :content="NotifyData.username" />
     </Head>
-    <div class="leftContent">
-      <div class="content st">
-        <header class="headerText">
-          <h1>{{ NotifyData.title }}</h1>
-          <p class="ContentMessage">
-            <span>管理员：{{ NotifyData.username }}</span>
-            <span>时间：{{ NotifyData.pub_date }}</span>
-          </p>
-        </header>
-        <div v-html="NotifyData.content">
-        </div>
-      </div>
+    <div class="content">
+      <header class="headerText">
+        <h1>{{ NotifyData.title }}</h1>
+        <p class="ContentMessage">
+          <span>管理员：{{ NotifyData.username }}</span>
+          <span>时间：{{ NotifyData.pub_date }}</span>
+        </p>
+      </header>
+      <div v-html="NotifyData.content" class="html-content"></div>
     </div>
-    <div class="ArticleRightPanel">
-      <RightMArticle></RightMArticle>
-    </div>
+    <RightMIcp />
   </div>
 </template>
-
+<style src="@/assets/css/article.css"></style>
 <style lang="less" scoped>
+* {
+  font-size: 0.8rem;
+}
 .article {
-  word-wrap: break-word;
-  position: relative;
+  height: 100%;
 }
 
-.leftContent {
+.content {
   overflow: hidden;
   background-color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  min-height: 60vh;
 }
 
 .ContentMessage > span:first-child {
@@ -75,22 +75,23 @@ onMounted(() => {
 }
 
 .ContentMessage > span {
-  font-size: 10px;
+  font-size: 0.7rem;
 }
 
 .headerText {
   text-align: center;
   margin-bottom: 10px;
+  > h1 {
+    font-size: 2rem;
+  }
+  color: rgba(0, 0, 0, 0.737);
 }
 
 @media only screen and (min-width: 755px) {
   .article {
-    display: flex;
-    justify-content: space-between;
     width: 80vw;
     margin: 0 auto;
     max-width: 1200px;
-    min-height: 100vh;
   }
 
   .leftContent {
@@ -98,10 +99,6 @@ onMounted(() => {
     border-radius: 12px;
     margin-right: 20px;
     width: 50vw;
-  }
-
-  .ArticleRightPanel {
-    width: 25vw;
   }
 }
 
@@ -117,12 +114,6 @@ onMounted(() => {
     /* 兼容性较好的属性 */
     overflow-wrap: break-word;
     /* CSS3 标准属性 */
-  }
-
-  .leftContent {
-    padding: 10px;
-    border-radius: 12px;
-    margin-bottom: 30px;
   }
 }
 
@@ -151,15 +142,5 @@ onMounted(() => {
   button {
     margin: 10px;
   }
-}
-
-.goodnum,
-.collect {
-  letter-spacing: 5px;
-}
-
-.selc,
-.selg {
-  color: red;
 }
 </style>

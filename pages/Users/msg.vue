@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import getMsgApi from '@/api/User'
-// import dayjs from 'dayjs'
 definePageMeta({
   layout: 'ctrl-view'
 })
@@ -11,6 +11,8 @@ const UserMessageBox: any = ref({
 const tabPosition = ref('left')
 const uNullMsg = ref(true)
 const sNullMsg = ref(true)
+let timer: ReturnType<typeof setInterval> | null = null // 轮询定时器id
+
 const getUserMsg = async (num?: number): Promise<void> => {
   if (num === undefined) num = 0
   const { data: res } = await getMsgApi.GetUserMessage(num)
@@ -19,11 +21,13 @@ const getUserMsg = async (num?: number): Promise<void> => {
   uNullMsg.value = res.data.usermsg.length === 0
   sNullMsg.value = res.data.systemmsg.length === 0
 }
+
 const isRead = async (id: string): Promise<void> => {
   await getMsgApi.DelUserMessage(id, 'read').then(() => {
-    void getUserMsg
+    void getUserMsg()
   })
 }
+
 onMounted(() => {
   if (process.client ?? false) {
     if (window.innerWidth < 756) {
@@ -31,15 +35,15 @@ onMounted(() => {
     }
   }
   void getUserMsg()
-  // 随机请求数据方法 test
-  setInterval(() => {
-    const randomNum = Math.floor(Math.random() * 101) + Math.floor(Math.random() * 101)
-    if (randomNum % 3 === 0) {
-      // 检查是否为偶数
-      void getUserMsg() // 生成偶数后执行请求方法
-      // console.log(dayjs(new Date().getTime()).format('YYYY-MM-DD HH:mm:ss'))
-    }
-  }, 1000 * 2)
+
+  // 启动轮询，每隔5秒请求一次
+  timer = setInterval(() => {
+    void getUserMsg()
+  }, 3000)
+})
+
+onBeforeUnmount(() => {
+  if (timer) clearInterval(timer) // 清理定时器
 })
 </script>
 

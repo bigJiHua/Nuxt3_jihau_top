@@ -19,17 +19,6 @@ const router = useRouter()
 const key: any = ref('')
 const isLogin = ref(false)
 const isHerePath: Ref<number> = ref(0)
-const MenuItem = reactive([
-  { path: '/Notify', text: '通知' },
-  { path: '/DevProcess', text: '发展历程' },
-  { path: '/SpsList', text: '友链' },
-  { path: '/checkver', text: '激活账户' },
-  { path: 'https://www.jihau.com', text: '主站博客页面' },
-  { path: '/notify/YSZC', text: '隐私政策' },
-  { path: '/html/goods/10010.html', text: '物品寻求页面' },
-  { path: '/error/type-phone', text: '错误页面测试-phone' },
-  { path: '/error/type-window', text: '错误页面测试-Windows' },
-])
 const UserTab = ref([
   // { path: `/space/${props.user}/index`, name: '动态' },
   { path: `/space/${props.user}/article`, name: '文章' },
@@ -91,29 +80,29 @@ onMounted(() => {
     <div class="Header">
       <div class="trsBox">
         <div :class="[{ isRotX: !istop, noRotX: istop }, 'Headermenu']">
-          <client-only>
-            <el-menu class="el-menu-demo menu-container" mode="horizontal">
-              <el-menu-item class="HeaderLeft">
-                <h1 class="HeaderTitle ">
-                  <a href="/">JiHua的web和js开发数据</a>
-                </h1>
-                <img
-                  src="https://jihau.top/img/logo.png"
-                  alt="Logo"
-                  class="logo"
-                />
-              </el-menu-item>
-              <el-menu-item v-for="(item, index) in MenuItem" :key="index">
-                <NuxtLink :to="item.path" class="text-x2">{{
-                  item.text
-                }}</NuxtLink>
-              </el-menu-item>
-            </el-menu>
-          </client-only>
+          <!-- <img
+        :src="reqConfig.LogoPic"
+        alt="Logo"
+        class="logo"
+        style="width: 35px; height: 25px"
+      /> -->
+          <h1 class="HeaderTitle">
+            <a href="/">JiHua的web和js开发数据</a>
+          </h1>
+          <div class="items">
+            <span
+              v-for="(item, index) in reqConfig.MenuItem"
+              :key="index"
+              class="MenuItem"
+            >
+              <NuxtLink :to="item.path" class="text-x2">{{
+                item.text
+              }}</NuxtLink>
+            </span>
+          </div>
         </div>
         <div :class="[{ isRotX: istop, noRotX: !istop }, 'HeaderTab']">
           <div class="tabLIst">
-            <img src="https://jihau.top/img/logo.png" alt="Logo" class="logo" />
             <div
               :class="[{ selectItem: isHerePath === index + 1 }, 'menuItem']"
               v-for="(item, index) in UserTab"
@@ -167,11 +156,6 @@ onMounted(() => {
         </div>
         <div class="User">
           <HeaderLogoMenu></HeaderLogoMenu>
-          <div class="User" v-if="!isLogin">
-            <nuxt-link to="/Login"
-              ><el-button type="primary" plain>登录</el-button></nuxt-link
-            >
-          </div>
         </div>
       </div>
     </div>
@@ -196,13 +180,6 @@ a {
   top: 0;
   z-index: 999;
 }
-.logo {
-  width: 45px;
-  height: 35px;
-}
-.logo:nth-child(1) {
-  margin: 0 30px 0 0;
-}
 .Header {
   height: 40px;
   width: 85vw;
@@ -217,8 +194,8 @@ a {
 }
 
 .HeaderTitle {
-  font-size: 2rem;
-  font-weight: 100;
+  font-size: 1.2rem;
+  font-weight: 400;
   color: rgb(141, 141, 141);
 }
 
@@ -240,6 +217,10 @@ a {
 }
 .tabLIst {
   display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
 }
 .HeaderTab {
   display: flex;
@@ -285,7 +266,27 @@ a {
   position: absolute;
   transition: transform 0.2s; /* 添加过渡效果 */
 }
+.Headermenu {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+.items {
+  display: flex;
+  align-items: center;
+  margin-left: 15px;
+}
+.MenuItem {
+  font-size: 0.8rem;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+}
 
+.MenuItem:hover {
+  border-bottom: 2px solid rgb(116, 181, 255);
+}
 .HeaderTab {
   transform: rotateX(180deg); /* 初始时反转180度，使其在背面 */
 }

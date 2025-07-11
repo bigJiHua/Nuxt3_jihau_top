@@ -2,7 +2,8 @@ import axios from 'axios'
 import { ElMessage } from 'element-plus'
 // 创建axios实例
 const request = axios.create({
-  baseURL: reqConfig.baseUrl
+  baseURL: reqConfig.baseUrl,
+  withCredentials: true // 允许携带cookie
 })
 // 增加一个请求拦截
 // axios请求拦截器
@@ -42,7 +43,6 @@ request.interceptors.response.use(response => {
   }
   return response
 }, (error): any => {
-  console.log(error)
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   const errorCode: number = error.response ? error.response.status : 200
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions

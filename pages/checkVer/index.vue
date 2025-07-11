@@ -2,11 +2,9 @@
 import checkMail from '@/api/Email'
 import { useRouter } from 'vue-router'
 const router = useRouter()
-const code = ref(router.currentRoute.value.params.code)
-const user = ref(router.currentRoute.value.params.user)
 const data: any = reactive({
-  user: '',
-  code: ''
+  user: router.currentRoute.value.params.user ?? '',
+  code: router.currentRoute.value.params.code ?? '',
 })
 // 提交检查验证
 const subCheckCode = async () => {
@@ -14,33 +12,31 @@ const subCheckCode = async () => {
     const { data: res } = await checkMail.checkVer(data)
     if (res.status === 200) {
       setTimeout(() => {
-        router.push('/Login')
+        void router.push('/Login')
       }, 2000)
+    } else {
+      void router.replace('/checkVer')
     }
   } else {
     ElMessage({
       message: '输入内容不能为空',
       type: 'error',
-      duration: 2000
+      duration: 2000,
     })
   }
 }
-onMounted(() => {
-  if (user && code) {
-    data.user = user
-    data.code = code
-  } else {
-    router.push('/checkVel')
-  }
-})
 </script>
-
 
 <template>
   <div class="subCodeBox">
     <div class="inputBox">
       <p>输入验证码以激活您的账户</p>
-      <el-form :label-position="'left'" label-width="100px" :model="data" style="max-width: 460px">
+      <el-form
+        :label-position="'left'"
+        label-width="100px"
+        :model="data"
+        style="max-width: 460px"
+      >
         <el-form-item label="用户名">
           <el-input v-model="data.user" />
         </el-form-item>
@@ -72,7 +68,7 @@ onMounted(() => {
   padding: 20px 40px 40px 40px;
   border-radius: 5px;
 
-  >p:first-child {
+  > p:first-child {
     margin: 10px 0;
     font-size: 1.2rem;
     font-weight: bold;

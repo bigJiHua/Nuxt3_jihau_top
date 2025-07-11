@@ -4,7 +4,6 @@ import { useUserDataStore } from '@/stores/useUserData'
 import { UploadFilled } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 const store = useUserDataStore()
-let UserData: any = reactive(store.Userdata.Users)
 const uploadImgData = ref('')
 const options = [
   { value: '北京', label: '北京' },
@@ -35,15 +34,16 @@ const ChangeUserData = async (type: string): Promise<void> => {
       message = '确定要修改生日吗？'
       break
     case 'sex':
-      data.sex = UserData.sex === '' ? '男' : UserData.sex
+      data.sex =
+        store.Userdata.Users.sex === '' ? '男' : store.Userdata.Users.sex
       message = '确定要修改性别吗？'
       break
     case 'city':
-      data.city = UserData.city
+      data.city = store.Userdata.Users.city
       message = '确定要修改城市吗？'
       break
     case 'cont':
-      data.user_content = UserData.user_content
+      data.user_content = store.Userdata.Users.user_content
       message = '确定要修改自我介绍吗？'
       break
     default:
@@ -75,11 +75,6 @@ const cagUserPic = (e: any): any | undefined => {
     }
   })
 }
-onMounted(() => {
-  if (store.Userdata.Users.username !== '') {
-    UserData = store.Userdata.Users
-  }
-})
 </script>
 
 <template>
@@ -173,6 +168,8 @@ onMounted(() => {
       <el-input
         v-model="store.Userdata.Users.user_content"
         type="textarea"
+        :rows="3"
+        maxlength="120"
       ></el-input>
       <el-button type="primary" plain @click="ChangeUserData('cont')"
         >修改</el-button
@@ -235,9 +232,11 @@ onMounted(() => {
   justify-content: space-between;
   flex-wrap: nowrap;
   margin: 20px 0;
-
   > span {
     margin: 5px;
+  }
+  > .el-textarea {
+    width: 80%;
   }
 }
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import getArtDataApi from '@/api/CtrlMenu'
 definePageMeta({
-  layout: 'ctrl-view'
+  layout: 'ctrl-view',
 })
 const MyArticleListData: Ref<any[]> = ref([])
 const AllNum: Ref<number> = ref(0)
@@ -29,25 +29,41 @@ const pagerNum = (num: number): void => {
 const nextNum = (num: number): void => {
   void getArticle((num - 1) * 10)
 }
+useHead({
+  title: '我的待发布文章',
+  meta: [
+    {
+      name: 'keywords',
+      content:
+        'JiHua,jihua,JiHua的Web和JS开发数据,JiHua的Web和JS开发数据,个人网站,C语言程序,Web语言,个人网站搭建',
+    },
+    {
+      name: 'description',
+      content:
+        'jihua的Web和js开发数据，一个神奇的个人网站，里面展现个人魅力，程序设计语言站点导航，以及软件使用方法和事件处理方法，包括但不限于C语言、C语言程序设计书籍、题型、作品等，网页逐渐搭建，不断更新中。一个神奇的个人网站！里面将有超多的内容知识。',
+    },
+  ],
+})
 onMounted(() => {
   void getArticle(0)
 })
 </script>
 
 <template>
-  <div class="MyArticleList">
+  <div class="MyArticleList" v-if="MyArticleListData.length > 0">
     <div class="NullData" v-if="!MyArticleListData">
       <el-empty description="暂无草稿数据">
         <nuxt-link to="/editor">发布文章</nuxt-link>
       </el-empty>
     </div>
     <div class="ArticleListArea" v-else>
-      <ArticleListCard v-for="(item, index) in MyArticleListData" :key="index" :data="item" :title="'未发布'" :type="'WColor'" />
-      <!-- <ArticleForMyCard
+      <ArticleListCard
         v-for="(item, index) in MyArticleListData"
         :key="index"
-        :data="(item)"
-      /> -->
+        :data="item"
+        :title="'未发布'"
+        :type="'WColor'"
+      />
     </div>
     <div class="pagBtnArea">
       <el-pagination
@@ -60,11 +76,14 @@ onMounted(() => {
       />
     </div>
   </div>
+  <div class="MyArticleList" v-else>
+    <el-empty description="暂无文章" />
+  </div>
 </template>
 
 <style lang="less" scoped>
 .MyArticleList {
-  width: calc(100vw - 200px);
+  width: calc(100vw - 60px);
   height: calc(100vh - 60px);
   background-color: #f5f5f5;
 }

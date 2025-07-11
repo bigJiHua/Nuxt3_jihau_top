@@ -3,7 +3,7 @@ import getArtDataApi from '@/api/Space'
 import { useRouter } from 'vue-router'
 import { View, Star, Share } from '@element-plus/icons-vue'
 definePageMeta({
-  layout: 'space-view'
+  layout: 'space-view',
 })
 const router = useRouter()
 const user: Ref<string> = ref(
@@ -18,7 +18,6 @@ const getArticle = async (num: number): Promise<void> => {
   MyArticleListData.value = [...res.data]
   AllNum.value = res.Num
 }
-
 // 上一页
 const prevNum = (num: number) => {
   void getArticle((num - 1) * 10)
@@ -39,46 +38,7 @@ onMounted(() => {
 <template>
   <div class="SpaceArticleList" v-if="AllNum !== 0">
     <h3>他的文章</h3>
-    <div
-      class="CardItem"
-      v-for="(item, index) in MyArticleListData"
-      :key="index"
-      :data="item"
-    >
-      <div class="Header">
-        <nuxt-link :to="'/article/' + item.article_id" class="titleLink">
-          <h3>
-            {{ item.title }}
-          </h3>
-        </nuxt-link>
-        <span class="putTime">{{ item.pub_date }}</span>
-      </div>
-      <div class="contentArea">
-        <div
-          class="ArticleCoverImg" v-if="item.cover_img !== '' && item.cover_img !== 'undefined'">
-          <img :src="item.cover_img" alt="文章配图" class="ArticleImg" />
-        </div>
-        <div class="ArticleContent">
-          <nuxt-link :to="'/article/' + item.article_id" class="titleLink">
-            {{ item.content }}
-          </nuxt-link>
-        </div>
-      </div>
-      <div class="ActionBtn">
-        <div class="UserDataNum">
-          <span
-            ><el-icon><View /></el-icon>{{ item.read_num }}</span
-          >
-          <span><van-icon name="like-o" />{{ item.goodNum }}</span>
-          <span
-            ><el-icon><Star /></el-icon>{{ item.collectNum }}</span
-          >
-          <span
-            ><el-icon><Share /></el-icon>{{ item.share_num }}</span
-          >
-        </div>
-      </div>
-    </div>
+    <SpaceItemCard :articleList="MyArticleListData"></SpaceItemCard>
     <div class="pagBtnArea" v-if="!(AllNum <= 10)">
       <el-pagination
         background
@@ -96,95 +56,9 @@ onMounted(() => {
 </template>
 
 <style lang="less" scoped>
-.CardItem {
-  height: 150px;
-  background-color: #fff;
-  margin: 10px;
-  border-radius: 5px;
-  overflow: hidden;
-}
 .pagBtnArea {
   display: flex;
   justify-content: center;
   padding: 5px;
-}
-
-@media screen and(max-width: 768px) {
-  .CardItem {
-    width: 100%;
-    height: auto;
-    background-color: #fff;
-    margin: 10px 0;
-    border-radius: 5px;
-    overflow: hidden;
-  }
-  .titleLink {
-    font-size: 0.8rem;
-  }
-}
-
-.Header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 2px 5px;
-}
-
-.titleLink {
-  color: black;
-}
-
-.titleLink:hover {
-  color: #286dd4;
-}
-.putTime {
-  color: gray;
-}
-
-.contentArea {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: nowrap;
-}
-
-.ActionBtn {
-  padding: 5px;
-}
-
-.UserDataNum {
-  display: flex;
-  align-items: center;
-  font-size: 0.8rem;
-  justify-content: space-between;
-  > span > i {
-    font-style: normal;
-    margin-right: 5px;
-  }
-}
-
-.ArticleCoverImg {
-  width: 180px;
-  height: 75px;
-  border-radius: 5px;
-  overflow: hidden;
-  flex: 0.8;
-  margin: 5px;
-
-  .ArticleImg {
-    width: 100%;
-    height: 100%;
-  }
-}
-
-.ArticleContent {
-  padding: 5px;
-}
-
-.ArticleContent {
-  flex: 2;
-}
-
-.action {
 }
 </style>

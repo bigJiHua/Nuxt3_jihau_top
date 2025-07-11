@@ -2,7 +2,6 @@
 import { Search } from '@element-plus/icons-vue'
 import { useRouter } from '#vue-router'
 import postArticleApi from '@/api/CtrlMenu'
-const router = useRouter()
 definePageMeta({
   layout: 'ctrl-view',
 })
@@ -38,6 +37,7 @@ const rules: any = reactive({
     msg: '填一下关键字吧！',
   },
 })
+const router = useRouter()
 const elContent = ref('') // 备份修改之前的
 const isTrue = ref(false) // 接收数据
 const isMd = ref(false) // 切换编辑器
@@ -59,6 +59,7 @@ useHead({
       id: 'dynamic-code',
     },
   ],
+  title: '正在修改 ' + router.currentRoute.value.params.id,
 })
 
 // 同步子组件对服务组件的数据
@@ -145,35 +146,43 @@ const PostNewArticle = async (isDraft: boolean | number): Promise<void> => {
 }
 // 获取文章内容
 const getArticle = async (queryId: string): Promise<void> => {
-  const { data: res } = await postArticleApi.UsergetArticleData(queryId)
-  if (res.status === 404) {
-    isget.value = true
-    void router.push('/editor/cag/')
-  }
-  if (res.status === 200 && res !== undefined) {
-    void router.replace('/editor/cag/' + queryId)
-    editorData.value = { ...res.data.article }
-    if (/\bmd[A-Z0-9]+\b/g.test(queryId)) isMd.value = true
-    isget.value = true
-    // 在得到数据时展示现有的主题
-    if (isMd.value) {
-      selectedTheme.value =
-        JSON.parse(editorData.value.content).theme !== undefined
-          ? JSON.parse(editorData.value.content).theme
-          : 'simplicity-green'
-      selectedCodeTheme.value =
-        JSON.parse(editorData.value.content).codeTheme !== undefined
-          ? JSON.parse(editorData.value.content).codeTheme
-          : 'default'
-      loadTheme(JSON.parse(editorData.value.content).theme)
-    }
-  }
+  await postArticleApi
+    .UsergetArticleData(queryId)
+    .then((respone) => {
+      const { data: res } = respone
+      if (res.status === 200 && res !== undefined) {
+        void router.replace('/editor/cag/' + queryId)
+        editorData.value = { ...res.data.article }
+        // if (/\bmd[A-Z0-9]+\b/g.test(queryId)) isMd.value = true
+        // 匹配md开头
+        if (/^md.*/i.test(queryId)) isMd.value = true
+        isget.value = true
+        // 在得到数据时展示现有的主题
+        if (isMd.value) {
+          selectedTheme.value =
+            JSON.parse(editorData.value.content).theme !== undefined
+              ? JSON.parse(editorData.value.content).theme
+              : 'simplicity-green'
+          selectedCodeTheme.value =
+            JSON.parse(editorData.value.content).codeTheme !== undefined
+              ? JSON.parse(editorData.value.content).codeTheme
+              : 'default'
+          loadTheme(JSON.parse(editorData.value.content).theme)
+        }
+        searchId.value = ''
+      }
+    })
+    .catch(() => {
+      isget.value = true
+      void router.push('/editor/cag/')
+    })
 }
 // 获取文章
 const searchArticle = async (): Promise<void> => {
-  if (searchId.value === '') {
+  const regexID = /^.{4,15}$/.test(searchId.value)
+  if (searchId.value === '' || !regexID) {
     ElMessage({
-      message: '文章ID不能为空',
+      message: '非法 ID',
       type: 'error',
     })
   } else {
@@ -299,8 +308,9 @@ const codeTheme = [
 // 动态创建/更新 link 标签来加载 CSS 文件
 const loadTheme = (theme: string, type: string = 'css'): void => {
   if (type === 'code' && theme === undefined) theme = 'default'
-  if (theme === '' || (theme === undefined && type === 'css'))
+  if (theme === '' || (theme === undefined && type === 'css')) {
     theme = 'simplicity-green'
+  }
   const label = type === 'css' ? 'dynamic-theme' : 'dynamic-code'
   let link = document.getElementById(`${label}`) as HTMLLinkElement | null
   if (!link) {
@@ -327,13 +337,14 @@ const onThemeChange = (theme: string, type: string = 'css'): void => {
 // 返回
 const comeBack = async (): Promise<void> => {
   if (await WarningTips('你确定要返回吗？数据不会被保存/更改')) {
-    void router.back()
+    void router.push('/editor/list')
   }
 }
+
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   if (router.currentRoute.value.params.id as string) {
-    getArticle(router.currentRoute.value.params.id as string)
+    void getArticle(router.currentRoute.value.params.id as string)
   } else {
     isget.value = true
   }
@@ -458,13 +469,14 @@ onMounted(() => {
             <el-input v-model="editorData.cover_img" />
           </el-form-item>
         </el-form>
-        <dev class="cover_img" v-if="editorData.cover_img !== 'undefined'">
+        <div class="cover_img" v-if="editorData.cover_img !== 'undefined'">
           <img :src="editorData.cover_img" alt="Cover_img" />
-        </dev>
+        </div>
         <p><span style="color: red">*</span>为必填项</p>
         <p><span style="color: red">*</span>不能设置图片封面为base64格式！</p>
         <p><span style="color: red">注意：</span>标签关键词用中文顿号间隔！</p>
       </div>
+      <!-- 编辑器页面 -->
       <div class="EditorArea" v-if="isget">
         <Cekditor
           v-if="!isMd"

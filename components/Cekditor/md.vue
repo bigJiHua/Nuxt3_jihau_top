@@ -17,12 +17,12 @@ import 'highlight.js/styles/default.css'
 const props = defineProps({
   content: {
     type: String,
-    default: ''
+    default: '',
   },
   type: {
     type: String,
-    default: 'set'
-  }
+    default: 'set',
+  },
 })
 // 渲染md的插件
 const plugins = ref([

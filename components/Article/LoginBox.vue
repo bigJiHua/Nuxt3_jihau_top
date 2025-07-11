@@ -20,13 +20,16 @@ const rules: any = ref({
 const login = async () => {
   loading.value = true
   // 验证是否已经拥有token 输入的用户名是否合法 输入的密码是否合法
-  if (localStorage.getItem('token')) {
+  const token = localStorage.getItem('token')
+  if (token != 'undefined' && token != null) {
     ElMessage({
       message: '已经登录啦！请勿重复登录',
       type: 'warning'
     })
     location.reload()
     return
+  } else {
+    localStorage.removeItem('token')
   }
   // 验证
   if (validata('username') && validata('password')) {

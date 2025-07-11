@@ -1,21 +1,28 @@
 <template>
   <div id="" class="footer">
     <div id="icp">
-      <p>
-        <img
-          :src="reqConfig.LogoPic"
-          alt="站点logo"
-          width="30"
-          height="25"
-        />
-        ICP备案号:<a href="https://beian.miit.gov.cn">{{reqConfig.icpNumber}}</a>
+      <p class="icp_alt">
+        <img :src="reqConfig.LogoPic" alt="站点logo" width="30" height="26" />
+        <a href="https://beian.miit.gov.cn" rel="noreferrer" target="_blank">{{
+          reqConfig.icpNumber
+        }}</a>
       </p>
       <p class="icp_alt">
-        Power By <a href="http://github.com/bigjihua">BigJiHua</a> | © 2021
-        BigJiHua
+        <img :src="reqConfig.gaPic" alt="公安备案ICON" width="25" height="25" />
+        <a
+          href="https://beian.mps.gov.cn/#/query/webSearch?code=00000000000000"
+          rel="noreferrer"
+          target="_blank"
+          >{{ reqConfig.gaNumber }}</a
+        >
       </p>
       <p class="icp_alt">
-        <NuxtLink to="/Notify/YSZC">隐私政策</NuxtLink>
+        Power By &nbsp;<a href="http://github.com/bigjihua">BigJiHua</a>
+      </p>
+      <p class="icp_alt icp_alt3">
+        <span>© 2021-{{ new Date().getFullYear() }} | &nbsp;</span>
+        <NuxtLink to="/Notify/YSZC">隐私政策</NuxtLink> | &nbsp;
+        <NuxtLink to="/feedback/sitemap">站点导航</NuxtLink>
       </p>
     </div>
   </div>
@@ -51,5 +58,23 @@
   .nonetop {
     display: none;
   }
+}
+.icp_alt {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  margin: 5px 0;
+  > img {
+    margin-right: 5px;
+  }
+  > a {
+    font-size: 0.85rem;
+  }
+}
+.icp_alt3 {
+  flex-wrap: wrap;
 }
 </style>

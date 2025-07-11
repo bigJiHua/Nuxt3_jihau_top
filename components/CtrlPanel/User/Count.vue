@@ -5,7 +5,7 @@ import cagpwaApi from '@/api/User'
 const store = useUserDataStore()
 let UserData: any = reactive(store.Userdata.Users)
 const dialogFormVisible = ref(false)
-const data: any = reactive({
+const data: any = ref({
   oldpwd: '',
   newpwd: '',
 })
@@ -23,36 +23,36 @@ const rules = reactive<FormRules<typeof data>>({
   oldpwd: [{ validator: pwdCheck, trigger: 'blur' }],
   newpwd: [{ validator: pwdCheck, trigger: 'blur' }],
 })
-const validata = () => {
+const validata = (): boolean => {
   let bool = true
-  if (data.oldpwd === '' || data.newpwd === '') {
-    data.oldpwd = ''
-    data.newpwd = ''
+  if (data.value.oldpwd === '' || data.value.newpwd === '') {
+    data.value.oldpwd = ''
+    data.value.newpwd = ''
     ElMessage({
-      message: '请输入原密码和新密码且不能为空!且长度为6-12位',
+      message: '非法空值! 请输入长度为6-12位的原/新密码!',
       type: 'error',
     })
-    data.oldpwd = ''
-    data.newpwd = ''
+    data.value.oldpwd = ''
+    data.value.newpwd = ''
     bool = false
-  } else if (data.oldpwd === data.newpwd) {
+  } else if (data.value.oldpwd === data.value.newpwd) {
     ElMessage({
       type: 'error',
       message: '新密码不能与旧密码相同',
     })
-    data.oldpwd = ''
-    data.newpwd = ''
+    data.value.oldpwd = ''
+    data.value.newpwd = ''
     bool = false
   } else if (
-    !/^[^\u4e00-\u9fa5]{6,30}$/.test(data.oldpwd) &&
-    !/^[^\u4e00-\u9fa5]{6,30}$/.test(data.newpwd)
+    !/^[^\u4e00-\u9fa5]{6,30}$/.test(data.value.oldpwd) &&
+    !/^[^\u4e00-\u9fa5]{6,30}$/.test(data.value.newpwd)
   ) {
     ElMessage({
       message: '请输入原密码和新密码且不能为空!且长度为6-12位',
       type: 'error',
     })
-    data.oldpwd = ''
-    data.newpwd = ''
+    data.value.oldpwd = ''
+    data.value.newpwd = ''
     bool = false
   }
   return bool
@@ -61,13 +61,13 @@ const validata = () => {
 const ChangeUserPassword = async (action: boolean) => {
   dialogFormVisible.value = false
   if (!action) {
-    data.oldpwd = ''
-    data.newpwd = ''
+    data.value.oldpwd = ''
+    data.value.newpwd = ''
     return
   }
   // 校验规则
   if (validata()) {
-    const res = await cagpwaApi.CagPassword(data)
+    const res = await cagpwaApi.CagPassword(data.value)
     if (res.data.status === 200) {
       // 退出当前登录
       if (process.client) {
@@ -80,6 +80,9 @@ const ChangeUserPassword = async (action: boolean) => {
           location.reload()
         }, 1500)
       }
+    } else {
+      data.value.oldpwd = ''
+      data.value.newpwd = ''
     }
   }
 }
@@ -151,21 +154,27 @@ onMounted(() => {
       top="30vh"
     >
       <el-form :model="data" :rules="rules">
-        <el-form-item
-          label="请输入旧密码"
-          type="password"
-          show-password
-          prop="oldpwd"
-        >
-          <el-input v-model="data.oldpwd" autocomplete="off" />
+        <el-form-item label="请输入原密码" prop="oldpwd">
+          <el-input
+            v-model="data.oldpwd"
+            autocomplete="off"
+            type="password"
+            placeholder="请输入原密码"
+            show-password
+            minlength="6"
+            maxlength="12"
+          />
         </el-form-item>
-        <el-form-item
-          label="请输入新密码"
-          type="password"
-          show-password
-          prop="newpwd"
-        >
-          <el-input v-model="data.newpwd" autocomplete="off" />
+        <el-form-item label="请输入新密码" prop="newpwd">
+          <el-input
+            v-model="data.newpwd"
+            autocomplete="off"
+            type="password"
+            placeholder="请输入新密码"
+            show-password
+            minlength="6"
+            maxlength="12"
+          />
         </el-form-item>
       </el-form>
       <template #footer>

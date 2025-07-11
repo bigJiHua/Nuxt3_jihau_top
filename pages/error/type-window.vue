@@ -417,12 +417,29 @@
   </div>
   <div class="errorText">
     <div class="centerBox">
-      404
+      <p class="code">404</p>
+      <p class="tips">这就是你想要的错误页面！桌面端展示</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  layout: 'pagedf'
+})
+useHead({
+  title: '桌面端错误页面测试页面',
+  meta: [
+    {
+      name: 'keywords',
+      content: '站点测试、JiHua、jihau.top、测试页面',
+    },
+    {
+      name: 'description',
+      content: '这是jihau_top网站的桌面端测试页面，欢迎您访问此网站！',
+    },
+  ],
+})
 </script>
 
 <style lang="less" scoped>
@@ -441,8 +458,17 @@
     top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: white;
-    font-size: 10rem;
+    color: rgb(206, 28, 28);
+    .code {
+      font-size: 10rem;
+    }
+    .tips {
+      font-size: 1.2rem;
+      font-weight: 600;
+      background-color: rgba(255, 255, 255, 0.927);
+      display: inline-block;
+      padding: 10px;
+    }
   }
 }
 .errorPage {

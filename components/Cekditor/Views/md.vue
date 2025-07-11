@@ -14,8 +14,8 @@ import { ref, onMounted } from 'vue'
 const props = defineProps({
   content: {
     type: String,
-    default: '',
-  },
+    default: ''
+  }
 })
 const data = JSON.parse(props.content).data
 // 渲染 md 的插件

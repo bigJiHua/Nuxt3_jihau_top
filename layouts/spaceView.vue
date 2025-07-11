@@ -30,13 +30,13 @@ const UserTab = ref([
   { path: `/space/${user.value}/like`, name: '喜欢' },
   { path: `/space/${user.value}/collect`, name: '收藏' },
   { path: `/space/${user.value}/follow`, name: '关注' },
-  { path: `/space/${user.value}/fans`, name: '粉丝' }
+  { path: `/space/${user.value}/fans`, name: '粉丝' },
 ])
 // 获取用户数据
 const getUserData = async (): Promise<void> => {
   spaceApi
     .GetSpaceData(user.value)
-    .then((resData) => {
+    .then((resData: any) => {
       const { data: res } = resData
       UserData.value.username = res.data.UserData.username
       UserData.value.user_id = res.data.UserData.user_id
@@ -54,10 +54,12 @@ const getUserData = async (): Promise<void> => {
         isOad.value = true
       }, 500)
     })
-    .catch(async (err) => {
+    .catch(async (err: any) => {
       const { data: res } = err
       if (res.status === 404) {
         return await router.push('/404')
+      } else if (res.status === 403) {
+        return await router.push('/error/403')
       }
     })
 }
@@ -154,7 +156,7 @@ onMounted(async () => {
           <div class="UserListArea">
             <div :class="[{ isNone: istop }, 'menuTab']">
               <div
-                :class="[{ selectItem: isHerePath === index + 1}, 'menuItem']"
+                :class="[{ selectItem: isHerePath === index + 1 }, 'menuItem']"
                 v-for="(item, index) in UserTab"
                 :key="index"
                 @click="toTap(item.path, index)"

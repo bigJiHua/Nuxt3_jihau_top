@@ -4,16 +4,16 @@
 
 <script setup lang="ts">
 // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
-const props = defineProps<{
+const props = defineProps({
   content: {
-    type: string
-    default: ''
-  }
+    type: String,
+    default: '',
+  },
   type: {
-    type: string
-    default: 'set'
-  }
-}>()
+    type: String,
+    default: 'set',
+  },
+})
 const ckeditor = ref<any>(null)
 const emit = defineEmits(['cagEditorData'])
 const editorValue = ref('')
@@ -28,7 +28,10 @@ onMounted(() => {
   script.onload = () => {
     // 渲染编辑器
     ckeditor.value = window.CKEDITOR.replace('Cekditor', { height: '450px' })
-    ckeditor.value.setData(props.content)
+    // 设置编辑器内容
+    if (props.type === 'cag') {
+      ckeditor.value.setData(props.content)
+    }
     // 监听同步
     let Count = 0
     ckeditor.value.on('change', (e: any) => {
@@ -46,7 +49,7 @@ onMounted(() => {
       }
     })
     // 开启同步模式 如果模式不为改
-    if (props.type.type !== 'cag') {
+    if (props.type !== 'cag') {
       const get = setInterval(() => {
         ckeditor.value.setData(props.content)
       }, 200)
@@ -59,15 +62,15 @@ onMounted(() => {
     console.error('Failed to load CKEditor script', error)
   }
 })
-
-watch(
-  () => props.content,
-  (newValue: string) => {
-    if (newValue !== ckeditor.value.getData()) {
-      ckeditor.value.setData(newValue)
-    }
-  }
-)
+// 2025年6月8日 目前来看没什么用 留着先
+// watch(
+//   () => props.content,
+//   (newValue: string) => {
+//     if (newValue !== ckeditor.value.getData()) {
+//       ckeditor.value.setData(newValue)
+//     }
+//   }
+// )
 
 onBeforeUnmount(() => {
   // 销毁编辑器

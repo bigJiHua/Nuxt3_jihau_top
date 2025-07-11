@@ -1,20 +1,12 @@
 <script setup lang="ts">
 import { User, Document, MessageBox, Setting } from '@element-plus/icons-vue'
-const isCollapse = ref('280px')
 </script>
 
 <template>
-  <el-radio-group v-model="isCollapse" class="CollapseBox">
-    <el-radio-button :value="'280px'" v-if="isCollapse === '100px'"
-      >展开</el-radio-button
-    >
-    <el-radio-button :value="'100px'" v-else>收缩</el-radio-button>
-  </el-radio-group>
   <el-menu
     default-active="1"
-    :width="isCollapse"
+    width="280px"
     class="el-menu-vertical-demo CtrlAside"
-    :collapse="isCollapse === '100px'"
   >
     <el-menu-item index="1">
       <el-icon
@@ -77,8 +69,8 @@ const isCollapse = ref('280px')
   justify-content: center;
 }
 :deep(.el-radio-button__inner) {
-  background-color: #ECF5FF;
-  border: 1px solid #A0CFFF;
+  background-color: #ecf5ff;
+  border: 1px solid #a0cfff;
   color: #409eff;
 }
 </style>

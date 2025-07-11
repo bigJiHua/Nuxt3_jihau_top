@@ -43,7 +43,3 @@ span.list_year {
   font-weight: 500;
 }
 </style>
-
-function defineProps(arg0: { year: { type: NumberConstructor; default: number }; AllData: { type: ArrayConstructor; default: () => never[] } }) {
-  throw new Error("Function not implemented.")
-}

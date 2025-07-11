@@ -24,12 +24,9 @@ const delMsg = async (id: string): Promise<any> => {
   // eslint-disable-next-line no-useless-return
   if (!(await WarningTips('你确定要删除这个通知吗？'))) return
   getMsgApi
-    .DelUserMessage(id,'delete')
+    .DelUserMessage(id, 'delete')
     .then(() => {
       getNewListData()
-    })
-    .catch((err: any) => {
-      console.log(err)
     })
 }
 // 申明对父组件操作
@@ -86,14 +83,15 @@ const getNewListData = (): void => {
 }
 
 .MsgBoxItemLeft {
+  width: 90%;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .UserAvatar {
-  width: 45px;
-  height: 45px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   overflow: hidden;
   margin-right: 20px;
@@ -109,8 +107,11 @@ const getNewListData = (): void => {
   flex-direction: column;
   font-weight: 400;
   margin-right: 10px;
-
+  width: 100%;
+  word-break: break-word;
   .MsgBoxItemRightContent {
+    width: 100%;
+    word-wrap: break-word;
     margin: 8px 0;
   }
 }
@@ -136,6 +137,7 @@ const getNewListData = (): void => {
 
 .MsgBoxItem {
   position: relative;
+  width: 95%;
 }
 .isState {
   position: absolute;

@@ -3,7 +3,6 @@
 export default defineNuxtConfig({
   devtools: {
     enabled: true,
-
     timeline: {
       enabled: true
     }
@@ -96,5 +95,9 @@ export default defineNuxtConfig({
     proxy: true
   },
   components: true,
-  ssr: true
+  ssr: true,
+  nitro: {
+    compatibilityDate: '2025-07-06'
+  }
+
 })

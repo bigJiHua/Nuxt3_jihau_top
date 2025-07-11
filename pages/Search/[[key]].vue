@@ -14,7 +14,7 @@ const SearchFunc = async () => {
   } else {
     ElMessage({
       message: '搜索词/搜索类型不能为空！',
-      type: 'warning'
+      type: 'warning',
     })
   }
 }
@@ -25,7 +25,7 @@ onMounted(() => {
   }
 })
 useHead({
-  title: '搜索--jihau.top全站搜索'
+  title: '搜索--jihau.top全站搜索',
 })
 </script>
 
@@ -58,7 +58,7 @@ useHead({
 
 <style lang="less" scoped>
 .value_area {
-  >ul {
+  > ul {
     height: 100%;
     width: 100%;
     list-style: none;
@@ -113,15 +113,14 @@ useHead({
 
   .Content_Area {
     height: 100%;
-    // background-color: rgba(240, 240, 240, 0.4);
-    padding: 20px;
-
+    padding: 5px;
     p:first-child {
-      font-weight: 600;
+      font-weight: 400;
       text-align: center;
-      font-size: 3.5rem;
+      font-size: 3rem;
       color: rgb(14, 14, 14) !important;
       letter-spacing: 2rem;
+      margin: 10px;
     }
   }
 
@@ -137,7 +136,5 @@ useHead({
     height: 75vh;
     overflow: scroll;
   }
-  
 }
 </style>
-

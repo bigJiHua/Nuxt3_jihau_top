@@ -1,0 +1,333 @@
+/* 限定作用域：仅影响 .html-content 内的内容 */
+.html-content {
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+  font-size: 0.9rem;
+  overflow-x: scroll; /* 横向滚动条 */
+  word-wrap: break-word; /* 自动换行 */
+  letter-spacing: 2px;
+}
+@media (max-width: 755px) {
+  .html-content {
+    font-size: 1rem;
+  }
+}
+/* 块级元素结构样式 */
+.html-content article,
+.html-content aside,
+.html-content details,
+.html-content figcaption,
+.html-content figure,
+.html-content footer,
+.html-content header,
+.html-content main,
+.html-content nav,
+.html-content section,
+.html-content summary,
+.html-content div,
+.html-content p,
+.html-content h1,
+.html-content h2,
+.html-content h3,
+.html-content h4,
+.html-content h5,
+.html-content h6,
+.html-content ul,
+.html-content ol,
+.html-content li,
+.html-content dl,
+.html-content dt,
+.html-content dd,
+.html-content pre,
+.html-content blockquote,
+.html-content address,
+.html-content fieldset,
+.html-content legend {
+  font-size: 1rem;
+  margin: 5px 0;
+  color: rgb(0 0 0 / 0.68);
+}
+@media (max-width: 755px) {
+  .html-content pre,
+  .html-content code {
+    display: block; /* 让它成为块级元素 */
+    width: 100%; /* 宽度根据容器自适应 */
+    max-width: 100%; /* 防止溢出容器 */
+    overflow-x: auto; /* 横向滚动开启 */
+    white-space: pre; /* 保留缩进和换行格式 */
+    font-size: 0.9rem; /* 字体大小 */
+    line-height: 1.5; /* 行高设置为1.5倍 */
+    box-sizing: border-box;
+    padding: 0 5px !important; /* 内边距设置为10px */
+    font-family: Menlo, Monaco, Consolas, Courier New, monospace;
+  }
+}
+.html-content pre,
+.html-content code {
+  padding: 10px !important; /* 内边距设置为10px */
+}
+.html-content pre {
+  border: 1px solid #eeeeee;
+  background-color: rgb(255, 255, 255); /* 背景颜色设置为浅灰色 */
+  color: rgb(0, 0, 0); /* 字体颜色设置为黑色 */
+  margin: 10px 0; /* 上下外边距设置为10px */
+}
+
+.html-content code {
+  padding: 5px;
+}
+
+.html-content pre:before {
+  content: ' ';
+  display: block;
+  height: 30px;
+  width: 100%;
+  background: url(data:image/png;base64,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)
+    10px 10px no-repeat;
+  background-size: 40px;
+}
+
+/* 标题 */
+.html-content h1 {
+  font-size: 2em;
+}
+.html-content h2 {
+  font-size: 1.5em;
+}
+.html-content h3 {
+  font-size: 1.17em;
+}
+.html-content h4 {
+  font-size: 1em;
+}
+.html-content h5 {
+  font-size: 0.93em;
+}
+.html-content h6 {
+  font-size: 0.85em;
+}
+
+/* 列表 */
+.html-content ul,
+.html-content ol {
+  padding-left: 1rem;
+}
+.html-content li {
+  margin-bottom: 4px;
+}
+.html-content ul {
+  list-style: disc;
+}
+.html-content ol {
+  list-style: decimal;
+}
+
+/* 表格 */
+.html-content table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #999;
+}
+.html-content th,
+.html-content td {
+  border: 1px solid #999;
+  padding: 6px;
+}
+.html-content thead {
+  background-color: #eee;
+}
+
+/* 表单元素 */
+.html-content form,
+.html-content label,
+.html-content input,
+.html-content select,
+.html-content textarea,
+.html-content button,
+.html-content fieldset,
+.html-content legend,
+.html-content datalist,
+.html-content output,
+.html-content progress,
+.html-content meter {
+  font-family: inherit;
+  margin: 4px;
+  padding: 6px;
+  border: 1px solid #ccc;
+}
+.html-content input,
+.html-content textarea,
+.html-content select {
+  width: auto;
+}
+.html-content textarea {
+  resize: vertical;
+}
+.html-content button,
+.html-content input[type='submit'] {
+  background: #007bff;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.html-content button:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
+.html-content input:focus,
+.html-content textarea:focus,
+.html-content select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* 文本/内联语义元素 */
+.html-content b,
+.html-content strong,
+.html-content i,
+.html-content em,
+.html-content mark,
+.html-content small,
+.html-content sub,
+.html-content sup,
+.html-content span,
+.html-content abbr,
+.html-content acronym,
+.html-content time,
+.html-content var,
+.html-content samp,
+.html-content kbd,
+.html-content code,
+.html-content del,
+.html-content ins,
+.html-content u {
+  margin: 2px;
+  padding: 2px;
+  display: inline;
+}
+
+/* 媒体元素 */
+.html-content img,
+.html-content video,
+.html-content audio,
+.html-content canvas,
+.html-content picture,
+.html-content svg,
+.html-content iframe,
+.html-content object,
+.html-content embed {
+  max-width: 400px !important;
+  max-height: 400px !important;
+}
+@media (max-width: 755px) {
+  .html-content img,
+  .html-content video,
+  .html-content audio,
+  .html-content canvas,
+  .html-content picture,
+  .html-content svg,
+  .html-content iframe,
+  .html-content object,
+  .html-content embed {
+    margin: 0 auto;
+    max-width: 350px !important;
+    max-height: 225px !important;
+    background-color: #fafafa;
+  }
+}
+/* 引用与注释 */
+.html-content blockquote {
+  padding-left: 1em;
+  border-left: 4px solid #0080ff;
+  background-color: #dcedfe;
+  font-size: 1rem;
+  padding: 10px;
+}
+.html-content q {
+  quotes: '“' '”' '‘' '’';
+}
+.html-content cite {
+  font-style: italic;
+}
+
+/* 特殊元素 */
+.html-content hr {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 1em 0;
+}
+
+.html-content br {
+  display: block;
+  margin: 4px 0;
+}
+.html-content noscript {
+  color: red;
+  font-weight: bold;
+}
+.html-content template {
+  display: none;
+}
+
+/* ruby 注音 */
+.html-content ruby,
+.html-content rt,
+.html-content rp {
+  border: 1px dashed #bbb;
+  padding: 2px;
+}
+
+/* 对话框 */
+.html-content dialog {
+  border: 1px solid #666;
+  padding: 1em;
+  background: #fff;
+  color: #000;
+}
+
+/* 交互元素 */
+.html-content details,
+.html-content summary {
+  border: 1px solid #aaa;
+  padding: 8px;
+  margin: 4px 0;
+}
+.html-content summary {
+  cursor: pointer;
+}
+
+/* Web 组件结构可视化 */
+.html-content slot {
+  display: inline-block;
+  padding: 4px;
+  background: #eef;
+  border: 1px dashed #88c;
+}
+.html-content shadow-root {
+  display: block;
+  border: 1px dashed #ccc;
+  padding: 8px;
+}
+
+/* HTML5 语义边框强化（便于调试结构） */
+.html-content section,
+.html-content nav,
+.html-content article,
+.html-content aside,
+.html-content header,
+.html-content footer,
+.html-content main {
+  border: 1px dashed #aaa;
+  background-color: #f0f0f0;
+}
+
+/* contents.css */
+
+pre {
+  white-space: pre-wrap; /* CSS 2.1 */
+  word-wrap: break-word; /* IE7 */
+  -moz-tab-size: 4;
+  tab-size: 4;
+  margin: 10px 0;
+  background: #f3f3f3;
+}

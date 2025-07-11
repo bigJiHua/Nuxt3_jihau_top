@@ -1,22 +1,22 @@
 import request from '../request'
 // 获取当前用户所有文章
-const UsergetArticle = function (page: number, type?: number) {
+const UsergetArticle = (page: number, type?: number): any => {
   // 复用接口 type为2则获取待发布的文章list
   return request.get('/article?page=' + page + '&type=' + type)
 }
 // 添加文章
-const UseraddArticle = function (data: {
+const UseraddArticle = (data: {
   username: string
   title: string
   content: string
   cover_img: string
   lable: string
-  keyword: string,
-  describes: string,
-  state: string,
-  pub_date: string,
+  keyword: string
+  describes: string
+  state: string
+  pub_date: string
   isMd: string
-}) {
+}): any => {
   const params = new URLSearchParams()
   params.append('username', data.username)
   params.append('title', data.title)
@@ -31,30 +31,30 @@ const UseraddArticle = function (data: {
   return request.post('/article/addart', params)
 }
 // 删除当前用户文章
-const UserdelArticle = function (id: string) {
+const UserdelArticle = (id: string): any => {
   const params = new URLSearchParams()
   params.append('id', id)
   return request.post('/article/delart', params)
 }
 // 获取要编辑的文章数据
-const UsergetArticleData = function (id: string) {
+const UsergetArticleData = (id: string): any => {
   const params = new URLSearchParams()
   params.append('id', id)
   return request.get('/article/getart', { params })
 }
 // 编辑文章
-const UsercagArticle = function (data: {
-  id: string,
-  username: string,
-  title: string,
-  content: string,
-  cover_img: string,
-  lable: string,
-  keyword: string,
-  article_id: string,
-  describes: string,
-  state: string,
-}) {
+const UsercagArticle = (data: {
+  id: string
+  username: string
+  title: string
+  content: string
+  cover_img: string
+  lable: string
+  keyword: string
+  article_id: string
+  describes: string
+  state: string
+}): any => {
   const params = new URLSearchParams()
   params.append('id', data.id)
   params.append('username', data.username)

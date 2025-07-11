@@ -15,15 +15,15 @@ export const useUserDataStore = defineStore('UserData', {
           id: 0,
           user_id: '',
           username: '',
-          isadmin: 1,
-          iscom: 1,
-          isart: 1,
-          isupimg: 1,
-          isrel: 1,
-          isspace: 1,
-          islike: 1,
-          iscol: 1,
-          isfans: 1
+          isadmin: '',
+          iscom: '',
+          isart: '',
+          isupimg: '',
+          isrel: '',
+          isspace: '',
+          islike: '',
+          iscol: '',
+          isfans: ''
         }
       }
     } as any,
@@ -40,6 +40,9 @@ export const useUserDataStore = defineStore('UserData', {
   getters: {
     getUserData (): any {
       return this.Userdata
+    },
+    getPower (): any {
+      return this.Userdata.Users.UserPower
     }
   }
 })

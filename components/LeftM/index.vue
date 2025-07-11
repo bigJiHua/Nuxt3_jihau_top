@@ -58,7 +58,7 @@ const getNewArticleList = async (): Promise<void> => {
   <div id="" class="left_box">
     <client-only><Lunbo></Lunbo></client-only>
     <div class="article_ListView">
-      <p class="article_alltitle st">
+      <p class="article_alltitle">
         <span>最新文章</span>
         <span>New article</span>
       </p>
@@ -90,25 +90,22 @@ const getNewArticleList = async (): Promise<void> => {
 
 .article_alltitle {
   font-weight: bolder;
-  font-size: 2rem;
+  color: rgba(0, 0, 0, 0.712);
+  font-size: 1.6rem;
+  margin: 10px 0;
+  font-family: 'STSong';
+}
+
+.article_alltitle span:nth-child(2) {
+  font-size: 1rem;
+  margin-left: 10px;
 }
 
 @media only screen and (min-width: 755px) {
   .left_box {
     width: 100%;
   }
-
-  .article_alltitle span:nth-child(2) {
-    top: 18px;
-    font-size: 1rem;
-  }
 }
 
-@media only screen and (max-width: 755px) {
-  .article_alltitle span:nth-child(2) {
-    top: 18px;
-    margin-left: 10px;
-    font-size: 1.2rem;
-  }
-}
+@media only screen and (max-width: 755px) {}
 </style>

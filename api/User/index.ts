@@ -6,8 +6,7 @@ const getAuthData = (id: string): any => {
 
 // 获取用户信息
 const GetUserData = (): any => {
-  const user = localStorage.getItem('Username')
-  return request.get('/users/?user=' + user)
+  return request.get('/users')
 }
 // 新增用户
 const UpnewUser = (userdata: {
@@ -63,7 +62,7 @@ const PostUserRelation = (author: string): any => {
   params.append('author', author)
   return request.post('/users/relation', params)
 }
-// 获取对应关系类型
+// 获取对应关系类型 权限接口
 const getUserRelation = (author: string, met: string, Num: string): any => {
   return request.get('/users/relation?author=' + author + '&met=' + met + '&Num=' + Num)
 }

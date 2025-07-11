@@ -4,22 +4,22 @@ const Secret: string = 'secret key 123'
 
 // 随机加密 randomKey 推荐采取token; data 加密的数据
 // 防止逆推 现将变量命名修改为 错误
-const getRandomSubstring = (Krandomey: string, data: string) => {
-  const id = Math.floor(Math.random() * (Krandomey.length - 11));
+const getRandomSubstring = (Krandomey: string, data: string): object => {
+  const id = Math.floor(Math.random() * (Krandomey.length - 11))
   const Srandomecret = Krandomey.substr(id, 10)
   return {
     data: CryptoJS.AES.encrypt(data, Srandomecret).toString(),
-    id: id
+    id
   }
 }
 
 // 封装数据加密方法
-function encryptData(data: any): string {
+const encryptData = (data: any): string => {
   return CryptoJS.AES.encrypt(JSON.stringify(data), Secret).toString()
 }
 
 // 封装数据解密方法
-function decryptData(encryptedData: string): string {
+const decryptData = (encryptedData: string): string => {
   const bytes = CryptoJS.AES.decrypt(encryptedData, Secret)
   const decryptedData = bytes.toString(CryptoJS.enc.Utf8)
   return JSON.parse(decryptedData)

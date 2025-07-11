@@ -26,9 +26,9 @@ onMounted(() => {
       <el-tab-pane label="隐私设置">
         <CtrlPanelUserPrivacy></CtrlPanelUserPrivacy>
       </el-tab-pane>
-      <el-tab-pane label="屏蔽名单">
+      <!-- <el-tab-pane label="屏蔽名单">
         <CtrlPanelUserShield></CtrlPanelUserShield>
-      </el-tab-pane>
+      </el-tab-pane> -->
     </el-tabs>
   </div>
 </template>
