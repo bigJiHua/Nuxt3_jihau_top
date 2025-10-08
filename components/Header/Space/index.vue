@@ -20,12 +20,12 @@ const key: any = ref('')
 const isLogin = ref(false)
 const isHerePath: Ref<number> = ref(0)
 const UserTab = ref([
-  // { path: `/space/${props.user}/index`, name: '动态' },
-  { path: `/space/${props.user}/article`, name: '文章' },
-  { path: `/space/${props.user}/like`, name: '喜欢' },
-  { path: `/space/${props.user}/collect`, name: '收藏' },
-  { path: `/space/${props.user}/follow`, name: '关注' },
-  { path: `/space/${props.user}/fans`, name: '粉丝' },
+  // { path: `/space/${props.user}/index`, name: '动态', id : 0 },
+  { path: `/space/${props.user}/article`, name: '文章', id: 1 },
+  { path: `/space/${props.user}/like`, name: '喜欢', id: 2 },
+  { path: `/space/${props.user}/collect`, name: '收藏', id: 3 },
+  { path: `/space/${props.user}/follow`, name: '关注', id: 4 },
+  { path: `/space/${props.user}/fans`, name: '粉丝', id: 5 },
 ])
 // 手动跳转
 const toTap = (path: string, index: number): void => {
@@ -47,31 +47,35 @@ onMounted(() => {
   if (process.client ?? false) {
     isLogin.value = localStorage.getItem('token') !== null
   }
-  setInterval(() => {
-    const path: any = router.currentRoute.value.path.match(/\/([^/]+)$/)
-    switch (path[1]) {
-      case 'index':
-        isHerePath.value = 0
-        break
-      case 'article':
-        isHerePath.value = 1
-        break
-      case 'like':
-        isHerePath.value = 2
-        break
-      case 'collect':
-        isHerePath.value = 3
-        break
-      case 'follow':
-        isHerePath.value = 4
-        break
-      case 'fans':
-        isHerePath.value = 5
-        break
-      default:
-        isHerePath.value = 0
-    }
-  }, 500)
+  watch(
+    () => router.currentRoute.value.path,
+    (newPath) => {
+      const path = newPath.match(/\/([^/]+)$/)
+      switch (path?.[1]) {
+        case 'index':
+          isHerePath.value = 0
+          break
+        case 'article':
+          isHerePath.value = 1
+          break
+        case 'like':
+          isHerePath.value = 2
+          break
+        case 'collect':
+          isHerePath.value = 3
+          break
+        case 'follow':
+          isHerePath.value = 4
+          break
+        case 'fans':
+          isHerePath.value = 5
+          break
+        default:
+          isHerePath.value = 0
+      }
+    },
+    { immediate: true }
+  )
 })
 </script>
 
@@ -79,9 +83,10 @@ onMounted(() => {
   <div id="SpaceHeader">
     <div class="Header">
       <div class="trsBox">
+        <!-- 正常菜单 -->
         <div :class="[{ isRotX: !istop, noRotX: istop }, 'Headermenu']">
           <!-- <img
-        :src="reqConfig.LogoPic"
+        :src="icon.LogoPic"
         alt="Logo"
         class="logo"
         style="width: 35px; height: 25px"
@@ -101,10 +106,11 @@ onMounted(() => {
             </span>
           </div>
         </div>
+        <!-- 翻转菜单 -->
         <div :class="[{ isRotX: istop, noRotX: !istop }, 'HeaderTab']">
           <div class="tabLIst">
             <div
-              :class="[{ selectItem: isHerePath === index + 1 }, 'menuItem']"
+              :class="[{ selectItem: isHerePath === item.id }, 'menuItem']"
               v-for="(item, index) in UserTab"
               :key="index"
               @click="toTap(item.path, index)"
@@ -112,38 +118,10 @@ onMounted(() => {
               <span class="TabPath">{{ item.name }}</span>
             </div>
           </div>
-          <div class="SearchBox">
-            <el-input
-              v-model="key"
-              placeholder="搜搜搜~"
-              class="input-with-select"
-            >
-              <template #append>
-                <el-button :icon="Search" @click="SearchFunc" />
-              </template>
-            </el-input>
-          </div>
-          <el-button
-            class="followBtn"
-            v-if="istop && !isSelf"
-            type="primary"
-            plain
-            :bg="false"
-          >
-            <el-icon>
-              <Plus />
-            </el-icon>
-            &nbsp;关注ta
-          </el-button>
-          <nuxt-link class="EditUserData" to="/Users" v-if="istop && isSelf">
-            <el-button class="followBtn" type="primary" plain
-              >编辑个人资料
-            </el-button></nuxt-link
-          >
         </div>
       </div>
       <div class="LoginBtn">
-        <div class="SearchBox" v-if="!istop">
+        <div class="SearchBox">
           <el-input
             v-model="key"
             placeholder="搜搜搜~"
@@ -232,7 +210,13 @@ a {
   width: 100%;
 }
 .menuItem {
-  margin: 10px;
+  padding: 10px;
+  width: 50px;
+  text-align: center;
+}
+.menuItem:hover {
+  background-color: #f5f5f5;
+  cursor: pointer;
 }
 .selectItem {
   padding-bottom: 5px;

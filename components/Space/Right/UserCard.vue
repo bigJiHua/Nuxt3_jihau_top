@@ -1,63 +1,51 @@
 <script lang="ts" setup>
-import { useRoute } from 'vue-router'
-import getAuthorApi from '@/api/User'
 import { useUserDataStore } from '@/stores/useUserData'
 const store = useUserDataStore()
 
-const isLoding = ref(false)
-const isSelf = ref(false)
-const Users: any = reactive({
-  fans: 0,
-  user_content: '',
-  user_id: '',
-  user_pic: '',
-  useridentity: '',
-  username: '',
-})
-const Userdata: any = reactive({
-  articles: 0,
-  goodnums: 0,
-  collects: 0,
-  comments: 0,
-})
-const router = useRoute()
-// 获取作者信息
-const getauthData = async (): Promise<void> => {
-  const { data: res } = await getAuthorApi.getAuthData(
-    router.params.id as string
-  )
-  Users.fans = res.data.Users.fans
-  Users.user_content = res.data.Users.user_content
-  Users.user_id = res.data.Users.user_id
-  Users.user_pic = res.data.Users.user_pic
-  Users.user_bgc = res.data.Users.user_bgc
-  Users.useridentity = res.data.Users.useridentity
-  Users.username = res.data.Users.username
-  Userdata.articles = res.data.articles
-  Userdata.goodnums = res.data.goodnums
-  Userdata.collects = res.data.collects
-  Userdata.comments = res.data.comments
-  isLoding.value = false
-  void getRelation()
+interface UserInfo {
+  isSelf: boolean
+  Users: {
+    username: string
+    user_id: string
+    useridentity?: string
+    user_pic?: string
+    user_content?: string
+    user_bgc?: string
+    fans?: number
+  }
+  articles: number
+  goodnums: number
+  collects: number
+  fans: number
 }
+const sonData = inject('sonsData') as Ref<UserInfo>
+const isSelf = computed(() => sonData.value.isSelf)
+const Users = computed(() => sonData.value.Users)
+const Userdata = computed(() => ({
+  articles: sonData.value.articles,
+  goodnums: sonData.value.goodnums,
+  collects: sonData.value.collects,
+  fans: sonData.value.fans,
+}))
+
 const relation: Ref<boolean> = ref(false)
 // 获取用户关系
 const getRelation = async (): Promise<void> => {
-  const storeUN = computed(() => store.Userdata?.Users?.username)
   // 如果是本人则截断
-  if (storeUN.value === Users.username) {
-    isSelf.value = true
+  if (localStorage.getItem('Username') === Users.value.username) {
     return
   }
+  // 获取用户关系
+
   if (isLogin.value) {
     // 如果登录了且不是本人就 获取用户关系 权限接口
-    const res = await fllowMe.SelectRelation(Users.username)
+    const res = await fllowMe.SelectRelation(Users.value.username)
     relation.value = res
   }
 }
 // 添加用户关系
 const addRelation = async (met: boolean): Promise<void> => {
-  if (localStorage.getItem('Username') === Users.username) {
+  if (localStorage.getItem('Username') === Users.value.username) {
     ElMessage({
       message: '你很酷！ 但是不能关注自己哟！',
       type: 'warning',
@@ -71,9 +59,9 @@ const addRelation = async (met: boolean): Promise<void> => {
     })
   } else {
     if (
-      Users.username === '' ||
-      Users.username === undefined ||
-      Users.username === null
+      Users.value.username === '' ||
+      Users.value.username === undefined ||
+      Users.value.username === null
     ) {
       ElMessage({
         message: '非法',
@@ -85,7 +73,7 @@ const addRelation = async (met: boolean): Promise<void> => {
     if (await WarningTips(tip)) {
       relation.value = met
       await fllowMe
-        .AddRelation(Users.username)
+        .AddRelation(Users.value.username)
         .then(() => {
           // 关注成功
           relation.value = true
@@ -98,9 +86,8 @@ const addRelation = async (met: boolean): Promise<void> => {
     }
   }
 }
-
+const isLogin = ref(isSelf.value)
 // 监听登录
-const isLogin = ref(false)
 const StoreisLogin = computed(() => store.isLogin)
 watch(StoreisLogin, (newVal) => {
   if (newVal) {
@@ -110,7 +97,7 @@ watch(StoreisLogin, (newVal) => {
   }
 })
 onMounted(() => {
-  void getauthData()
+  void getRelation()
 })
 </script>
 
@@ -128,9 +115,7 @@ onMounted(() => {
         <img :src="Users.user_pic" alt="logo" class="logo" />
       </div>
       <div class="username">
-        <nuxt-link :to="'/space/' + Users.username">{{
-          Users.username
-        }}</nuxt-link>
+        {{ Users.username }}
         <p class="flag-text">
           {{ Users.user_content }}
         </p>
@@ -147,16 +132,29 @@ onMounted(() => {
         <p class="NumText">收藏数</p>
       </div>
       <div class="showNumDataItem">
-        <p class="Num">{{ Users.fans }}</p>
+        <p class="Num">{{ Userdata.fans }}</p>
         <p class="NumText">粉丝数</p>
       </div>
     </div>
     <!-- 用户操作区域 -->
     <div class="UserActionArea">
-      <div v-if="isSelf && isLogin">
+      <div
+        v-if="isSelf && isLogin"
+        style="
+          width: 100%;
+          display: flex;
+          justify-content: space-around;
+          flex-wrap: wrap;
+        "
+      >
+        <nuxt-link class="EditUserData" to="/editor">
+          <el-button type="primary" plain class="UABtton"
+            >撰写文章</el-button
+          ></nuxt-link
+        >
         <nuxt-link class="EditUserData" to="/Users">
           <el-button type="primary" plain class="UABtton"
-            >编辑个人信息</el-button
+            >个人信息</el-button
           ></nuxt-link
         >
       </div>
@@ -166,7 +164,7 @@ onMounted(() => {
           plain
           @click="addRelation(true)"
           class="UABtton"
-          >关注我</el-button
+          >关注ta</el-button
         >
       </div>
       <div v-else>
@@ -186,6 +184,9 @@ onMounted(() => {
 .UserArea {
   background-color: #fff;
   border-radius: 5px;
+  margin-bottom: 10px;
+  width: 20vw;
+  padding: 10px;
 }
 
 .background {

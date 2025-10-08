@@ -1,58 +1,58 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import cagUserAPi from '@/api/User'
-
-const UserPower = ref({
-  isspace: 0,
-  isrel: 0,
-  isfans: 0,
-  islike: 0,
-  iscol: 0,
-})
-
-const UserPrivacy = ref<any[]>([])
+interface data {
+  class: string
+  text: string
+  value: boolean
+}
+const UserPrivacy = ref<data[]>([
+  {
+    class: '',
+    text: '',
+    value: false
+  }
+])
 
 const ChangUserPower = async (key: string, value: boolean): Promise<void> => {
   if (await WarningTips('你确定要改变改权限吗？')) {
     await cagUserAPi.CagUserPower(key, value ? 'true' : 'false')
-    getUserPower()
+    void getUserPower()
   } else {
     UserPrivacy.value.map((item) =>
       item.class === key ? (item.value = !value) : item.value
     )
   }
 }
-
+// 获取权限
 const getUserPower = async (): Promise<void> => {
   const { data: res } = await cagUserAPi.CagUserPower('get', 'true')
-  UserPower.value = res.data[0]
-  // 更新 UserPrivacy
   UserPrivacy.value = [
     {
       class: 'isspace',
       text: '查看我的空间',
-      value: Number(UserPower.value.isspace) === 1,
+      value: Number(res.data.isspace) === 1
     },
     {
       class: 'isrel',
       text: '查看我的关注',
-      value: Number(UserPower.value.isrel) === 1,
+      value: Number(res.data.isrel) === 1
     },
     {
       class: 'isfans',
       text: '查看我的粉丝',
-      value: Number(UserPower.value.isfans) === 1,
+      value: Number(res.data.isfans) === 1
     },
     {
       class: 'islike',
       text: '查看我的喜欢',
-      value: Number(UserPower.value.islike) === 1,
+      value: Number(res.data.islike) === 1
     },
     {
       class: 'iscol',
       text: '查看我的收藏',
-      value: Number(UserPower.value.iscol) === 1,
-    },
+      value: Number(res.data.iscol) === 1
+    }
   ]
 }
 

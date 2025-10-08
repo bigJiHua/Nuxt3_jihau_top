@@ -53,30 +53,23 @@
     display: block; /* 让它成为块级元素 */
     width: 100%; /* 宽度根据容器自适应 */
     max-width: 100%; /* 防止溢出容器 */
-    overflow-x: auto; /* 横向滚动开启 */
     white-space: pre; /* 保留缩进和换行格式 */
     font-size: 0.9rem; /* 字体大小 */
     line-height: 1.5; /* 行高设置为1.5倍 */
     box-sizing: border-box;
-    padding: 0 5px !important; /* 内边距设置为10px */
+    padding: 10px !important; /* 内边距设置为10px */
     font-family: Menlo, Monaco, Consolas, Courier New, monospace;
   }
 }
 .html-content pre,
 .html-content code {
-  padding: 10px !important; /* 内边距设置为10px */
+  padding: 5px; /* 内边距设置为10px */
 }
 .html-content pre {
   border: 1px solid #eeeeee;
-  background-color: rgb(255, 255, 255); /* 背景颜色设置为浅灰色 */
+  background-color: rgb(62 62 62); /* 背景颜色设置为浅灰色 */
   color: rgb(0, 0, 0); /* 字体颜色设置为黑色 */
-  margin: 10px 0; /* 上下外边距设置为10px */
 }
-
-.html-content code {
-  padding: 5px;
-}
-
 .html-content pre:before {
   content: ' ';
   display: block;

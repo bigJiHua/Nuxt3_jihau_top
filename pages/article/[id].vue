@@ -48,10 +48,10 @@ const Aurl = `${reqConfig.baseUrl}/data/article/`
 const { data } = await uFetch.useCustomFetch(Aurl, {
   method: 'get',
   params: {
-    id: route.params.id,
+    id: route.params.id
   },
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-  key: `post-${route.params.id}`,
+  key: `post-${route.params.id}`
 })
 if (/\bmd[A-Z0-9]+\b/g.test(route.params.id as string)) isMd.value = true
 const res: any = data.value
@@ -375,7 +375,7 @@ onMounted(() => {
 .content > p > p > img {
   max-width: 350px;
 }
-
+// 电脑窗口
 @media only screen and (min-width: 755px) {
   .article {
     display: flex;
@@ -389,15 +389,17 @@ onMounted(() => {
   .leftContent {
     padding: 20px;
     border-radius: 12px;
-    margin-right: 20px;
     width: 50vw;
+    max-width: 700px;
   }
 
   .ArticleRightPanel {
     width: 25vw;
+    max-width: 480px;
+    margin-left: 20px;
   }
 }
-
+// 移动窗口
 @media only screen and (max-width: 755px) {
   .article {
     width: 95vw;

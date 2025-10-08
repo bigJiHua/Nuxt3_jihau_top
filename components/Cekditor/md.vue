@@ -11,18 +11,18 @@ import zhHans from 'bytemd/locales/zh_Hans.json'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Editor, Viewer } from '@bytemd/vue-next'
 import 'juejin-markdown-themes/dist/juejin.min.css'
-import 'highlight.js/styles/default.css'
+import 'highlight.js/styles/atom-one-dark.css'
 
 // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 const props = defineProps({
   content: {
     type: String,
-    default: '',
+    default: ''
   },
   type: {
     type: String,
-    default: 'set',
-  },
+    default: 'set'
+  }
 })
 // 渲染md的插件
 const plugins = ref([
@@ -32,7 +32,7 @@ const plugins = ref([
   frontmatter(),
   breaks(),
   footnotes(),
-  mediumZoom(),
+  mediumZoom()
 ])
 const mdContent = ref('')
 const emit = defineEmits(['cagEditorData'])

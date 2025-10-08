@@ -11,25 +11,36 @@ const user: Ref<string> = ref(
 ) as Ref<string>
 const MyArticleListData: Ref<any[]> = ref([])
 const AllNum: Ref<number> = ref(0)
+const loading = ref(false)
+const isend = ref(false)
+// 每次获取10条文章
 const getArticle = async (num: number): Promise<void> => {
-  if (num === 0) num = 0
   const { data: res } = await getArtDataApi.UsergetArticle(num, user.value)
-  MyArticleListData.value = []
-  MyArticleListData.value = [...res.data]
-  AllNum.value = res.Num
-}
-// 上一页
-const prevNum = (num: number) => {
-  void getArticle((num - 1) * 10)
-}
-// 数字
-const pagerNum = (num: number) => {
-  void getArticle((num - 1) * 10)
+  if (res.data.length === 0) {
+    isend.value = true
+    loading.value = false
+    return
+  }
+  if (num !== 0) {
+    setTimeout(() => {
+      AllNum.value = res.Num
+      loading.value = false
+      MyArticleListData.value = [...MyArticleListData.value, ...res.data]
+    }, 800)
+  } else {
+    AllNum.value = res.Num
+    MyArticleListData.value = [...MyArticleListData.value, ...res.data]
+  }
 }
 // 下一页
-const nextNum = (num: number) => {
-  void getArticle((num - 1) * 10)
+const pageNum: Ref<number> = ref(1)
+const nextNum = (): void => {
+  if (isend.value) return
+  pageNum.value++
+  loading.value = true
+  void getArticle((pageNum.value - 1) * 10)
 }
+
 onMounted(() => {
   void getArticle(0)
 })
@@ -40,14 +51,9 @@ onMounted(() => {
     <h3>他的文章</h3>
     <SpaceItemCard :articleList="MyArticleListData"></SpaceItemCard>
     <div class="pagBtnArea" v-if="!(AllNum <= 10)">
-      <el-pagination
-        background
-        layout="prev, pager, next"
-        :total="AllNum"
-        @current-change="prevNum"
-        @prev-click="pagerNum"
-        @next-click="nextNum"
-      />
+      <div @click="nextNum" class="btn" v-loading="loading">
+        {{ isend ? '没有更多了' : '加载更多...' }}
+      </div>
     </div>
   </div>
   <el-empty v-else>
@@ -60,5 +66,11 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   padding: 5px;
+}
+.btn {
+  padding: 10px;
+  text-align: center;
+  cursor: pointer; /* 小手样式 */
+  text-decoration: none;
 }
 </style>

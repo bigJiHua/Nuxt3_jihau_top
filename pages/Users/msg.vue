@@ -8,7 +8,7 @@ const UserMessageBox: any = ref({
   uMsg: {},
   sMsg: {}
 })
-const tabPosition = ref('left')
+const tabPosition = ref('top')
 const uNullMsg = ref(true)
 const sNullMsg = ref(true)
 let timer: ReturnType<typeof setInterval> | null = null // 轮询定时器id

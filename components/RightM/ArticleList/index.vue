@@ -44,7 +44,7 @@ const getdata = async (): Promise<void> => {
   AllArticleData.value = ArticleData.value.reverse()
   store.setArchive({
     Archive: AllArticleData.value,
-    YearListData: yearlist.value
+    YearListData: yearlist.value,
   })
   AllArticleData.value = toRaw(store.getArchive.ArchiveListData)
 }
@@ -65,6 +65,12 @@ onMounted(() => {
 </template>
 
 <style lang="less" scoped>
+@media only screen and (min-width: 755px) {
+  .ararc {
+    width: 25vw;
+    max-width: 480px;
+  }
+}
 .ararc {
   min-height: 120px;
   background-color: #fff;

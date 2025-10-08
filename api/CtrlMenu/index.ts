@@ -53,7 +53,7 @@ const UsercagArticle = (data: {
   keyword: string
   article_id: string
   describes: string
-  state: string
+  state: string | number
 }): any => {
   const params = new URLSearchParams()
   params.append('id', data.id)
@@ -65,7 +65,7 @@ const UsercagArticle = (data: {
   params.append('keyword', data.keyword)
   params.append('article_id', data.article_id)
   params.append('describes', data.describes)
-  params.append('state', data.state)
+  params.append('state', String(data.state))
   return request.post('/article/cagart', params)
 }
 export default {

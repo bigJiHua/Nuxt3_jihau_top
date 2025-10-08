@@ -1,12 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 // 基本配置都在这，相当于main.ts
 export default defineNuxtConfig({
-  devtools: {
-    enabled: true,
-    timeline: {
-      enabled: true
-    }
-  },
   modules: [
     // 其他模块...
     [
@@ -29,9 +23,7 @@ export default defineNuxtConfig({
   },
   css: [
     '@/assets/css/index.css',
-    // '@/assets/css/typeface.css',
     'element-plus/dist/index.css',
-    // 'highlight.js/styles/monokai-sublime.css',
     'bytemd/dist/index.css'
   ],
   app: {
@@ -98,6 +90,14 @@ export default defineNuxtConfig({
   ssr: true,
   nitro: {
     compatibilityDate: '2025-07-06'
+  },
+  vite: {
+    server: {
+      host: true, // 支持局域网访问
+      port: 3000, // Nuxt dev 端口
+      strictPort: true, // 如果端口被占用就报错
+      hmr: false
+    },
+    clearScreen: false // 可选：不清屏，方便查看日志
   }
-
 })

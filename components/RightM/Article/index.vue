@@ -33,24 +33,18 @@ onMounted(() => {
 
 <template>
   <client-only>
-    <div class="RightBox">
-      <RightMUser class="RightMoudle"></RightMUser>
-      <el-affix :offset="60">
-        <div :class="['icpArea', 'RightArea', { icpAreatop: istop }]">
-          <RightMArticleList></RightMArticleList>
-          <RightMNotifyList></RightMNotifyList>
-          <RightMIcp></RightMIcp>
-        </div>
-      </el-affix>
-    </div>
+    <RightMUser class="RightMoudle"></RightMUser>
+    <el-affix :offset="60">
+      <div :class="['icpArea', 'RightArea', { icpAreatop: istop }]">
+        <RightMArticleList></RightMArticleList>
+        <RightMNotifyList></RightMNotifyList>
+        <RightMIcp></RightMIcp>
+      </div>
+    </el-affix>
   </client-only>
 </template>
 
 <style lang="less" scoped>
-.icpArea {
-  width: 100%;
-}
-
 .RightMoudle {
   background-color: #fff;
   box-shadow: rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 0%) 0px 0px 0px 0px,
@@ -59,17 +53,26 @@ onMounted(() => {
 }
 
 @media only screen and (min-width: 755px) {
+  .RightMoudle {
+    width: 25vw;
+    max-width: 480px;
+    padding: 10px;
+  }
   .right_box {
     width: 25vw;
-    max-width: 500px;
+    max-width: 480px;
+  }
+  .icpArea {
+    width: 25vw;
+    max-width: 480px;
   }
 
   .icpAreatop {
     position: fixed;
     top: 56px;
     z-index: 99;
-    width: 25vw;
-    max-width: 439px;
+    width: 30vw;
+    max-width: 500px;
     max-height: 100vh;
     overflow: scroll;
   }

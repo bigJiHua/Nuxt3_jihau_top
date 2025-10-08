@@ -8,28 +8,25 @@ const loading: Ref<boolean> = ref(false)
 const finished: Ref<boolean> = ref(false)
 const Num = ref(10)
 const AUrl = `${reqConfig.baseUrl}/data/list`
-const ssrGetArticle = async (): Promise<void> => {
-  await useFetch(AUrl, {
-    method: 'get',
-    params: {
-      page: 0,
-    },
+useFetch(AUrl, {
+  method: 'get',
+  params: {
+    page: 0,
+  },
+})
+  .then((response) => {
+    const res: any = response.data.value
+    ArticleListData.value = res.data
+    store.setArticleData(res.data)
   })
-    .then((response) => {
-      const res: any = response.data.value
-      ArticleListData.value = res.data
-      store.setArticleData(res.data)
-    })
-    .catch((error) => {
-      console.error('Request failed:', error)
-    })
-}
-await ssrGetArticle()
+  .catch((error) => {
+    console.error('Request failed:', error)
+  })
 
 // 获取新的文章列表
 const getNewArticleList = async (): Promise<void> => {
   await ArticleAPI.getArticleList(Num.value)
-    .then((response) => {
+    .then((response: any) => {
       Num.value += 10
       const { data: res } = response
       if (res.data.length === 0) {
@@ -62,7 +59,11 @@ const getNewArticleList = async (): Promise<void> => {
         <span>最新文章</span>
         <span>New article</span>
       </p>
-      <van-pull-refresh v-model="refreshing" @refresh="getNewArticleList">
+      <van-pull-refresh
+        v-model="refreshing"
+        :head-height="60"
+        @refresh="getNewArticleList"
+      >
         <van-list
           v-model:loading="loading"
           :finished="finished"
@@ -102,10 +103,15 @@ const getNewArticleList = async (): Promise<void> => {
 }
 
 @media only screen and (min-width: 755px) {
+  .article_alltitle {
+    width: 43vw;
+    max-width: 700px;
+  }
   .left_box {
     width: 100%;
   }
 }
 
-@media only screen and (max-width: 755px) {}
+@media only screen and (max-width: 755px) {
+}
 </style>

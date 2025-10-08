@@ -11,39 +11,29 @@ export const useUserDataStore = defineStore('UserData', {
         user_id: '',
         useridentity: '',
         birthday: '',
-        UserPower: {
-          id: 0,
-          user_id: '',
-          username: '',
-          isadmin: '',
-          iscom: '',
-          isart: '',
-          isupimg: '',
-          isrel: '',
-          isspace: '',
-          islike: '',
-          iscol: '',
-          isfans: ''
-        }
+        user_bgc: ''
       }
-    } as any,
-    stateCode: 200
+    }
   }),
   actions: {
+    // 赋值
     setUserData (data: any) {
       this.Userdata = data
-    },
-    setState (code: number) {
-      this.stateCode = code
     }
   },
   getters: {
+    // 获取 用户数据
     getUserData (): any {
       return this.Userdata
     },
-    getPower (): any {
-      return this.Userdata.Users.UserPower
+    // 判断是否登录
+    isLogin (): boolean {
+      const username = this.Userdata?.Users?.username
+      const token = localStorage.getItem('token')
+      if (token === null || token === undefined || token === 'undefined' || token === '') return false
+      return typeof username === 'string' && username.trim().length > 0
     }
+
   }
 })
 

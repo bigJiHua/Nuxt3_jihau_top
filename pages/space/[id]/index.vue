@@ -1,18 +1,17 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 definePageMeta({
-  layout: 'space-view'
+  layout: 'space-view',
 })
 const router = useRouter()
-onMounted(() => {
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-  void router.push(`/space/${router.currentRoute.value.params.id}/article`)
+const id = ref(router.currentRoute.value.params.id as string)
+onMounted((): any => {
+  if (!id.value) return router.push('/space')
+  void router.push(`/space/${id.value}/article`)
 })
 </script>
 <template>
-  <el-empty>
-    <template #description> 空空如也 暂未开发</template>
-  </el-empty>
+  <div>Welcome to /space</div>
 </template>
 
 <style lang="less" scoped></style>

@@ -1,7 +1,6 @@
 <script setup lang="ts">
-
 definePageMeta({
-  layout: 'pagedf',
+  layout: 'pagedf'
 })
 
 useHead({
@@ -9,13 +8,13 @@ useHead({
   meta: [
     {
       name: 'keywords',
-      content: '站点测试、JiHua、jihau.top、测试页面',
+      content: '站点测试、JiHua、jihau.top、测试页面'
     },
     {
       name: 'description',
-      content: '这是jihau_top网站的移动端测试页面，欢迎您访问此网站！',
-    },
-  ],
+      content: '这是jihau_top网站的移动端测试页面，欢迎您访问此网站！'
+    }
+  ]
 })
 </script>
 
@@ -96,6 +95,12 @@ useHead({
   width: 70vw;
   padding: 80px 0;
   margin: 0 auto;
+}
+@media only screen and (max-width: 755px) {
+  // 403页面样式
+  .page403 {
+    width: 95vw;
+  }
 }
 
 .container-403 {

@@ -48,9 +48,11 @@ onMounted(() => {
           <span>时间：{{ NotifyData.pub_date }}</span>
         </p>
       </header>
-      <div v-html="NotifyData.content" class="html-content"></div>
+      <div v-html="NotifyData.content" v-highlight class="html-content"></div>
     </div>
-    <RightMIcp />
+    <div class="icpBox">
+      <RightMIcp :width="'100%'" :max-width="'1200px'"/>
+    </div>
   </div>
 </template>
 <style src="@/assets/css/article.css"></style>
@@ -142,5 +144,10 @@ onMounted(() => {
   button {
     margin: 10px;
   }
+}
+.icpBox {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 </style>

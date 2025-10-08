@@ -1,41 +1,55 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
-import { useRouter } from '#vue-router'
+import { useRouter } from 'vue-router'
 import postArticleApi from '@/api/CtrlMenu'
 definePageMeta({
-  layout: 'ctrl-view',
+  layout: 'ctrl-view'
 })
+interface EditorData {
+  id: string
+  username: string
+  title: string
+  content: string
+  cover_img: string
+  lable: string
+  keyword: string
+  article_id: string
+  describes: string
+  state: number | string
+  pub_date: string
+}
 // 编辑数据
-const editorData: any = ref({
+const editorData: Ref<EditorData> = ref({
   id: '',
   username: '',
   title: '',
-  content: '',
-  cover_img: '',
   lable: '',
   keyword: '',
+  cover_img: '',
   article_id: '',
+  content: '',
   describes: '',
   state: 0,
+  pub_date: ''
 })
 // 校验规则
 const rules: any = reactive({
   title: {
     rule: /\S/,
-    msg: '文章标题不能为空',
+    msg: '文章标题不能为空'
   },
   content: {
     rule: /.{50,}/,
-    msg: '不能水文章哦！字数大于等于50！',
+    msg: '不能水文章哦！字数大于等于50！'
   },
   lable: {
     rule: /\S/,
-    msg: '忘记填标签咯！',
+    msg: '忘记填标签咯！'
   },
   keyword: {
     rule: /\S/,
-    msg: '填一下关键字吧！',
-  },
+    msg: '填一下关键字吧！'
+  }
 })
 const router = useRouter()
 const elContent = ref('') // 备份修改之前的
@@ -46,20 +60,23 @@ const searchId = ref('') // 搜索ID
 // 当前选中的主题
 const selectedTheme = ref('simplicity-green')
 const selectedCodeTheme = ref('default')
+const articleID: Ref<string> = ref(
+  router.currentRoute.value.params.id as string
+)
 useHead({
   link: [
     {
       rel: 'stylesheet',
       href: '/css/file/simplicity-green.min.css',
-      id: 'dynamic-theme',
+      id: 'dynamic-theme'
     },
     {
       rel: 'stylesheet',
-      href: '/css/code/styles/default.css',
-      id: 'dynamic-code',
-    },
+      href: '/css/code/styles/atom-one-dark.css',
+      id: 'dynamic-code'
+    }
   ],
-  title: '正在修改 ' + router.currentRoute.value.params.id,
+  title: '正在修改 ' + articleID.value + 'ID的文章'
 })
 
 // 同步子组件对服务组件的数据
@@ -80,7 +97,7 @@ const deleteEditor = async (): Promise<void> => {
     if (editorData.value.id === '') {
       ElMessage({
         message: 'ID 获取失败 无法执行删除该文章！',
-        type: 'warning',
+        type: 'warning'
       })
       return
     }
@@ -98,20 +115,29 @@ const deleteEditor = async (): Promise<void> => {
         describes: '',
         state: 0,
         pub_date: '',
+        id: '',
+        article_id: ''
       }
       setTimeout(() => {
-        router.push('/editor/list')
+        void router.push('/editor/list')
       }, 500)
     }
   }
 }
 // 重新发布文章
 const PostNewArticle = async (isDraft: boolean | number): Promise<void> => {
+  if (editorData.value.id === '') {
+    ElMessage({
+      message: 'ID 获取失败 无法执行删除该文章！',
+      type: 'warning'
+    })
+    return
+  }
   if (isDraft === true && editorData.value.state === 0) {
     if (await WarningTips('你确定要保存为草稿吗？')) {
       editorData.value.state = '2'
     } else return
-  } else if (parseInt(editorData.value.state) !== 0 && !isDraft) {
+  } else if (editorData.value.state !== 0 && !isDraft) {
     if (await WarningTips('准备好发布了吗？')) {
       editorData.value.state = '0'
     } else return
@@ -133,7 +159,7 @@ const PostNewArticle = async (isDraft: boolean | number): Promise<void> => {
       editorData.value.content = JSON.stringify({
         data: editorData.value.content,
         theme: selectedTheme.value,
-        codeTheme: selectedCodeTheme.value,
+        codeTheme: selectedCodeTheme.value
       })
     }
     const { data: res } = await postArticleApi.UsercagArticle(editorData.value)
@@ -148,9 +174,9 @@ const PostNewArticle = async (isDraft: boolean | number): Promise<void> => {
 const getArticle = async (queryId: string): Promise<void> => {
   await postArticleApi
     .UsergetArticleData(queryId)
-    .then((respone) => {
+    .then((respone: any) => {
       const { data: res } = respone
-      if (res.status === 200 && res !== undefined) {
+      if (res.status === 200) {
         void router.replace('/editor/cag/' + queryId)
         editorData.value = { ...res.data.article }
         // if (/\bmd[A-Z0-9]+\b/g.test(queryId)) isMd.value = true
@@ -183,19 +209,19 @@ const searchArticle = async (): Promise<void> => {
   if (searchId.value === '' || !regexID) {
     ElMessage({
       message: '非法 ID',
-      type: 'error',
+      type: 'error'
     })
   } else {
     void getArticle(searchId.value)
   }
 }
 // 校验规则
-const validata = (key: string): Boolean => {
+const validata = (key: string): boolean => {
   let bool = true
   if (!rules[key].rule.test(editorData.value[key])) {
     ElMessage({
       message: rules[key].msg,
-      type: 'error',
+      type: 'error'
     })
     bool = false
   }
@@ -230,7 +256,7 @@ const themes = [
   'v-green',
   'vue-pro',
   'vuepress',
-  'z-blue',
+  'z-blue'
 ]
 const codeTheme = [
   'a11y-dark',
@@ -302,13 +328,13 @@ const codeTheme = [
   'vs',
   'vs2015',
   'xcode',
-  'xt256',
+  'xt256'
 ]
 
 // 动态创建/更新 link 标签来加载 CSS 文件
 const loadTheme = (theme: string, type: string = 'css'): void => {
-  if (type === 'code' && theme === undefined) theme = 'default'
-  if (theme === '' || (theme === undefined && type === 'css')) {
+  if (type === 'code') theme = 'default'
+  if (theme === '') {
     theme = 'simplicity-green'
   }
   const label = type === 'css' ? 'dynamic-theme' : 'dynamic-code'
@@ -343,8 +369,8 @@ const comeBack = async (): Promise<void> => {
 
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-  if (router.currentRoute.value.params.id as string) {
-    void getArticle(router.currentRoute.value.params.id as string)
+  if (articleID.value) {
+    void getArticle(articleID.value)
   } else {
     isget.value = true
   }
@@ -422,7 +448,7 @@ onMounted(() => {
     </div>
     <div class="editor-container">
       <div class="ArticleDataPanel">
-        <div class="articleState" v-if="router.currentRoute.value.params.id">
+        <div class="articleState" v-if="articleID">
           <div>
             <h3>当前状态：</h3>
             <el-tag v-if="editorData.state === 0" type="success">已发布</el-tag>

@@ -12,9 +12,6 @@ onMounted(() => {
 
 <template>
   <div class="ararc">
-    <p class="ararc_title Cookie">
-      <nuxt-link to="/Notify">通知</nuxt-link>
-    </p>
     <client-only>
       <van-notice-bar left-icon="volume-o" :scrollable="false">
         <van-swipe
@@ -36,11 +33,14 @@ onMounted(() => {
 </template>
 
 <style lang="less" scoped>
+@media only screen and (min-width: 755px) {
+  .ararc {
+    width: 25vw;
+    max-width: 480px;
+  }
+}
 .ararc {
-  background-color: #fff;
-  margin: 10px 0 15px 0;
-  box-shadow: rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 0%) 0px 0px 0px 0px,
-    rgb(0 0 0 / 10%) 0px 10px 15px -3px, rgb(0 0 0 / 5%) 0px 4px 6px -2px;
+  margin: 10px 0;
   border-radius: 5px;
   border-radius: 5px;
   padding: 10px;

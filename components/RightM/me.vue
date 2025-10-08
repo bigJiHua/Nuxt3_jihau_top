@@ -3,7 +3,7 @@
     <div class="phone_Viewset">
       <div class="author_logobox">
         <a href="http://me.jihau.top">
-          <img :src="reqConfig.LogoPic" class="author_logo" alt="logo" />
+          <img :src="icon.LogoPic" class="author_logo" alt="logo" />
         </a>
       </div>
       <div class="author_name  ">

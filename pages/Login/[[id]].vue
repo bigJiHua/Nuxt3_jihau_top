@@ -113,7 +113,7 @@ useHead({
 <template>
   <div class="container">
     <div class="login_conten_box">
-      <img slt="登录" class="login_img" :src="reqConfig.LoginPic" />
+      <img slt="登录" class="login_img" :src="icon.LoginPic" />
       <div class="user_input_eara">
         <h2>登录 <small>Login</small></h2>
         <el-form

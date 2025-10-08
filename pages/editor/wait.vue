@@ -61,8 +61,10 @@ onMounted(() => {
         v-for="(item, index) in MyArticleListData"
         :key="index"
         :data="item"
-        :title="'未发布'"
-        :type="'WColor'"
+        :title="
+          item.state === 1 ? '被驳回' : item.state === 2 ? '待发布' : '已发布'
+        "
+        :type="item.state === 1 ? 'EColor' : 'WColor'"
       />
     </div>
     <div class="pagBtnArea">

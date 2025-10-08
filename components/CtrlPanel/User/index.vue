@@ -99,7 +99,7 @@ const cagUserPic = (e: any): any | undefined => {
       <img
         alt="用户头像"
         v-if="store.Userdata.Users.user_pic"
-        :src="store.Userdata.Users.user_pic"
+        :src="store.Userdata?.Users?.user_pic"
         class="avatar"
         style="width: 45px; height: 45px"
       />
@@ -151,8 +151,8 @@ const cagUserPic = (e: any): any | undefined => {
       <span>性别</span>
       <div class="ItemSelect">
         <el-radio-group v-model="store.Userdata.Users.sex" class="ml-4">
-          <el-radio :label="'男'" size="large">男</el-radio>
-          <el-radio :label="'女'" size="large">女</el-radio>
+          <el-radio :value="'男'" size="large">男</el-radio>
+          <el-radio :value="'女'" size="large">女</el-radio>
         </el-radio-group>
       </div>
       <div class="Item">

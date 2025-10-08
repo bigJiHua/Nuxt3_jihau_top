@@ -13,7 +13,7 @@ const SearchFunc = (): void => {
   <div class="Header">
     <div class="HeaderLeft">
       <!-- <img
-        :src="reqConfig.LogoPic"
+        :src="icon.LogoPic"
         alt="Logo"
         class="logo"
         style="width: 35px; height: 25px"

@@ -13,14 +13,32 @@ const user: Ref<string> = ref(
 const MyArticleListData: Ref<any[]> = ref([])
 const AllNum: Ref<number> = ref(0)
 const msg = ref('空空如也')
+const loading = ref(false)
+const isend = ref(false)
+
 const getArticle = async (num: number): Promise<void> => {
   if (num === 0) num = 0
   await getArtDataApi
     .UsergetLike(num, user.value)
     .then((res) => {
-      MyArticleListData.value = []
-      MyArticleListData.value = [...res.data.data]
-      AllNum.value = res.data.Num
+      if (res.data.data.length === 0) {
+        isend.value = true
+        loading.value = false
+        return
+      }
+      if (num !== 0) {
+        setTimeout(() => {
+          AllNum.value = res.Num
+          loading.value = false
+          MyArticleListData.value = [
+            ...MyArticleListData.value,
+            ...res.data.data,
+          ]
+        }, 800)
+      } else {
+        AllNum.value = res.Num
+        MyArticleListData.value = [...MyArticleListData.value, ...res.data.data]
+      }
     })
     .catch((err) => {
       if (err.data.status === 403) {
@@ -30,18 +48,15 @@ const getArticle = async (num: number): Promise<void> => {
     })
 }
 
-// 上一页
-const prevNum = (num: number): void => {
-  void getArticle((num - 1) * 10)
-}
-// 数字
-const pagerNum = (num: number): void => {
-  void getArticle((num - 1) * 10)
-}
 // 下一页
-const nextNum = (num: number): void => {
-  void getArticle((num - 1) * 10)
+const pageNum: Ref<number> = ref(1)
+const nextNum = (): void => {
+  if (isend.value) return
+  pageNum.value++
+  loading.value = true
+  void getArticle((pageNum.value - 1) * 10)
 }
+
 onMounted(() => {
   void getArticle(0)
 })
@@ -52,14 +67,9 @@ onMounted(() => {
     <h3>他的喜欢</h3>
     <SpaceItemCard :articleList="MyArticleListData"></SpaceItemCard>
     <div class="pagBtnArea" v-if="!(AllNum <= 10)">
-      <el-pagination
-        background
-        layout="prev, pager, next"
-        :total="AllNum"
-        @current-change="prevNum"
-        @prev-click="pagerNum"
-        @next-click="nextNum"
-      />
+      <div @click="nextNum" class="btn" v-loading="loading">
+        {{ isend ? '没有更多了' : '加载更多...' }}
+      </div>
     </div>
   </div>
   <el-empty v-else>

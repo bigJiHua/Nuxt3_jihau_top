@@ -3,7 +3,7 @@
 definePageMeta({
   layout: 'ctrl-view'
 })
-const tabPosition: any = ref('left')
+const tabPosition: any = ref('top')
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   if (process.client) {

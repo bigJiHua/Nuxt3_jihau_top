@@ -5,8 +5,8 @@ const props = defineProps({
     type: Object,
     default: () => {
       return {}
-    }
-  }
+    },
+  },
 })
 const isdemo = ref(false)
 const { $copyUrl } = useNuxtApp()
@@ -26,12 +26,14 @@ const ShareBox = async () => {
 onMounted(() => {
   setTimeout(() => {
     isdemo.value = true
-  }, 200);
+  }, 200)
 })
 </script>
 
 <template>
-  <div :class="[{ article_demo: isdemo, article_demos: !isdemo }, 'article_item']">
+  <div
+    :class="[{ article_demo: isdemo, article_demos: !isdemo }, 'article_item']"
+  >
     <p class="article_doc_title">
       <nuxt-link class="togolink" :to="{ path: '/article/' + data.article_id }">
         {{ data.title }}
@@ -42,7 +44,10 @@ onMounted(() => {
         <img :alt="data.title" class="article_img_item" :src="data.cover_img" />
       </div>
       <div class="article_doc">
-        <nuxt-link class="article_doc_txt togolink" :to="{ path: '/article/' + data.article_id }">
+        <nuxt-link
+          class="article_doc_txt togolink"
+          :to="{ path: '/article/' + data.article_id }"
+        >
           {{ data.content }}
         </nuxt-link>
       </div>
@@ -50,19 +55,27 @@ onMounted(() => {
     <div class="artmethod">
       <!-- 分享面板 -->
       <div class="shareBox">
-        <nuxt-link :to="'/article/' + data.article_id"><el-button type="primary" text
-            class="Gobutton">阅读</el-button></nuxt-link>
-        <el-button type="primary" text class="Gobutton" @click="ShareBox">分享</el-button>
+        <nuxt-link :to="'/article/' + data.article_id"
+          ><el-button type="primary" text class="Gobutton"
+            >阅读</el-button
+          ></nuxt-link
+        >
+        <el-button type="primary" text class="Gobutton" @click="ShareBox"
+          >分享</el-button
+        >
       </div>
       <div class="article_span_time">
-        <span>作者：<nuxt-link :to="{ path: '/space/' + data.username }">{{ data.username }}</nuxt-link></span>
+        <span
+          >作者：<nuxt-link :to="{ path: '/space/' + data.username }">{{
+            data.username
+          }}</nuxt-link></span
+        >
         &nbsp;
         <span>时间：{{ data.pub_date }}</span>
       </div>
     </div>
   </div>
 </template>
-
 
 <style lang="less" scoped>
 .artmethod {
@@ -88,7 +101,7 @@ onMounted(() => {
   color: rgba(0, 0, 0, 0.692);
   text-decoration: none;
 }
-.article_doc_title>a {
+.article_doc_title > a {
   font-size: 1.2rem;
   font-weight: 600;
   font-family: '微软雅黑';
@@ -135,9 +148,11 @@ onMounted(() => {
   }
 }
 
-
-
 @media only screen and (min-width: 755px) {
+  .article_item {
+    width: 43vw;
+    max-width: 700px;
+  }
   .article_area {
     display: flex;
     padding-left: 10px;
@@ -151,8 +166,8 @@ onMounted(() => {
   }
 
   .article_img_item {
-    width: 100%;
-    height: 100%;
+    width: 150px;
+    height: 80px;
   }
 
   .article_doc {
@@ -164,7 +179,6 @@ onMounted(() => {
       text-indent: 3rem;
       font-size: 0.8rem;
     }
-
   }
 
   /* 文章动效 */
@@ -189,12 +203,10 @@ onMounted(() => {
 }
 
 @media only screen and (max-width: 755px) {
-
   /* 最新文章 */
   .article_box {
     position: relative;
   }
-
   .article_area {
     display: flex;
     align-items: center;
@@ -211,8 +223,8 @@ onMounted(() => {
   }
 
   .article_img_item {
-    width: 100%;
-    height: 100%;
+    width: 150px;
+    height: 80px;
     background-color: rgba(255, 255, 255, 0.8);
   }
 
@@ -221,7 +233,7 @@ onMounted(() => {
     min-width: 50%;
   }
 
-  .article_doc_title>a {
+  .article_doc_title > a {
     font-size: 1.2rem;
     font-weight: bolder;
     font-family: '微软雅黑';
@@ -232,7 +244,6 @@ onMounted(() => {
     font-size: 0.9rem;
     overflow: hidden;
   }
-
 
   .article_span_time {
     font-size: 0.8rem;
@@ -249,4 +260,3 @@ onMounted(() => {
   }
 }
 </style>
-

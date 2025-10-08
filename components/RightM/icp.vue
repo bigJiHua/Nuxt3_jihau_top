@@ -1,14 +1,27 @@
+<script setup lang="ts">
+const props = defineProps({
+  width: {
+    type: String,
+    default: '25vw',
+  },
+  maxWidth: {
+    type: String,
+    default: '480px',
+  },
+})
+</script>
+
 <template>
-  <div id="" class="footer">
+  <div id="" class="footer" :style="{ width, maxWidth }">
     <div id="icp">
       <p class="icp_alt">
-        <img :src="reqConfig.LogoPic" alt="站点logo" width="30" height="26" />
+        <img :src="icon.LogoPic" alt="站点logo" width="30" height="26" />
         <a href="https://beian.miit.gov.cn" rel="noreferrer" target="_blank">{{
           reqConfig.icpNumber
         }}</a>
       </p>
       <p class="icp_alt">
-        <img :src="reqConfig.gaPic" alt="公安备案ICON" width="25" height="25" />
+        <img :src="icon.gaPic" alt="公安备案ICON" width="25" height="25" />
         <a
           href="https://beian.mps.gov.cn/#/query/webSearch?code=00000000000000"
           rel="noreferrer"
@@ -27,9 +40,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts"></script>
-
 <style lang="less">
 .footer {
   text-align: center;
