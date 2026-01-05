@@ -20,9 +20,12 @@ const props = defineProps({
 <template>
   <div class="articleDetail">
     <h3 class="title">
-      <nuxt-link v-if="type !== 'WColor'" :to="'/article/' + data.article_id">{{
-        data.title
-      }}</nuxt-link>
+      <nuxt-link
+        v-if="type !== 'WColor'"
+        :to="'/article/' + data.article_id"
+        target="_blank"
+        >{{ data.title }}</nuxt-link
+      >
       <span v-else>{{ data.title }}</span>
     </h3>
     <div class="content">{{ data.content }}...</div>
@@ -64,7 +67,12 @@ const props = defineProps({
         >{{ item }}</el-tag
       >
     </div>
-    <nuxt-link :to="'/editor/cag/' + data.article_id" class="action">
+    <nuxt-link
+      :to="'/editor/cag/' + data.article_id"
+      class="action"
+      target="_blank"
+      title="编辑"
+    >
       <el-icon :size="15">
         <Edit />
       </el-icon>

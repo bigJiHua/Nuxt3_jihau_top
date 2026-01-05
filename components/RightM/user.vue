@@ -102,15 +102,20 @@ const addRelation = async (met: boolean): Promise<void> => {
 // 监听登录
 const isLogin = ref(false)
 const StoreisLogin = computed(() => store.isLogin)
-watch(StoreisLogin, (newVal) => {
-  if (newVal) {
-    isLogin.value = true
-  } else {
-    isLogin.value = false
-  }
-})
+watch(
+  StoreisLogin,
+  (newVal) => {
+    if (newVal) {
+      isLogin.value = true
+    } else {
+      isLogin.value = false
+    }
+  },
+  { immediate: true }
+)
 onMounted(() => {
   void getauthData()
+  // isLogin.value = store.isLogin
 })
 </script>
 

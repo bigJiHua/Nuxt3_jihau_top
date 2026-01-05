@@ -1,9 +1,10 @@
 <template>
-  <div id="Cekditor" name="content"></div>
+  <div id="Cekditor"></div>
 </template>
 
 <script setup lang="ts">
-// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+
 const props = defineProps({
   content: {
     type: String,
@@ -11,70 +12,53 @@ const props = defineProps({
   },
   type: {
     type: String,
-    default: 'set',
+    default: 'set', // set | cag
   },
 })
+
+const emit = defineEmits<{
+  (e: 'cagEditorData', value: string): void
+}>()
+
 const ckeditor = ref<any>(null)
-const emit = defineEmits(['cagEditorData'])
 const editorValue = ref('')
 
 onMounted(() => {
   const script = document.createElement('script')
-  script.src = '/ckeditor/ckeditor.js' // 外部脚本的路径
+  script.src = '/ckeditor/ckeditor.js'
   script.type = 'text/javascript'
-  script.defer = true // 确保脚本在 DOM 完全加载后执行
+  script.defer = true
   document.head.appendChild(script)
 
   script.onload = () => {
-    // 渲染编辑器
-    ckeditor.value = window.CKEDITOR.replace('Cekditor', { height: '450px' })
-    // 设置编辑器内容
-    if (props.type === 'cag') {
-      ckeditor.value.setData(props.content)
-    }
-    // 监听同步
-    let Count = 0
-    ckeditor.value.on('change', (e: any) => {
-      Count += 1
-      editorValue.value = e.editor.getData()
-      if (props.type.type === 'set' && Count >= 120) {
-        setTimeout(() => {
-          emit('cagEditorData', editorValue.value)
-        }, 200)
-        Count = 0
-      } else {
-        setTimeout(() => {
-          emit('cagEditorData', editorValue.value)
-        }, 2500)
-      }
+    ckeditor.value = window.CKEDITOR.replace('Cekditor', {
+      height: '450px',
     })
-    // 开启同步模式 如果模式不为改
-    if (props.type !== 'cag') {
-      const get = setInterval(() => {
-        ckeditor.value.setData(props.content)
-      }, 200)
-      setTimeout(() => {
-        clearInterval(get)
-      }, 800)
+
+    // 初始化内容（只做一次）
+    if (props.content) {
+      ckeditor.value.setData(props.content)
+      editorValue.value = props.content
     }
+
+    // ✅ 核心：立即同步（无延迟、无节流）
+    ckeditor.value.on('change', (e: any) => {
+      const data = e.editor.getData()
+      editorValue.value = data
+      emit('cagEditorData', data)
+    })
   }
-  script.onerror = (error) => {
-    console.error('Failed to load CKEditor script', error)
+
+  script.onerror = (err) => {
+    console.error('CKEditor load failed:', err)
   }
 })
-// 2025年6月8日 目前来看没什么用 留着先
-// watch(
-//   () => props.content,
-//   (newValue: string) => {
-//     if (newValue !== ckeditor.value.getData()) {
-//       ckeditor.value.setData(newValue)
-//     }
-//   }
-// )
 
 onBeforeUnmount(() => {
-  // 销毁编辑器
-  ckeditor.value.destroy()
+  if (ckeditor.value) {
+    ckeditor.value.destroy()
+    ckeditor.value = null
+  }
 })
 </script>
 

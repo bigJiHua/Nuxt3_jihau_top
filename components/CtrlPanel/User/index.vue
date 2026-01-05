@@ -3,6 +3,7 @@ import GetUData from '@/api/User'
 import { useUserDataStore } from '@/stores/useUserData'
 import { UploadFilled } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
+
 const store = useUserDataStore()
 const uploadImgData = ref('')
 const options = [
@@ -18,48 +19,89 @@ const options = [
   { value: '澳门', label: '澳门' },
 ]
 const uploadImg = ref(false)
+
+// 核心修复1：封装用户数据，加空值兜底（避免访问undefined）
+const userInfo = computed(() => store.Userdata?.Users || {})
+
+// 补充：WarningTips函数（你代码中用到但未定义）
+const WarningTips = async (message: string) => {
+  try {
+    await ElMessageBox.confirm(message, '确认修改', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+    return true
+  } catch {
+    return false
+  }
+}
+
 // 修改用户信息
 const ChangeUserData = async (type: string): Promise<void> => {
-  // 获取用户信息
+  // 核心修复2：先判断用户是否登录（user_id是否存在）
+  const userId = userInfo.value.user_id
+  if (!userId) {
+    ElMessage.error('未获取到用户信息，请重新登录')
+    return
+  }
+
   const data: any = {}
   let message = ''
-  const userId = store.Userdata.Users.user_id
+  
   switch (type) {
     case 'img':
       data.user_pic = uploadImgData.value
       message = '确定要修改头像吗？'
       break
     case 'bir':
-      data.birthday = dayjs(store.Userdata.Users.birthday).format('YYYY-MM-DD')
+      // 核心修复3：加可选链保护，dayjs空值处理
+      data.birthday = dayjs(userInfo.value.birthday).isValid() 
+        ? dayjs(userInfo.value.birthday).format('YYYY-MM-DD')
+        : ''
       message = '确定要修改生日吗？'
       break
     case 'sex':
-      data.sex =
-        store.Userdata.Users.sex === '' ? '男' : store.Userdata.Users.sex
+      // 核心修复4：加可选链，兜底默认值
+      data.sex = userInfo.value.sex || '男'
       message = '确定要修改性别吗？'
       break
     case 'city':
-      data.city = store.Userdata.Users.city
+      data.city = userInfo.value.city || ''
       message = '确定要修改城市吗？'
       break
     case 'cont':
-      data.user_content = store.Userdata.Users.user_content
+      data.user_content = userInfo.value.user_content || ''
       message = '确定要修改自我介绍吗？'
       break
     default:
       break
   }
-  // 调用GetUData.CagUserData方法修改用户信息
+
   if (await WarningTips(message)) {
-    const res = await GetUData.CagUserData(userId, data)
-    if (res.status === 200 && type === 'img') {
-      uploadImg.value = false
+    try { // 核心修复5：加异常捕获，避免接口报错冒泡
+      const res = await GetUData.CagUserData(userId, data)
+      if (res?.status === 200 && type === 'img') {
+        uploadImg.value = false
+        ElMessage.success('头像修改成功')
+      }
+    } catch (error) {
+      console.error('修改用户信息失败：', error)
+      ElMessage.error('修改失败，请稍后重试')
     }
   }
 }
+
 const { $setBase64Avator } = useNuxtApp()
 // 上传图片事件
 const cagUserPic = (e: any): any | undefined => {
+  // 核心修复6：先判断是否登录
+  if (!userInfo.value.user_id) {
+    ElMessage.error('请先登录')
+    uploadImg.value = false
+    return
+  }
+
   if (e.file.size > 1024 * 1024 * 5) {
     ElMessage({
       message: '图片大小不能超过5M',
@@ -68,38 +110,48 @@ const cagUserPic = (e: any): any | undefined => {
     uploadImg.value = false
     return
   }
+  
   void $setBase64Avator(e.file, true).then((res: any) => {
     uploadImgData.value = res
-    if (uploadImgData.value !== '') {
+    if (uploadImgData.value) {
       void ChangeUserData('img')
     }
+  }).catch(error => { // 核心修复7：捕获图片上传异常
+    console.error('图片上传失败：', error)
+    ElMessage.error('图片上传失败')
+    uploadImg.value = false
   })
 }
 </script>
 
 <template>
-  <div class="Card">
+  <!-- 核心修复8：加v-if判断，未登录时不渲染整个组件 -->
+  <div v-if="userInfo?.user_id" class="Card">
     <div class="title">基本信息</div>
     <div class="CardItem">
       <div>
-        用户:<nuxt-link
-          :to="'/space/' + store.Userdata.Users.username"
+        用户:
+        <!-- 核心修复9：加可选链?.保护username -->
+        <nuxt-link
+          :to="'/space/' + (userInfo?.username || '')"
           style="color: #fb7299; margin-left: 10px"
-          >{{ store.Userdata.Users.username }}</nuxt-link
         >
+          {{ userInfo?.username || '未设置' }}
+        </nuxt-link>
       </div>
       <div>
-        UID： <el-tag> {{ store.Userdata.Users.user_id }}</el-tag>
+        UID： <el-tag> {{ userInfo?.user_id || '未设置' }}</el-tag>
       </div>
       <div>
-        身份： <el-tag>{{ store.Userdata.Users.useridentity }}</el-tag>
+        身份： <el-tag>{{ userInfo?.useridentity || '普通用户' }}</el-tag>
       </div>
     </div>
     <div class="CardItem">
+      <!-- 核心修复10：加可选链?.保护user_pic -->
       <img
         alt="用户头像"
-        v-if="store.Userdata.Users.user_pic"
-        :src="store.Userdata?.Users?.user_pic"
+        v-if="userInfo?.user_pic"
+        :src="userInfo?.user_pic"
         class="avatar"
         style="width: 45px; height: 45px"
       />
@@ -109,8 +161,9 @@ const cagUserPic = (e: any): any | undefined => {
       <span>生日</span>
       <div class="ItemSelect">
         <client-only>
+          <!-- 核心修复11：加可选链?.保护birthday -->
           <el-date-picker
-            v-model="store.Userdata.Users.birthday"
+            v-model="userInfo.birthday"
             type="date"
             placeholder="Pick a day"
           />
@@ -126,8 +179,9 @@ const cagUserPic = (e: any): any | undefined => {
       <span>城市</span>
       <div class="ItemSelect">
         <client-only>
+          <!-- 核心修复12：加可选链?.保护city -->
           <el-select
-            v-model="store.Userdata.Users.city"
+            v-model="userInfo.city"
             class="m-2"
             placeholder="Select"
           >
@@ -139,7 +193,7 @@ const cagUserPic = (e: any): any | undefined => {
             />
           </el-select>
         </client-only>
-        <el-input v-model="store.Userdata.Users.city"></el-input>
+        <el-input v-model="userInfo.city"></el-input>
       </div>
       <div class="Item">
         <el-button type="primary" plain @click="ChangeUserData('city')"
@@ -150,7 +204,8 @@ const cagUserPic = (e: any): any | undefined => {
     <div class="CardItem">
       <span>性别</span>
       <div class="ItemSelect">
-        <el-radio-group v-model="store.Userdata.Users.sex" class="ml-4">
+        <!-- 核心修复13：加可选链?.保护sex -->
+        <el-radio-group v-model="userInfo.sex" class="ml-4">
           <el-radio :value="'男'" size="large">男</el-radio>
           <el-radio :value="'女'" size="large">女</el-radio>
         </el-radio-group>
@@ -162,11 +217,14 @@ const cagUserPic = (e: any): any | undefined => {
       </div>
     </div>
   </div>
-  <div class="Card">
+
+  <!-- 核心修复14：未登录时不渲染自我介绍组件 -->
+  <div v-if="userInfo?.user_id" class="Card">
     <div class="title">自我介绍</div>
     <div class="CardItem">
+      <!-- 核心修复15：加可选链?.保护user_content -->
       <el-input
-        v-model="store.Userdata.Users.user_content"
+        v-model="userInfo.user_content"
         type="textarea"
         :rows="3"
         maxlength="120"
@@ -176,8 +234,10 @@ const cagUserPic = (e: any): any | undefined => {
       >
     </div>
   </div>
+
   <client-only>
-    <el-dialog v-model="uploadImg" title="修改用户头像">
+    <!-- 核心修复16：未登录时不显示头像修改弹窗 -->
+    <el-dialog v-model="uploadImg" v-if="userInfo?.user_id" title="修改用户头像">
       <el-upload
         class="upload-demo"
         drag

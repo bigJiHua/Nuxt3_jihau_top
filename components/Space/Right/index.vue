@@ -10,8 +10,7 @@ const props = defineProps<DataProps>()
   <transition name="fade-slide" mode="out-in">
     <SpaceRightUserCard v-show="props.istop" key="user-card" />
   </transition>
-
-  <RightMIcp style="width: 20vw!important" />
+  <RightMIcp />
 </template>
 
 <style lang="less" scoped>

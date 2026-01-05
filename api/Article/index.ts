@@ -20,9 +20,13 @@ const getNotifyList = (Num: number): any => {
 const getArticle = (id: string): any => {
   return request.get('/data/article?id=' + id)
 }
-// 获取文章内容(评论点赞收藏等)
+// 获取文章内容(点赞收藏等)
 const getArchives = (id: string): any => {
   return request.get('/data/artdata?id=' + id)
+}
+// 获取文章评论
+const getArtComment = (id: string): any => {
+  return request.get('/data/artcom?id=' + id)
 }
 
 // 获取通知内容
@@ -63,5 +67,6 @@ export default {
   getArchive,
   getArticle,
   getNotifyList,
-  SearchApi
+  SearchApi,
+  getArtComment
 }

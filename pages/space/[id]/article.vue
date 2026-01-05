@@ -2,6 +2,7 @@
 import getArtDataApi from '@/api/Space'
 import { useRouter } from 'vue-router'
 import { View, Star, Share } from '@element-plus/icons-vue'
+import { useUserDataStore } from '@/stores/useUserData'
 definePageMeta({
   layout: 'space-view',
 })
@@ -34,10 +35,30 @@ const getArticle = async (num: number): Promise<void> => {
 }
 // 下一页
 const pageNum: Ref<number> = ref(1)
+const store = useUserDataStore()
+// 监听登录
+const isLogin = ref(false)
+const StoreisLogin = computed(() => store.isLogin)
+watch(
+  StoreisLogin,
+  (newVal) => {
+    if (newVal) {
+      isLogin.value = true
+    } else {
+      isLogin.value = false
+    }
+  },
+  { immediate: true }
+)
 const nextNum = (): void => {
   if (isend.value) return
   pageNum.value++
   loading.value = true
+  if (pageNum.value > 3 && !isLogin.value) {
+    loading.value = false
+    ElMessage.warning('欲知更多，请先登录!')
+    return
+  }
   void getArticle((pageNum.value - 1) * 10)
 }
 
@@ -49,7 +70,7 @@ onMounted(() => {
 <template>
   <div class="SpaceArticleList" v-if="AllNum !== 0">
     <h3>他的文章</h3>
-    <SpaceItemCard :articleList="MyArticleListData"></SpaceItemCard>
+    <SpaceItemArticleCard :articleList="MyArticleListData"></SpaceItemArticleCard>
     <div class="pagBtnArea" v-if="!(AllNum <= 10)">
       <div @click="nextNum" class="btn" v-loading="loading">
         {{ isend ? '没有更多了' : '加载更多...' }}

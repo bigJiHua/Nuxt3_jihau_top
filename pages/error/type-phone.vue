@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'pagedf',
+  layout: 'default',
 })
 
 useHead({

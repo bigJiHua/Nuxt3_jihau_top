@@ -1,6 +1,6 @@
 <script setup>
 definePageMeta({
-  layout: 'pagedf',
+  layout: 'default',
 })
 
 const width = ref(0)

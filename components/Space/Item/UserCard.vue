@@ -82,6 +82,7 @@ const EditorBgc = (): void => {
 
 // 添加用户关系
 const addRelation = async (met: boolean): Promise<void> => {
+  if (isSelf.value) return
   if (props.data.username === '') return
   if (!met) relation.value = true
   relation.value = !relation.value
@@ -226,7 +227,7 @@ onMounted(() => {
   overflow: hidden;
   height: 100%;
   text-align: center;
-  color: #8f8f8f;
+  color: #8f8f8f6e;
 }
 .BgcBox::after {
   content: '⁶⁶ ⁶⁶⁶⁶⁶⁶   ⁶⁶66 ⁶⁶⁶⁶   ₆₆₆₆  可以啊.这 波  ₆₆₆₆ ⁶⁶⁶⁶⁶  ⁶⁶⁶⁶⁶⁶⁶  ⁶⁶⁶⁶⁶⁶⁶  66⁶⁶⁶⁶ 卧槽⁶⁶⁶⁶⁶⁶  ⁶⁶⁶⁶⁶⁶⁶ 666 ₆₆₆₆ ₆₆₆ 666 666 ⁶⁶⁶⁶ ⁶⁶₆₆₆ ₆₆₆₆⁶⁶⁶⁶⁶ ⁶⁶⁶⁶ ⁶⁶⁶⁶⁶⁶ ⁶⁶⁶⁶ ⁶⁶⁶⁶  66⁶⁶⁶⁶ 太牛了⁶⁶⁶⁶⁶⁶  ⁶⁶⁶⁶⁶⁶⁶ 666₆₆₆₆ ₆₆₆ 666 666 ⁶⁶⁶⁶ ⁶⁶₆₆₆ ₆₆₆₆⁶⁶⁶⁶⁶ ⁶⁶⁶⁶ ⁶⁶⁶⁶⁶⁶ ⁶⁶⁶⁶ ⁶⁶⁶⁶  66⁶⁶⁶⁶ 卧槽⁶⁶⁶⁶⁶⁶  ⁶⁶⁶⁶⁶⁶⁶ 666₆₆₆₆ ₆₆₆ 666 666 ⁶⁶⁶⁶ ⁶⁶₆₆₆ ₆₆₆₆⁶⁶⁶⁶⁶ ⁶⁶⁶⁶ ⁶⁶⁶⁶⁶⁶ ⁶⁶⁶⁶ ⁶⁶⁶⁶  66⁶⁶⁶⁶ 卧槽⁶⁶⁶⁶⁶⁶  ⁶⁶⁶⁶⁶⁶⁶ 666₆₆₆₆ ₆₆₆ 666 666 ⁶⁶⁶⁶ ⁶⁶₆₆₆ ₆₆₆₆⁶⁶⁶⁶⁶ ⁶⁶⁶⁶ ⁶⁶⁶⁶⁶⁶ ⁶⁶⁶⁶ ⁶⁶⁶⁶';
@@ -298,6 +299,7 @@ onMounted(() => {
     padding: 0 !important;
     font-size: 1rem !important;
     margin: 5px 0;
+    text-align: center;
   }
 
   .EditorBgc {
@@ -424,47 +426,4 @@ onMounted(() => {
   width: 100%;
 }
 
-.UserLogo {
-  height: 150px;
-  width: 150px;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 5px solid rgb(255, 255, 255);
-  background-color: #ffffffce;
-}
-
-.logo {
-  width: 100%;
-  height: 100%;
-}
-
-.Content {
-  height: 100%;
-  padding-left: 40px;
-  position: relative;
-  padding-top: 10vh;
-  width: 75%;
-
-  .ContentTitle {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    flex-direction: row;
-    flex-wrap: nowrap;
-
-    > h3 {
-      font-size: 2rem;
-    }
-
-    > p {
-      margin-left: 10px;
-    }
-  }
-
-  .ContentText {
-    padding: 15px 15px 15px 0;
-    font-size: 1.3rem;
-    font-weight: 100;
-  }
-}
 </style>

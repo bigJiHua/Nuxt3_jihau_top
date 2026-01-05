@@ -2,7 +2,7 @@
 // import GetNotifyData from '@/api/Article'
 import { useRoute } from 'vue-router'
 import { useAuthorDataStore } from '@/stores/useUserData'
-const router = useRoute()
+const route = useRoute()
 const store = useAuthorDataStore()
 const NotifyData: any = ref({
   title: '',
@@ -12,15 +12,19 @@ const NotifyData: any = ref({
   keyword: '',
   describes: '',
 })
-const NUrl = `${reqConfig.baseUrl}/data/page/`
-const { data } = await uFetch.useCustomFetch(NUrl, {
-  method: 'get',
-  params: {
-    id: router.params.id,
-  },
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-  key: `post-${router.params.id}`,
-})
+const appConfig = useAppConfig()
+const baseUrl = appConfig.site.baseUrl
+
+const NUrl = `${baseUrl}/data/page/`
+const key = 'notify-' + route.params.id
+const { data } = await useAsyncData(key, () =>
+  $fetch(NUrl, {
+    method: 'get',
+    params: {
+      id: route.params.id,
+    },
+  })
+)
 const res: any = data.value
 NotifyData.value = res.data
 
@@ -51,7 +55,7 @@ onMounted(() => {
       <div v-html="NotifyData.content" v-highlight class="html-content"></div>
     </div>
     <div class="icpBox">
-      <RightMIcp :width="'100%'" :max-width="'1200px'"/>
+      <RightMIcp />
     </div>
   </div>
 </template>

@@ -63,7 +63,7 @@ onMounted(() => {
 
 <style lang="less" scoped>
 :deep(.bytemd) {
-  height: calc(100vh - 120px);
+  height: calc(100vh - 175px);
   z-index: 999;
 }
 </style>

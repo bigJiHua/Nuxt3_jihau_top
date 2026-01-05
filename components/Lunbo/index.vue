@@ -1,89 +1,78 @@
 <script setup lang="ts">
 import { useIndexLunBoStore } from '@/stores/useindexDemoData'
 import getLunboData from '@/api/Page'
-// import Swiper core and required modules
+
+// Swiper（只在客户端使用）
 import {
   Navigation,
   Pagination,
   Scrollbar,
-  A11y,
   Autoplay,
+  A11y,
 } from 'swiper/modules'
-// Import Swiper Vue.js components
 import { Swiper, SwiperSlide } from 'swiper/vue'
+
 import 'swiper/less'
 import 'swiper/less/navigation'
 import 'swiper/less/pagination'
 
+/* ========== Store ========== */
+const store = useIndexLunBoStore()
+
+/* ========== SSR 拉数据（关键） ========== */
+const { data, pending, error } = await useAsyncData('lunbo', async () => {
+  const { data: res } = await getLunboData.getSetting('Lunbo')
+  return res
+})
+
+/* ========== 派生状态（统一数据源） ========== */
+const images = computed(() => data.value?.data || [])
+const isOpen = computed(() => data.value?.isOpen ?? false)
+
+/* ========== 客户端缓存到 Store（只做缓存） ========== */
+if (process.client && images.value.length) {
+  store.setLunBoData(images.value)
+}
+
+/* ========== Swiper 配置 ========== */
 const modules = [Navigation, Pagination, Scrollbar, Autoplay, A11y]
+
 const swiperOption = {
-  spaceBetween: 0,
-  slidesPerView: 1, // 一屏显示的slide个数  'auto'
-  slidesPerGroup: 1, // 每组多少个swiper滑块
-  centeredSlides: true, // 居中的slide是否标记为active，默认是最左active,这样样式即可生效
-  slideToClickedSlide: true, // 点击的slide会居中
-  loop: true, // 循环播放, 可有无限滚动效果，初始加载即是滚动后的效果
-  scrollbar: { draggable: true },
-  grabCursor: true, // 抓手光标
+  slidesPerView: 1,
+  loop: true,
+  centeredSlides: true,
   autoplay: {
     delay: 3000,
-    disableOnInteraction: false, // 用户操作swiper之后，是否禁止autoplay
-    pauseOnMouseEnter: true, // 鼠标置于swiper是否时暂停自动切换
+    disableOnInteraction: false,
+    pauseOnMouseEnter: true,
   },
-  // 使用前进后退按钮来控制Swiper切换。
-  navigation: true, // 1默认，在内
-  // 2前进、后退按钮放到容器的外面
-  // navigation: {
-  //   nextEl: ".swiper-button-next",
-  //   prevEl: ".swiper-button-prev",
-  //   hiddenClass: "button-hidden", //隐藏时的class
-  //   disabledClass: "button-disabled", //不可用时的class
-  // },
-  // 使用分页器导航
   pagination: { clickable: true },
+  navigation: true,
 }
-const store = useIndexLunBoStore()
-const images = ref(toRaw(store.getLunBoList))
-// SSR请求轮播图 /data/Setting?value=
-// const NUrl = `${reqConfig.baseUrl}/data/Setting`
-// await useFetch(NUrl, {
-//   method: 'get',
-//   params: {
-//     value: 'Lunbo',
-//   },
-// }).then((response) => {
-//   const res: any = response.data.value
-//   images.value = res.data
-// })
-
-const getLunBoList = async (): Promise<void> => {
-  const { data: res } = await getLunboData.getSetting('Lunbo')
-  store.setLunBoData(res.data)
-  images.value = res.data
-}
-onMounted(() => {
-  if (Object.keys(images.value).length === 0) {
-    void getLunBoList()
-  }
-  setTimeout(() => {
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    if (images.value) {
-      store.setLunBoData(images.value)
-    }
-  }, 800)
-  if (images.value.length === 0 && store.LunBoList.length !== 0) {
-    images.value = toRaw(store.getLunBoList)
-  }
-})
 </script>
+
 <template>
-  <div class="swiper-wrap">
-    <swiper :modules="modules" class="mySwiper LunboArea" v-bind="swiperOption">
-      <swiper-slide v-for="(image, index) in images" :key="index">
-        <img :src="image.set_difault" class="lunbo_img" :alt="image.set_title !== '' ? image.set_title : '轮播图' " />
-        <a :href="image.set_url" class="Lunbo_title">{{ image.set_title }}</a>
-      </swiper-slide>
-    </swiper>
+  <div class="swiper-wrap" v-if="isOpen">
+    <!-- SSR 渲染静态结构，客户端才加载 Swiper -->
+    <ClientOnly>
+      <swiper class="LunboArea" :modules="modules" v-bind="swiperOption">
+        <swiper-slide v-for="(image, index) in images" :key="index">
+          <img
+            :src="image.set_difault"
+            class="lunbo_img"
+            :alt="image.set_title || '轮播图'"
+          />
+          <a v-if="image.set_title" :href="image.set_url" class="Lunbo_title">
+            {{ image.set_title }}
+          </a>
+        </swiper-slide>
+      </swiper>
+
+      <!-- Swiper 加载前占位 -->
+      <template #fallback>
+        <div class="LunboArea skeleton" />
+      </template>
+    </ClientOnly>
   </div>
 </template>
 
@@ -105,7 +94,7 @@ onMounted(() => {
     position: absolute;
     top: 50%;
     left: 50%;
-    font-size:2.5rem;
+    font-size: 2.5rem;
     transform: translate(-50%, -50%);
     color: #e6f0fd;
   }

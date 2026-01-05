@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import getNotifyAPI from '@/api/Article'
-const notifyList: any = ref([])
+import { useNotifyListStore } from '@/stores/useArticleData'
+const store = useNotifyListStore()
+
+const notifyList: any = ref(toRaw(store.getNotify))
 const getNotifyData = async (): Promise<void> => {
   const { data: res } = await getNotifyAPI.getNotifyList(0)
   notifyList.value = res.data
+  store.setNotify(res.data)
 }
 onMounted(() => {
-  if (notifyList.value.length === 0) void getNotifyData()
+  if (notifyList.value.length <= 1) void getNotifyData()
 })
 </script>
 
@@ -33,12 +37,6 @@ onMounted(() => {
 </template>
 
 <style lang="less" scoped>
-@media only screen and (min-width: 755px) {
-  .ararc {
-    width: 25vw;
-    max-width: 480px;
-  }
-}
 .ararc {
   margin: 10px 0;
   border-radius: 5px;

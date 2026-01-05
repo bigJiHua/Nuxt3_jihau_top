@@ -10,7 +10,7 @@ const elContent = ref('') // 备份修改之前的
 const isTrue = ref(false)
 const isAutoSafe = ref(false) // 自动保存
 const isMd = ref(true) // 切换编辑器
-const showPanel = ref(true) // 面板开关
+const showPanel = ref(false) // 面板开关
 const isLoading = ref(true) // 是否加载中
 // 编辑数据
 const editorData: any = ref({
@@ -138,27 +138,31 @@ const PostNewArticle = async (isSet?: boolean): Promise<void> => {
       })
     }
     if (isSet) editorData.value.state = '2'
-    const { data: res } = await postArticleApi.UseraddArticle(editorData.value)
-    if (res.status === 200) {
-      editorData.value = {
-        username: '',
-        title: '',
-        lable: '',
-        keyword: '',
-        cover_img: '',
-        content: '',
-        describes: '',
-        state: 0,
-        pub_date: '',
-      }
-      localStorage.removeItem('setArtData')
-      setTimeout(() => {
-        if (!isSet) {
-          void router.push('/article/' + res.article)
-        } else {
-          void router.push('/editor/wait')
+    if (await WarningTips('准备好发布了吗？')) {
+      const { data: res } = await postArticleApi.UseraddArticle(
+        editorData.value
+      )
+      if (res.status === 200) {
+        editorData.value = {
+          username: '',
+          title: '',
+          lable: '',
+          keyword: '',
+          cover_img: '',
+          content: '',
+          describes: '',
+          state: 0,
+          pub_date: '',
         }
-      }, 500)
+        localStorage.removeItem('setArtData')
+        setTimeout(() => {
+          if (!isSet) {
+            void router.push('/article/' + res.article)
+          } else {
+            void router.push('/editor/wait')
+          }
+        }, 500)
+      }
     }
   }
 }
@@ -414,41 +418,37 @@ onMounted(async () => {
         >
           <el-form-item>
             <template #label>
-              <b>标题</b><span style="color: red">*</span>---设置文章标题
+              <b>标题</b><span style="color: red"> *(必需)</span>
             </template>
             <el-input v-model="editorData.title" maxlength="30" />
           </el-form-item>
           <el-form-item>
             <template #label>
-              <b>标签</b
-              ><span style="color: red">*</span>---设置文章标签(以中文顿号分隔)
+              <b>标签</b><span style="color: red"> *以中文顿号分隔(必需)</span>
             </template>
             <el-input v-model="editorData.lable" maxlength="30" />
           </el-form-item>
           <el-form-item>
             <template #label>
               <b>关键词</b
-              ><span style="color: red">*</span
-              >---设置文章关键词(以中文顿号分隔)
+              ><span style="color: red"> *以中文顿号分隔(必需)</span>
             </template>
             <el-input v-model="editorData.keyword" maxlength="30" />
           </el-form-item>
           <el-form-item>
             <template #label>
-              <b>文章描述</b><span style="color: red">*</span>---设置文章描述
+              <b>文章描述</b><span style="color: red"> *(必需)</span>
             </template>
             <el-input v-model="editorData.describes" maxlength="50" />
           </el-form-item>
           <el-form-item>
-            <template #label> <b>封面</b>---设置文章封面(可选) </template>
+            <template #label> <b>封面</b>(可选) </template>
             <el-input v-model="editorData.cover_img" maxlength="255" />
           </el-form-item>
         </el-form>
         <div class="cover_img" v-show="editorData.cover_img">
           <img :src="editorData.cover_img" alt="Cover_img" />
         </div>
-        <p><span style="color: red">*</span>为必填项</p>
-        <p><span style="color: red">注意：</span>标签关键词用中文顿号间隔！</p>
         <p v-if="isMd">
           不喜欢MarkDown？<el-button
             type="primary"

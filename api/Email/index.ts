@@ -7,7 +7,7 @@ const checkVer = (data: {
   const params = new URLSearchParams()
   params.append('code', data.code)
   params.append('user', data.user)
-  return request.post('/getmail/checkEmail', params)
+  return request.post('/mail/check', params)
 }
 
 export default {

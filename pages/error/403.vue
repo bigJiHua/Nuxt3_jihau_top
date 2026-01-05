@@ -1,14 +1,14 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: 'pagedf'
+  layout: 'default'
 })
 
 useHead({
-  title: '移动端错误页面测试页面',
+  title: '403-暂无权限访问该页面',
   meta: [
     {
       name: 'keywords',
-      content: '站点测试、JiHua、jihau.top、测试页面'
+      content: '403,无权限访问,错误页面'
     },
     {
       name: 'description',

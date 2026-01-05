@@ -2,8 +2,10 @@
 import { computed } from 'vue'
 
 const ListItem: any = ref([])
+const appConfig = useAppConfig()
+const baseUrl = appConfig.site.baseUrl
 
-const SUrl = `${reqConfig.baseUrl}/data/Setting`
+const SUrl = `${baseUrl}/data/Setting`
 useFetch(SUrl, {
   method: 'get',
   params: {
@@ -18,19 +20,7 @@ useFetch(SUrl, {
     console.error('Request failed:', error)
   })
 
-useHead({
-  title: 'jihau_top网站发展历程',
-  meta: [
-    {
-      name: 'keywords',
-      content: '发展、Login、JiHua、jihau.top、网站发展历程页面',
-    },
-    {
-      name: 'description',
-      content: '这是jihau.top网站的发展历程页面，欢迎您访问此网站！',
-    },
-  ],
-})
+usePageHead('dev')
 
 // 辅助函数：拆分时间字符串（假设格式类似 "2025-05-17"）
 const splitDate = (dateStr: string) => {

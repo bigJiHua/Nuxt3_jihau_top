@@ -8,7 +8,7 @@ const LoginMenu = (username: string, password: string): any => {
   const params = new URLSearchParams()
   params.append('username', username)
   params.append('password', password)
-  return request.post('/my/login', params)
+  return request.post('/auth/login', params)
 }
 // 用户注册
 const UpnewUser = (userdata: {
@@ -20,7 +20,7 @@ const UpnewUser = (userdata: {
   params.append('username', userdata.username)
   params.append('password', userdata.password)
   params.append('email', userdata.email)
-  return request.post('/my/reguser', params)
+  return request.post('/auth/reguser', params)
 }
 // Space
 const GetSpaceData = (user: string): any => {

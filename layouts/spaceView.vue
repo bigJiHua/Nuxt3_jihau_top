@@ -135,10 +135,10 @@ onMounted(async () => {
     ></HeaderSpace>
     <div class="body ContentBox">
       <!-- 用户信息 -->
-      <SpaceItem :data="UserData" :isSelf="isSelf" v-if="isOad"></SpaceItem>
+      <SpaceItemUserCard :data="UserData" :isSelf="isSelf" v-if="isOad"></SpaceItemUserCard>
       <!-- 内容主体 电脑端 -->
       <div class="userContentBox wsee" v-if="isOad" ref="tabPanel">
-        <div class="leftBar UserListArea">
+        <div class="leftBar">
           <!-- 切换页面 -->
           <div :class="[{ isNone: istop }, 'menuTab']">
             <div
@@ -151,7 +151,7 @@ onMounted(async () => {
             </div>
           </div>
           <!-- 主要内容区域 -->
-          <slot />
+          <slot/>
         </div>
         <!-- 右侧功能面板 -->
         <div class="rightBar">
@@ -163,19 +163,17 @@ onMounted(async () => {
       <!-- 手机端 -->
       <div class="userContentBox psee" v-if="isOad" ref="tabPanel">
         <div class="leftBar window-none">
-          <div class="UserListArea">
-            <div :class="[{ isNone: istop }, 'menuTab']">
-              <div
-                :class="[{ selectItem: isHerePath === item.id }, 'menuItem']"
-                v-for="(item, index) in UserTab"
-                :key="index"
-                @click="toTap(item.path, index)"
-              >
-                <span class="TabPath">{{ item.name }}</span>
-              </div>
+          <div :class="[{ isNone: istop }, 'menuTab']">
+            <div
+              :class="[{ selectItem: isHerePath === item.id }, 'menuItem']"
+              v-for="(item, index) in UserTab"
+              :key="index"
+              @click="toTap(item.path, index)"
+            >
+              <span class="TabPath">{{ item.name }}</span>
             </div>
-            <slot />
           </div>
+          <slot />
         </div>
       </div>
     </div>
@@ -184,11 +182,6 @@ onMounted(async () => {
 </template>
 
 <style lang="less" scoped>
-.UserListArea {
-  padding: 10px;
-  margin-right: 10px;
-  background-color: #fff;
-}
 .DefaultLayout {
   background-color: #edf1f5;
 }
@@ -203,19 +196,18 @@ onMounted(async () => {
 .userContentBox {
   display: flex;
   margin-top: 10px;
+  min-height: 500px;
 }
 
 .leftBar {
-  width: 50vw;
-  flex: 2;
-  margin-right: 10px;
+  width: 45vw;
+  padding: 10px;
+  background-color: #fff;
 }
 
 .rightBar {
-  flex: 1;
-  width: 15vw;
-  height: 500px;
-  margin-left: 10px;
+  width: calc(25vw - 20px);
+  padding: 10px;
 }
 
 .menuTab {
@@ -249,6 +241,12 @@ onMounted(async () => {
     background-color: #fff;
     overflow: scroll;
   }
+
+  .leftBar {
+    width: 95vw;
+    padding: 10px;
+    background-color: #fff;
+  }
   .userContentBox {
     display: block;
     margin: 0;
@@ -256,11 +254,6 @@ onMounted(async () => {
   .rightBar {
     display: none;
   }
-  .UserListArea {
-    width: calc(100vw - 16px);
-    padding: 0 8px;
-  }
-
   .menuTab {
     justify-content: space-between;
     border-bottom: 1px rgb(231, 231, 231) solid;

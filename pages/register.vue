@@ -1,120 +1,137 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-import PostNewUser from '@/api/Page'
-import { User, Message, Lock } from '@element-plus/icons-vue'
-const router = useRouter()
-const loading = ref(false)
+import { useRouter } from "vue-router";
+import PostNewUser from "@/api/Page";
+import { User, Message, Lock } from "@element-plus/icons-vue";
+const router = useRouter();
+const loading = ref(false);
 const newUser: any = reactive({
-  username: '',
-  password: '',
-  email: '',
-  elsepassword: '',
-})
+  username: "",
+  password: "",
+  email: "",
+  elsepassword: "",
+});
 
-const newUserForm = ref()
+const newUserForm = ref();
 // 定义表单验证规则
 const rules = reactive({
   username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { required: true, message: "请输入用户名", trigger: "blur" },
     {
       pattern:
         /^(?=(.*[a-zA-Z].*))(?=(.*\d.*))[\w]{5,12}$|^(?=(.*[a-zA-Z].*))(?=(.*_.*))[\w]{5,12}$|^(?=(.*\d.*))(?=(.*_.*))[\w]{5,12}$|^(?=.*[a-zA-Z\d_].*[a-zA-Z\d_])[\w]{5,12}$/,
-      message: '用户名不能为空!且长度为5-12位',
-      trigger: 'blur',
+      message: "用户名不能为空!且长度为5-12位",
+      trigger: "blur",
     },
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
+    { required: true, message: "请输入密码", trigger: "blur" },
     {
       pattern: /^[^\u4e00-\u9fa5]{6,15}$/,
-      message: '密码不能为空，且长度为6-15位，不能包含中文',
-      trigger: 'blur',
+      message: "密码不能为空，且长度为6-15位，不能包含中文",
+      trigger: "blur",
     },
   ],
   elsepassword: [
-    { required: true, message: '请输入确认密码', trigger: 'blur' },
+    { required: true, message: "请输入确认密码", trigger: "blur" },
     {
       pattern: /^[^\u4e00-\u9fa5]{6,15}$/,
-      message: '确认密码不能为空，且长度为6-15位，不能包含中文',
-      trigger: 'blur',
+      message: "确认密码不能为空，且长度为6-15位，不能包含中文",
+      trigger: "blur",
     },
   ],
   email: [
-    { required: true, message: '请输入邮箱', trigger: 'blur' },
+    { required: true, message: "请输入邮箱", trigger: "blur" },
     {
       pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
-      message: '请输入正确的邮箱',
-      trigger: 'blur',
+      message: "请输入正确的邮箱",
+      trigger: "blur",
     },
   ],
-})
-
-const isBad = ref(false)
+});
+// 获取控制
+const isBad = ref(false);
 const regcontent = ref({
-  text1: '还差最后一步',
-  text2: '我们注意到您的注册请求已提交，但需要进行额外的验证。',
-  text3: '我们尝试向您的注册邮箱发送了验证码，但是遇到了一些问题。',
-})
-const newuser = async () => {
+  text1: "还差最后一步",
+  text2: "我们注意到您的注册请求已提交，但需要进行额外的验证。",
+  text3: "我们尝试向您的注册邮箱发送了验证码，但是遇到了一些问题。",
+});
+const showErrorState = (): void => {
+  regcontent.value.text1 = "⚠ 注册暂时关闭";
+  regcontent.value.text2 = "我们注意到您的注册请求，但是服务出现了点问题。";
+  regcontent.value.text3 = "请稍后再试。";
+  isBad.value = true;
+};
+const route = useRouter();
+const appConfig = useAppConfig();
+const baseUrl = appConfig.site.baseUrl;
+
+const AuthUrl = `${baseUrl}/auth/route`;
+await useAsyncData("login", () =>
+  $fetch(AuthUrl, {
+    method: "get",
+    params: {
+      path: "/register",
+    },
+  }),
+)
+  .then((res) => {
+    if (res?.data?.value?.state !== "true") {
+      showErrorState();
+    }
+  })
+  .catch(() => {
+    showErrorState();
+  });
+// 创建用户
+const newuser = async (): Promise<void> => {
   // 异步操作，设置loading为true
-  loading.value = true
-  if (!newUserForm) return
+  loading.value = true;
+  if (!newUserForm) return;
   // 如果用户名、密码、邮箱都有值，判断密码是否一致
   // 验证
   try {
-    await newUserForm.value?.validate()
+    await newUserForm.value?.validate();
     if (newUser.password === newUser.elsepassword) {
       // 发送post请求，更新用户信息
       await PostNewUser.UpnewUser(newUser)
         .then((response) => {
           if (response.status === 200) {
-            void router.push('/Login')
+            void router.push("/Login");
           }
         })
         .catch((err) => {
           if (err.status === 406) {
-            isBad.value = true
+            isBad.value = true;
           } else if (err.status === 404) {
-            isBad.value = true
-            regcontent.value.text1 = '❌ 注册失败'
-            regcontent.value.text2 =
-              '我们注意到您的注册请求已提交，但是服务器出现了点问题。'
-            regcontent.value.text3 = ''
+            isBad.value = true;
+            regcontent.value.text1 = "❌ 注册失败";
+            regcontent.value.text2 = "我们注意到您的注册请求已提交，但是服务器出现了点问题。";
+            regcontent.value.text3 = "";
           }
-        })
-      loading.value = false
+        });
+      loading.value = false;
     } else {
       ElMessage({
-        message: '两次密码不一致，请检查',
-        type: 'warning',
-      })
+        message: "两次密码不一致，请检查",
+        type: "warning",
+      });
     }
     setTimeout(() => {
-      loading.value = false
-    }, 2000)
+      loading.value = false;
+    }, 2000);
   } catch (err) {
     // 表单验证未通过
-    loading.value = false // 解除加载状态
+    loading.value = false; // 解除加载状态
   }
-}
-const comeback = async () => {
-  if (await WarningTips('放弃注册吗？')) {
-    router.back()
+};
+// 取消
+const comeback = async (): Promise<void> => {
+  if (await WarningTips("放弃注册吗？")) {
+    router.back();
   }
-}
-useHead({
-  title: '注册--欢迎注册jihau.top成为高贵的用户',
-  meta: [
-    {
-      name: 'keywords',
-      content: '注册、Regisiter、JiHua、jihau.top、注册页面',
-    },
-    {
-      name: 'description',
-      content: '这是jihau.top网站的注册页面，欢迎您访问此网站！',
-    },
-  ],
-})
+};
+
+usePageHead("register");
 </script>
 
 <template>
@@ -196,11 +213,7 @@ useHead({
           </el-form-item>
         </el-form>
         <div class="btnmenu">
-          <el-button
-            class="divbtn btn-register"
-            type="primary"
-            plain
-            @click="comeback"
+          <el-button class="divbtn btn-register" type="primary" plain @click="comeback"
             >返回</el-button
           >
           <el-button
@@ -218,24 +231,7 @@ useHead({
           ，其中包括 Cookie 使用条款。
         </div>
       </div>
-      <div class="verification-area" v-else>
-        <h2 class="verification-title">{{ regcontent.text1 }}</h2>
-        <p class="verification-message">1.{{ regcontent.text2 }}</p>
-        <p class="verification-instruction">2.{{ regcontent.text3 }}</p>
-        <p class="verification-troubleshoot">请联系站长处理！</p>
-        <nuxt-link to="/Login">
-          <el-button
-            class="divbtn btn-register"
-            type="primary"
-            plain
-            style="float: right"
-            >登录</el-button
-          >
-        </nuxt-link>
-        <!-- 如果需要，可以添加一个按钮，用于重新发送验证码或跳转到验证页面 -->
-        <!-- <el-button type="primary" plain @click="resendVerificationCode">重新发送验证码</el-button> -->
-        <!-- <el-button type="info" plain @click="goToVerificationPage">前往验证页面</el-button> -->
-      </div>
+      <PageItemTips v-else :regcontent="regcontent" />
     </div>
   </div>
 </template>
@@ -304,7 +300,7 @@ useHead({
 }
 @media (min-width: 768px) {
   .login_conten_box {
-    width: 30%; /* 小屏幕下宽度更大 */
+    width: 40%; /* 小屏幕下宽度更大 */
   }
 }
 .xijie {
@@ -347,7 +343,7 @@ useHead({
 }
 
 .btn-register.loading::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 24px;
   height: 24px;
@@ -360,53 +356,5 @@ useHead({
 .divbtn:hover {
   background-color: #5291d1;
   color: #fff;
-}
-
-// 202 区域的样式
-.verification-area {
-  display: flex;
-  flex-direction: column;
-  padding: 30px; // 内边距
-  width: 100%; // 确保占据可用宽度
-  max-width: 400px; // 限制最大宽度，避免过宽
-  box-sizing: border-box; // 包含 padding 在宽度内
-  > h2 {
-    align-items: center; // 水平居中所有子项
-  }
-}
-.verification-title {
-  font-size: 2em; // 标题更大
-  color: #409eff; // Element Plus 主题蓝
-  margin-bottom: 20px;
-  font-weight: bold;
-}
-
-.verification-message,
-.verification-instruction,
-.verification-troubleshoot {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: #606266; // Element Plus 默认文本颜色
-  margin-bottom: 10px; // 段落间距
-}
-
-.verification-instruction {
-  font-weight: 500;
-}
-
-.verification-troubleshoot {
-  font-size: 0.9rem;
-  color: #909399; // 稍微浅一些的颜色
-  margin-top: 15px; // 与上方内容间隔
-}
-// 响应式调整（如果需要为小屏幕单独调整 202 区域）
-@media (max-width: 768px) {
-  .verification-area {
-    padding: 20px;
-    max-width: none; // 小屏幕下不限制最大宽度
-  }
-  .verification-title {
-    font-size: 1.8em;
-  }
 }
 </style>

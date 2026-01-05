@@ -17,15 +17,18 @@ export default defineNuxtConfig({
     '@element-plus/nuxt',
     '@vant/nuxt'
   ],
+
   experimental: {
     reactivityTransform: true,
     inlineSSRStyles: false
   },
+
   css: [
     '@/assets/css/index.css',
     'element-plus/dist/index.css',
     'bytemd/dist/index.css'
   ],
+
   app: {
     head: {
       charset: 'utf-8',
@@ -77,20 +80,26 @@ export default defineNuxtConfig({
       ]
     }
   },
+
   layouts: {
     default: 'layouts/default.vue'
   },
+
   router: {
     mode: 'hash'
   },
+
   axios: {
     proxy: true
   },
+
   components: true,
   ssr: true,
+
   nitro: {
     compatibilityDate: '2025-07-06'
   },
+
   vite: {
     server: {
       host: true, // 支持局域网访问
@@ -99,5 +108,7 @@ export default defineNuxtConfig({
       hmr: false
     },
     clearScreen: false // 可选：不清屏，方便查看日志
-  }
+  },
+
+  compatibilityDate: '2025-10-09'
 })

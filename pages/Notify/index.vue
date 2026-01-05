@@ -25,16 +25,7 @@ const handlePageChange = (page: number) => {
   void getDevP((page - 1) * 20)
 }
 
-useHead({
-  title: '通知',
-  meta: [
-    { name: 'keywords', content: '通知、Notify、JiHua、jihau.top、通知页面' },
-    {
-      name: 'description',
-      content: '这是jihau.top网站的通知页面，欢迎您访问此网站！',
-    },
-  ],
-})
+usePageHead('notify')
 
 // 时间拆分辅助函数，类似发展历程页面用法
 const splitDate = (dateStr: string) => {

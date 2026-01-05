@@ -18,7 +18,7 @@ const UpnewUser = (userdata: {
   params.append('username', userdata.username)
   params.append('password', userdata.password)
   params.append('email', userdata.email)
-  return request.post('/my/reguser', params)
+  return request.post('/auth/reguser', params)
 }
 // 删除用户
 const DelUser = (user: string, deluser: string): any => {

@@ -65,12 +65,6 @@ onMounted(() => {
 </template>
 
 <style lang="less" scoped>
-@media only screen and (min-width: 755px) {
-  .ararc {
-    width: 25vw;
-    max-width: 480px;
-  }
-}
 .ararc {
   min-height: 120px;
   background-color: #fff;

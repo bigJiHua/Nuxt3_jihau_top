@@ -65,7 +65,7 @@ onMounted(() => {
 <template>
   <div class="SpaceArticleList" v-if="AllNum !== 0">
     <h3>他的喜欢</h3>
-    <SpaceItemCard :articleList="MyArticleListData"></SpaceItemCard>
+    <SpaceItemArticleCard :articleList="MyArticleListData"></SpaceItemArticleCard>
     <div class="pagBtnArea" v-if="!(AllNum <= 10)">
       <div @click="nextNum" class="btn" v-loading="loading">
         {{ isend ? '没有更多了' : '加载更多...' }}

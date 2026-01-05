@@ -102,19 +102,8 @@ const pageChanged = (page: number) => {
   localNum.value = (page - 1) * 20
   void getGallery(localNum.value)
 }
-
 useHead({
   title: '我的图库',
-  meta: [
-    {
-      name: 'keywords',
-      content: 'JiHua,jihua,JiHua的Web和JS开发数据,个人网站',
-    },
-    {
-      name: 'description',
-      content: '一个神奇的个人网站，展示 Web/JS 开发、图像处理等内容。',
-    },
-  ],
 })
 
 onMounted(() => {

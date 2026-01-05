@@ -1,151 +1,171 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { ElMessage } from 'element-plus'
-import PublicAPI from '@/api/AllPublic'
-import dayjs from 'dayjs'
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
+import PublicAPI from "@/api/AllPublic";
+import dayjs from "dayjs";
 definePageMeta({
-  layout: 'pagedf',
-})
-const formRef = ref()
-const route = useRouter()
+  layout: "default",
+});
+const formRef = ref();
+const route = useRouter();
 const form = ref({
-  set_title: '',
-  set_url: '',
-  set_difault: '',
-  set_time: dayjs(new Date()).format('YYYY-MM-DD'),
-})
+  set_title: "",
+  set_url: "",
+  set_difault: "",
+  set_time: dayjs(new Date()).format("YYYY-MM-DD"),
+});
 const seeForm = ref({
-  set_title: 'JiHua',
-  set_url: 'https://jihau.top',
-  set_difault: 'https://jihau.top/img/logo.png',
-  set_time: dayjs(new Date()).format('YYYY-MM-DD'),
-})
-const qqNumber = ref('')
-const isAllRight = ref(false)
-const isShow = ref(false)
-const captcha = ref('')
-const codeimg = ref('')
-const time = ref(0)
-const count: Ref<number> = ref(0)
+  set_title: "JiHua",
+  set_url: "https://jihau.top",
+  set_difault: "https://jihau.top/img/logo.png",
+  set_time: dayjs(new Date()).format("YYYY-MM-DD"),
+});
+const qqNumber = ref("");
+const isAllRight = ref(false);
+const isShow = ref(false);
+const captcha = ref("");
+const codeimg = ref("");
+const time = ref(0);
+const count: Ref<number> = ref(0);
 const rules = {
   set_title: [
-    { required: true, message: '请输入要展示的昵称', trigger: 'blur' },
-    { max: 15, message: '昵称不能超过15个字符', trigger: 'blur' },
+    { required: true, message: "请输入要展示的昵称", trigger: "blur" },
+    { max: 15, message: "昵称不能超过15个字符", trigger: "blur" },
   ],
   set_url: [
-    { required: true, message: '请输入网站地址', trigger: 'blur' },
-    { type: 'url', message: '请输入有效的网址', trigger: 'blur' },
+    { required: true, message: "请输入网站地址", trigger: "blur" },
+    { type: "url", message: "请输入有效的网址", trigger: "blur" },
   ],
   set_difault: [
-    { required: true, message: '请输入您的Logo Links', trigger: 'blur' },
-    { max: 200, message: 'Logo链接不能超过200个字符', trigger: 'blur' },
+    { required: true, message: "请输入您的Logo Links", trigger: "blur" },
+    { max: 200, message: "Logo链接不能超过200个字符", trigger: "blur" },
   ],
-  set_time: [{ required: true, message: '请选择认识时间', trigger: 'change' }],
-}
+  set_time: [{ required: true, message: "请选择认识时间", trigger: "change" }],
+};
+// 校验通道
+const isOpen: Ref<boolean> = ref(false);
+const appConfig = useAppConfig();
+const baseUrl = appConfig.site.baseUrl;
+const AuthUrl = `${baseUrl}/auth/route`;
+await useAsyncData("sps", () =>
+  $fetch(AuthUrl, {
+    method: "get",
+    params: {
+      path: "/spslist",
+    },
+  }),
+).then((res) => {
+  isOpen.value = res?.data?.value?.state === "true";
+});
+
+useHead({
+  title: "友链申请",
+});
 // 监听表单变化，同步到预览区域
 watch(
   form,
   (newVal) => {
     Object.keys(newVal).forEach((key) => {
       // 只同步有值的字段，避免把旧值覆盖为空
-      if (
-        newVal[key] !== '' &&
-        newVal[key] !== null &&
-        newVal[key] !== undefined
-      ) {
-        seeForm.value[key] = newVal[key]
+      if (newVal[key] !== "" && newVal[key] !== null && newVal[key] !== undefined) {
+        seeForm.value[key] = newVal[key];
       }
-    })
+    });
   },
-  { deep: true }
-)
+  { deep: true },
+);
 // 提交表单
 const submitForm = async (): Promise<void> => {
+  if (!isOpen.value) {
+    ElMessage.error("非法修改代码！警告！");
+    return;
+  }
   formRef.value.validate(async (valid: boolean) => {
     if (valid) {
-      if (form.value.set_title === 'JiHua') {
-        ElMessage.warning('请不要直接提交原有数据！')
-        return
+      if (form.value.set_title === "JiHua") {
+        ElMessage.warning("请不要直接提交原有数据！");
+        return;
       }
       // 调用获取验证码
-      void getCode()
+      void getCode();
     } else {
-      ElMessage.error('有遗漏项，请检查输入内容！')
+      ElMessage.error("有遗漏项，请检查输入内容！");
     }
-  })
-}
+  });
+};
 // 校验验证码
 const isCaptcha = async (): Promise<void> => {
   if (!captcha.value) {
-    ElMessage.error('请输入验证码！')
-    return
+    ElMessage.error("请输入验证码！");
+    return;
   }
-  await PublicAPI.verifyCode('verify', captcha.value)
+  await PublicAPI.verifyCode("verify", captcha.value)
     .then(async (r) => {
       if (r.data.status === 200) {
-        const { data: res } = await PublicAPI.postSpsList(form.value)
+        const { data: res } = await PublicAPI.postSpsList(form.value);
         if (res.status === 200) {
-          isShow.value = false
-          isAllRight.value = true
-          codeimg.value = ''
-          captcha.value = ''
+          isShow.value = false;
+          isAllRight.value = true;
+          codeimg.value = "";
+          captcha.value = "";
         }
       }
     })
     .catch(() => {
-      captcha.value = ''
-      ElMessage.error('验证码错误，请重新输入！')
-      isShow.value = false
-    })
-}
+      captcha.value = "";
+      ElMessage.error("验证码错误，请重新输入！");
+      isShow.value = false;
+    });
+};
 // TODO 需要解决 多次请求刷新验证码的问题
 // 获取验证码及倒计时逻辑简化版
 const getCode = async (): Promise<void> => {
   if (count.value >= 10) {
     // 超过5次，清理数据并关闭弹窗
-    captcha.value = ''
-    isShow.value = false
-    codeimg.value = ''
-    count.value = 0
-    ElMessage.error('尝试次数过多，请稍后再试！')
-    return
+    captcha.value = "";
+    isShow.value = false;
+    codeimg.value = "";
+    count.value = 0;
+    ElMessage.error("尝试次数过多，请稍后再试！");
+    return;
   }
-  const { data } = await PublicAPI.getCode()
-  codeimg.value = data
-  isShow.value = true
-  count.value++
-  time.value = 60
-  startCountDown()
-}
+  const { data } = await PublicAPI.getCode();
+  codeimg.value = data;
+  isShow.value = true;
+  count.value++;
+  time.value = 60;
+  startCountDown();
+};
 // 计时器
 const startCountDown = (): void => {
   if (time.value > 0 && isShow.value) {
     setTimeout(() => {
-      time.value--
+      time.value--;
       if (time.value <= 0 && isShow.value) {
-        void getCode() // 失效重新请求
+        void getCode(); // 失效重新请求
       } else {
-        startCountDown() // 继续倒计时
+        startCountDown(); // 继续倒计时
       }
-    }, 1000)
+    }, 1000);
   }
-}
+};
 
 // 使用qq 头像
 const useQQicon = () => {
   if (!qqNumber.value) {
-    ElMessage.warning('请输入QQ号码')
-    return
+    ElMessage.warning("请输入QQ号码");
+    return;
   }
-  const qqIconUrl = `https://q.qlogo.cn/g?b=qq&nk=${qqNumber.value}&s=640`
-  form.value.set_difault = qqIconUrl
-}
+  const qqIconUrl = `https://q.qlogo.cn/g?b=qq&nk=${qqNumber.value}&s=640`;
+  form.value.set_difault = qqIconUrl;
+};
 
 const resetForm = (): void => {
-  formRef.value.resetFields()
-  ElMessage.info('已取消申请')
-  void route.push('/SpsList')
-}
+  formRef.value.resetFields();
+  ElMessage.info("已取消申请");
+  void route.push("/SpsList");
+};
 </script>
 
 <template>
@@ -196,11 +216,7 @@ const resetForm = (): void => {
           label-position="top"
         >
           <el-form-item label="尊称" prop="set_title">
-            <el-input
-              v-model="form.set_title"
-              placeholder="请输入您的昵称"
-              maxlength="15"
-            />
+            <el-input v-model="form.set_title" placeholder="请输入您的昵称" maxlength="15" />
           </el-form-item>
 
           <el-form-item label="贵站链接" prop="set_url">
@@ -212,20 +228,10 @@ const resetForm = (): void => {
           </el-form-item>
 
           <el-form-item label="Logo" prop="set_difault">
-            <el-input
-              v-model="form.set_difault"
-              placeholder="Logo URL"
-              maxlength="150"
-            />
+            <el-input v-model="form.set_difault" placeholder="Logo URL" maxlength="150" />
             <div class="useQQinput">
-              <el-input
-                v-model="qqNumber"
-                placeholder="QQ号码"
-                maxlength="15"
-              />
-              <el-button type="primary" plain size="small" @click="useQQicon"
-                >使用QQ头像</el-button
-              >
+              <el-input v-model="qqNumber" placeholder="QQ号码" maxlength="15" />
+              <el-button type="primary" plain size="small" @click="useQQicon">使用QQ头像</el-button>
             </div>
             <p class="warningTips">
               ⚠请注意，我们不会通过你的QQ号主动联系你，如您觉得暴漏隐私请勿使用!
@@ -243,9 +249,8 @@ const resetForm = (): void => {
           </el-form-item>
           <div class="form-actions">
             <el-button type="warning" plain @click="resetForm">取消</el-button>
-            <el-button type="primary" plain @click="submitForm"
-              >递交申请</el-button
-            >
+            <el-button type="danger" plain v-if="!isOpen">暂停申请</el-button>
+            <el-button type="primary" plain @click="submitForm" v-else>递交申请</el-button>
           </div>
         </el-form>
       </el-card>
@@ -272,17 +277,17 @@ const resetForm = (): void => {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  padding: 60px 20px;
+  padding: 0px 20px;
   background: linear-gradient(to bottom, #fdfcfb, #e2d1c3);
   gap: 40px;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 60px);
   overflow: scroll;
 }
 .invitation-bg::-webkit-scrollbar {
   display: none;
 }
 .invitation-card {
-  font-family: 'Georgia', serif;
+  font-family: "Georgia", serif;
 }
 .card-view {
   position: relative;
@@ -298,10 +303,10 @@ const resetForm = (): void => {
   background-color: #fff;
 }
 .card-view > h3 {
-  position: absolute;
-  top: 0;
-  left: 45%;
   color: #bdbbbb;
+  display: flex;
+  justify-content: center;
+  margin: 0 0 10px 0;
 }
 .invitation-card {
   background: #fff8f0;
@@ -319,7 +324,7 @@ const resetForm = (): void => {
   font-size: 24px;
   font-weight: bold;
   color: #8b5e3c;
-  font-family: 'Times New Roman', serif;
+  font-family: "Times New Roman", serif;
   margin-bottom: 10px;
 }
 

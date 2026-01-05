@@ -1,47 +1,49 @@
 <script setup lang="ts">
-import { useUserDataStore } from '@/stores/useUserData'
-const store = useUserDataStore()
-const isLogin = ref(false)
-const username = ref('')
+import { useUserDataStore } from "@/stores/useUserData";
+const store = useUserDataStore();
+const isLogin = ref(false);
+const username = ref("");
 
 const getTimePeriod = (): string => {
-  const now = new Date()
-  const hour = now.getHours() // 0-23
+  const now = new Date();
+  const hour = now.getHours(); // 0-23
   if (hour >= 6 && hour < 12) {
-    return '早晨好' // 6:00 - 11:59
+    return "早上好"; // 6:00 - 11:59
   } else if (hour >= 12 && hour < 13) {
-    return '中午好' // 12:00 - 17:59
+    return "中午好"; // 12:00 - 17:59
   } else if (hour >= 14 && hour < 18) {
-    return '下午好' // 14:00 - 17:59
+    return "下午好"; // 14:00 - 17:59
   } else if (hour >= 18 && hour < 22) {
-    return '晚上好' // 18:00 - 21:59
+    return "晚上好"; // 18:00 - 21:59
   } else {
-    return '深夜好' // 22:00 - 5:59
+    return "深夜好"; // 22:00 - 5:59
   }
-}
+};
 
-const StoreisLogin = computed(() => store.isLogin)
+const StoreisLogin = computed(() => store.isLogin);
 watch(StoreisLogin, (newVal) => {
   if (newVal) {
-    isLogin.value = true
+    isLogin.value = true;
   } else {
-    isLogin.value = false
+    isLogin.value = false;
   }
-})
+});
+const appConfig = useAppConfig()
+const sitename = appConfig.site.sitename
 
 onMounted(() => {
-  if (localStorage.getItem('token') !== null) {
+  if (localStorage.getItem("token") !== null) {
     // 如果登录了切换卡片
-    isLogin.value = true
-    username.value = localStorage.getItem('Username') as string
+    isLogin.value = true;
+    username.value = localStorage.getItem("Username") as string;
   }
-})
+});
 </script>
 
 <template>
   <div class="toolBox">
     <div class="defaultBox" v-if="!isLogin">
-      <h1 class="headerText">博格</h1>
+      <h1 class="headerText">{{sitename}}</h1>
       <p class="text">
         属于你的专属社区，在这里你可以找到志同道合的朋友，分享你的生活，交流你的心得，共同成长。
       </p>
@@ -59,16 +61,14 @@ onMounted(() => {
       </div>
     </div>
     <div class="trueLoginBox" v-else>
-      <h2>{{ getTimePeriod() }}{{ username }} ，欢迎回来！</h2>
+      <h2>
+        {{ getTimePeriod() }} <nuxt-link :to="`/space/${username}`" class="UN">{{ username }}</nuxt-link> ，
+      </h2>
+      <h2>欢迎回来！</h2>
       <div class="btnArea">
         <nuxt-link to="/editor">
           <el-button type="primary" class="divbtn btn-register" plain
             >撰写文章</el-button
-          ></nuxt-link
-        >
-        <nuxt-link :to="`/space/${username}`">
-          <el-button type="primary" class="divbtn btn-register" plain
-            >我的空间</el-button
           ></nuxt-link
         >
         <nuxt-link to="/Users">
@@ -82,12 +82,6 @@ onMounted(() => {
 </template>
 
 <style lang="less" scoped>
-@media only screen and (min-width: 755px) {
-  .toolBox {
-    width: 25vw;
-    max-width: 480px;
-  }
-}
 .toolBox {
   min-height: 120px;
   background-color: #fff;
@@ -118,7 +112,9 @@ onMounted(() => {
   flex-wrap: wrap;
   margin: 10px 0;
 }
-
+.UN {
+  color: #FC80A3;
+}
 // DIV BTN
 .divbtn {
   width: 90px;
@@ -127,7 +123,7 @@ onMounted(() => {
   border: 1px solid #5291d1;
   border-radius: 50px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 .btn-register {
   background: linear-gradient(135deg, #9dcdf7 0%, #4c93ff 100%);
@@ -150,7 +146,7 @@ onMounted(() => {
 }
 
 .btn-register.loading::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 24px;
   height: 24px;
@@ -160,6 +156,6 @@ onMounted(() => {
   animation: spin 0.8s linear infinite;
 }
 h2 {
-  margin: 10px 0 20px;
+  font-size: 2rem;
 }
 </style>

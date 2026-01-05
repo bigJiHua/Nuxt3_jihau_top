@@ -1,23 +1,18 @@
 <script setup lang="ts">
-const props = defineProps({
-  width: {
-    type: String,
-    default: '25vw',
-  },
-  maxWidth: {
-    type: String,
-    default: '480px',
-  },
-})
+const appConfig = useAppConfig()
+
+const icpNumber = appConfig.site.icp.number
+const gaNumber = appConfig.site.ga.number
+
 </script>
 
 <template>
-  <div id="" class="footer" :style="{ width, maxWidth }">
+  <div class="footer">
     <div id="icp">
       <p class="icp_alt">
         <img :src="icon.LogoPic" alt="站点logo" width="30" height="26" />
         <a href="https://beian.miit.gov.cn" rel="noreferrer" target="_blank">{{
-          reqConfig.icpNumber
+          icpNumber
         }}</a>
       </p>
       <p class="icp_alt">
@@ -26,7 +21,7 @@ const props = defineProps({
           href="https://beian.mps.gov.cn/#/query/webSearch?code=00000000000000"
           rel="noreferrer"
           target="_blank"
-          >{{ reqConfig.gaNumber }}</a
+          >{{ gaNumber }}</a
         >
       </p>
       <p class="icp_alt">
@@ -53,7 +48,8 @@ const props = defineProps({
   border-radius: 5px;
   border-radius: 5px;
   padding: 10px;
-
+  width: 100%;
+  box-sizing: border-box;
   .top {
     right: 15px;
     position: fixed;

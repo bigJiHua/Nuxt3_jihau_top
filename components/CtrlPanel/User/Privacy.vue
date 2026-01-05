@@ -1,64 +1,85 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import cagUserAPi from '@/api/User'
+import { ref, onMounted } from "vue";
+import cagUserAPi from "@/api/User";
 interface data {
-  class: string
-  text: string
-  value: boolean
+  class: string;
+  text: string;
+  value: boolean;
 }
 const UserPrivacy = ref<data[]>([
   {
-    class: '',
-    text: '',
-    value: false
-  }
-])
-
+    class: "",
+    text: "",
+    value: false,
+  },
+]);
+const syncUserPrivacy = (power: any) => {
+  UserPrivacy.value.forEach((item) => {
+    if (item.class in power) {
+      item.value = Number(power[item.class]) === 1;
+    }
+  });
+};
+// 改变权限
 const ChangUserPower = async (key: string, value: boolean): Promise<void> => {
-  if (await WarningTips('你确定要改变改权限吗？')) {
-    await cagUserAPi.CagUserPower(key, value ? 'true' : 'false')
-    void getUserPower()
-  } else {
-    UserPrivacy.value.map((item) =>
-      item.class === key ? (item.value = !value) : item.value
-    )
+  const oldValue = !value;
+
+  if (!(await WarningTips("你确定要改变该权限吗？"))) {
+    // 回滚
+    UserPrivacy.value.forEach((item) => {
+      if (item.class === key) item.value = oldValue;
+    });
+    return;
   }
-}
+  try {
+    const { data: res } = await cagUserAPi.CagUserPower(key, value ? "true" : "false");
+    // ✅ 用后端返回的最新权限同步前端（重点）
+    if (res?.data) {
+      syncUserPrivacy(res.data);
+    }
+  } catch (err) {
+    // ❌ 请求失败也要回滚
+    UserPrivacy.value.forEach((item) => {
+      if (item.class === key) item.value = oldValue;
+    });
+  }
+};
+
 // 获取权限
 const getUserPower = async (): Promise<void> => {
-  const { data: res } = await cagUserAPi.CagUserPower('get', 'true')
+  const { data: res } = await cagUserAPi.CagUserPower("get", "true");
   UserPrivacy.value = [
     {
-      class: 'isspace',
-      text: '查看我的空间',
-      value: Number(res.data.isspace) === 1
+      class: "isspace",
+      text: "查看我的空间",
+      value: Number(res.data.isspace) === 1,
     },
     {
-      class: 'isrel',
-      text: '查看我的关注',
-      value: Number(res.data.isrel) === 1
+      class: "isrel",
+      text: "查看我的关注",
+      value: Number(res.data.isrel) === 1,
     },
     {
-      class: 'isfans',
-      text: '查看我的粉丝',
-      value: Number(res.data.isfans) === 1
+      class: "isfans",
+      text: "查看我的粉丝",
+      value: Number(res.data.isfans) === 1,
     },
     {
-      class: 'islike',
-      text: '查看我的喜欢',
-      value: Number(res.data.islike) === 1
+      class: "islike",
+      text: "查看我的喜欢",
+      value: Number(res.data.islike) === 1,
     },
     {
-      class: 'iscol',
-      text: '查看我的收藏',
-      value: Number(res.data.iscol) === 1
-    }
-  ]
-}
+      class: "iscol",
+      text: "查看我的收藏",
+      value: Number(res.data.iscol) === 1,
+    },
+  ];
+};
 
 onMounted(() => {
-  void getUserPower()
-})
+  void getUserPower();
+});
 </script>
 
 <template>

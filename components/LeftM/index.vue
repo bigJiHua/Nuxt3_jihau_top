@@ -7,22 +7,32 @@ const refreshing: Ref<boolean> = ref(false)
 const loading: Ref<boolean> = ref(false)
 const finished: Ref<boolean> = ref(false)
 const Num = ref(10)
-const AUrl = `${reqConfig.baseUrl}/data/list`
-useFetch(AUrl, {
-  method: 'get',
-  params: {
-    page: 0,
-  },
-})
-  .then((response) => {
-    const res: any = response.data.value
-    ArticleListData.value = res.data
-    store.setArticleData(res.data)
-  })
-  .catch((error) => {
-    console.error('Request failed:', error)
-  })
+const StoreIsLoading = computed(() => store.getIsLoading)
+const StoreData = computed(() => store.getArticleList)
+const appConfig = useAppConfig()
+const baseUrl = appConfig.site.baseUrl
 
+const AUrl = `${baseUrl}/data/list`
+if (!StoreIsLoading.value) {
+  useFetch(AUrl, {
+    method: 'get',
+    params: {
+      page: 0,
+    },
+  })
+    .then((response) => {
+      const res: any = response.data.value
+      ArticleListData.value = res.data
+      store.setArticleData(res.data)
+    })
+    .catch((error) => {
+      console.error('Request failed:', error)
+    })
+} else {
+  if (ArticleListData.value.length === 0) {
+    ArticleListData.value = StoreData.value
+  }
+}
 // 获取新的文章列表
 const getNewArticleList = async (): Promise<void> => {
   await ArticleAPI.getArticleList(Num.value)

@@ -1,32 +1,35 @@
 <script setup lang="ts">
-import { Menu, Search } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router'
-const router = useRouter()
-const key: any = ref('')
-const drawer = ref(false)
-const innerDrawer = ref(false)
-const isLogin = ref(false)
+import { Menu, Search } from "@element-plus/icons-vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
+const key: any = ref("");
+const drawer = ref(false);
+const innerDrawer = ref(false);
+const isLogin = ref(false);
 
 const CtrlMenuItem = reactive([
-  { path: '/Users', text: '个人设置' },
-  { path: '/editor/list', text: '我的文章' },
-  { path: '/editor', text: '发布文章' },
-  { path: '/editor/wait', text: '草稿箱' },
-  { path: '/editor/gallery', text: '图片资源' },
-  { path: '/Users/msg', text: '我的消息' },
-  { path: '/editor/cag', text: '修改文章' },
+  { path: "/Users", text: "个人设置" },
+  { path: "/editor/list", text: "我的文章" },
+  { path: "/editor", text: "发布文章" },
+  { path: "/editor/wait", text: "草稿箱" },
+  { path: "/editor/gallery", text: "图片资源" },
+  { path: "/Users/msg", text: "我的消息" },
+  { path: "/editor/cag", text: "修改文章" },
   // { path: '/Users/Setting', text: '个性设置' },
-])
+]);
+const appConfig = useAppConfig();
+const MenuItem = appConfig.site.menu;
+const sitename = appConfig.site.sitename;
 const SearchFunc = (): void => {
-  void router.push('/Search/' + key.value)
-  key.value = ''
-  drawer.value = false
-}
+  void router.push("/Search/" + key.value);
+  key.value = "";
+  drawer.value = false;
+};
 onMounted(() => {
   if (process.client ?? false) {
-    isLogin.value = localStorage.getItem('token') !== null
+    isLogin.value = localStorage.getItem("token") !== null;
   }
-})
+});
 </script>
 
 <template>
@@ -34,7 +37,7 @@ onMounted(() => {
     <div class="HeaderLeft">
       <div>
         <h1 class="HeaderTitle">
-          <a href="/">JiHua的web和js开发数据</a>
+          <a href="/">{{ sitename }}</a>
         </h1>
       </div>
       <div class="RightMenu">
@@ -53,7 +56,7 @@ onMounted(() => {
         <div class="defalutMenu">
           <div
             class="MenuItem"
-            v-for="(item, index) in reqConfig.MenuItem"
+            v-for="(item, index) in MenuItem"
             :key="index"
             @click="drawer = false"
           >
@@ -61,11 +64,7 @@ onMounted(() => {
           </div>
           <div class="MenuItem">
             <div class="SearchBox">
-              <el-input
-                v-model="key"
-                placeholder="搜搜搜~"
-                class="input-with-select"
-              >
+              <el-input v-model="key" placeholder="搜搜搜~" class="input-with-select">
                 <template #append>
                   <el-button :icon="Search" @click="SearchFunc" />
                 </template>
@@ -74,15 +73,11 @@ onMounted(() => {
           </div>
           <div class="LoginBtn" v-if="!isLogin">
             <nuxt-link to="/Login"
-              ><el-button type="primary" plain @click="drawer = false"
-                >登录</el-button
-              ></nuxt-link
+              ><el-button type="primary" plain @click="drawer = false">登录</el-button></nuxt-link
             >
           </div>
           <div class="MenuItem" v-if="isLogin">
-            <el-button type="primary" plain @click="innerDrawer = true"
-              >后台菜单</el-button
-            >
+            <el-button type="primary" plain @click="innerDrawer = true">后台菜单</el-button>
           </div>
         </div>
         <div v-if="isLogin">
@@ -98,11 +93,9 @@ onMounted(() => {
                 class="MenuItem"
                 v-for="(item, index) in CtrlMenuItem"
                 :key="index"
-                @click=";(innerDrawer = false), (drawer = false)"
+                @click="(innerDrawer = false), (drawer = false);"
               >
-                <NuxtLink :to="item.path" class="text-x2">{{
-                  item.text
-                }}</NuxtLink>
+                <NuxtLink :to="item.path" class="text-x2">{{ item.text }}</NuxtLink>
               </div>
             </el-drawer>
           </client-only>

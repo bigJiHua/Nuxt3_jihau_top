@@ -111,7 +111,7 @@ const groupedPages = [
     pages: [
       {
         name: '创作空间',
-        path: '/space/jihua',
+        path: '/space',
         description: '进入用户的创作空间',
         bg: 'linear-gradient(135deg, #d0f0fd, #b2ebf2)'
       },
@@ -120,6 +120,12 @@ const groupedPages = [
         path: '/feedback/class/spslist',
         description: '申请加入友情链接',
         bg: 'linear-gradient(135deg, #e3f2fd, #bbdefb)'
+      },
+      {
+        name: '站点地图',
+        path: '/sitemap.xml',
+        description: '站点地图',
+        bg: 'linear-gradient(135deg, #e0f7fa, #b2ebf2)'
       },
       {
         name: '站点导航',
@@ -145,28 +151,28 @@ const groupedPages = [
         bg: 'linear-gradient(135deg, #ffe0e0, #ffccbc)'
       },
       {
+        name: '403页面',
+        path: '/error/403',
+        description: '用于调试与测试错误页面',
+        bg: 'linear-gradient(135deg, #ffe0e0, #ffccbc)'
+      },
+      {
+        name: '503页面',
+        path: '/error/503',
+        description: '用于调试与测试错误页面',
+        bg: 'linear-gradient(135deg, #ffe0e0, #f8bbd0)'
+      },
+      {
         name: '测试页面大小',
         path: '/error/test',
         description: '用于调试与测试错误页面',
-        bg: 'linear-gradient(135deg, #ffe0e0, #f8bbd0)'
+        bg: 'linear-gradient(135deg, #ffe0e0, #f8bbd3)'
       },
     ]
   },
 ]
 
-useHead({
-  title: '站点全速导航',
-  meta: [
-    {
-      name: 'keywords',
-      content: '站点导航、JiHua、jihau.top、导航页面'
-    },
-    {
-      name: 'description',
-      content: '这是jihau_top网站的导航页面，欢迎您访问此网站！'
-    },
-  ]
-})
+usePageHead('sitemap')
 </script>
 
 <template>

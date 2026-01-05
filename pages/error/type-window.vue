@@ -425,7 +425,7 @@
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'pagedf'
+  layout: 'default'
 })
 useHead({
   title: '桌面端错误页面测试页面',

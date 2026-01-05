@@ -1,59 +1,54 @@
 <script setup lang="ts">
-import { useUserDataStore } from '@/stores/useUserData'
-import GetUserDataApi from '@/api/User'
-import { useRouter } from 'vue-router'
-import { computed, onMounted } from 'vue'
+import { useUserDataStore } from "@/stores/useUserData";
+import GetUserDataApi from "@/api/User";
+import { useRouter } from "vue-router";
+import { computed, onMounted } from "vue";
 
-const store = useUserDataStore()
-const router = useRouter()
+const store = useUserDataStore();
+const router = useRouter();
 
 // 响应式登录状态
-const isLogin = computed(() => store.isLogin)
-const userData = computed(() => store.Userdata.Users)
+const isLogin = computed(() => store.isLogin);
+const userData = computed(() => store.Userdata?.Users || {});
 
 // 注销操作
 const LoginOut = (): void => {
-  localStorage.removeItem('token')
-  localStorage.removeItem('Username')
-  localStorage.removeItem('Useridentity')
-  localStorage.removeItem('UserData')
-  store.setUserData([]) // 清空用户信息
-
-  const routerPath = router.currentRoute.value.path
+  const routerPath = router.currentRoute.value.path;
   if (/^\/(Users|my|editor)/.test(routerPath)) {
-    void router.push('/')
+    void router.push("/");
   }
-}
+  localStorage.removeItem("token");
+  localStorage.removeItem("Username");
+  localStorage.removeItem("Useridentity");
+  localStorage.removeItem("UserData");
+  store.setUserData([]); // 清空用户信息
+};
 
 // 获取用户数据
 const getUserData = async (): Promise<void> => {
-  const token = localStorage.getItem('token')
-  if (!token) return
+  const token = localStorage.getItem("token");
+  if (!token) return;
   try {
-    const { data: res } = await GetUserDataApi.GetUserData()
-    localStorage.setItem('Username', res.data.Users.username)
-    localStorage.setItem('Useridentity', res.data.Users.useridentity)
-    store.setUserData(res.data)
+    const { data: res } = await GetUserDataApi.GetUserData();
+    localStorage.setItem("Username", res.data.Users.username);
+    localStorage.setItem("Useridentity", res.data.Users.useridentity);
+    store.setUserData(res.data);
   } catch (error) {
-    console.error('获取用户信息失败', error)
+    console.error("获取用户信息失败", error);
   }
-}
+};
 
 // 组件挂载时请求用户数据
 onMounted(() => {
-  const token = localStorage.getItem('token')
-  if (token) void getUserData()
-})
+  const token = localStorage.getItem("token");
+  if (token) void getUserData();
+});
 </script>
 
 <template>
   <client-only>
     <el-dropdown trigger="click" v-if="isLogin">
-      <img
-        alt="用户头像"
-        :src="userData.user_pic || '/default-avatar.png'"
-        class="userLogo"
-      />
+      <img alt="用户头像" :src="userData.user_pic || icon.UserdefaultLogo" class="userLogo" />
       <template #dropdown>
         <el-dropdown-menu>
           <nuxt-link to="/editor/list">

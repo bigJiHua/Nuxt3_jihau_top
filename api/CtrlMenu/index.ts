@@ -43,35 +43,28 @@ const UsergetArticleData = (id: string): any => {
   return request.get('/article/getart', { params })
 }
 // 编辑文章
-const UsercagArticle = (data: {
+const UsercagArticle = (cagdata: {
   id: string
-  username: string
-  title: string
-  content: string
-  cover_img: string
-  lable: string
-  keyword: string
-  article_id: string
-  describes: string
-  state: string | number
+  data: any
 }): any => {
   const params = new URLSearchParams()
-  params.append('id', data.id)
-  params.append('username', data.username)
-  params.append('title', data.title)
-  params.append('content', data.content)
-  params.append('cover_img', data.cover_img)
-  params.append('lable', data.lable)
-  params.append('keyword', data.keyword)
-  params.append('article_id', data.article_id)
-  params.append('describes', data.describes)
-  params.append('state', String(data.state))
+  params.append('id', cagdata.id)
+  params.append('data', JSON.stringify(cagdata.data))
   return request.post('/article/cagart', params)
+}
+// 修改文章权限
+const UsercagArticlePower = (id: string, data: string): any => {
+  const params = new URLSearchParams()
+  params.append('id', id)
+  params.append('data', data)
+  return request.post('/article/cagartpower', params)
 }
 export default {
   UseraddArticle,
   UsergetArticle,
   UserdelArticle,
   UsercagArticle,
-  UsergetArticleData
+  UsergetArticleData,
+  UsercagArticlePower
+
 }

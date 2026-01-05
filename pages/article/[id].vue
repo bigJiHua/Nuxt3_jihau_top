@@ -1,223 +1,205 @@
 <script setup lang="ts">
-import getArticleApi from '@/api/Article'
-import UserAction from '@/api/Article/Action'
-import { useRoute, useRouter } from 'vue-router'
-import { useAuthorDataStore } from '@/stores/useUserData'
-import {
-  Share,
-  View,
-  Calendar,
-  ArrowDown,
-  Promotion,
-} from '@element-plus/icons-vue'
-const store = useAuthorDataStore()
-const route = useRoute()
-const router = useRouter()
-const isLogin = ref(false)
-const isMd = ref(false)
-const htmlContentRef = ref(null)
+import getArticleApi from "@/api/Article";
+import UserAction from "@/api/Article/Action";
+import dayjs from "dayjs";
+import { useRoute, useRouter } from "vue-router";
+import { useAuthorDataStore } from "@/stores/useUserData";
+import { Share, View, Calendar, ArrowDown, Promotion } from "@element-plus/icons-vue";
+const store = useAuthorDataStore();
+const route = useRoute();
+const router = useRouter();
+const isMd = ref(false);
+const htmlContentRef = ref(null);
 const btntype = ref({
-  goodnum: '',
-  collect: '',
-})
-const Active: any = reactive({
-  goodnum: false,
-  collect: false,
-  comTXT: '',
-})
+  goodnum: "",
+  collect: "",
+});
 const ArticleData: any = reactive({
   article: {
-    title: '',
-    author: '',
-    date: '',
-    tags: '',
-    readnum: '',
-    content: '',
-    lable: '',
-    username: '',
-    pub_date: '',
-    read_num: '',
+    title: "",
+    author: "",
+    date: "",
+    tags: "",
+    readnum: "",
+    content: "",
+    lable: "",
+    username: "",
+    pub_date: "",
+    read_num: "",
   },
   goodnum: 0,
   collect: 0,
-  commont: [],
   accollect: false,
   acgoodnum: false,
-})
-const Aurl = `${reqConfig.baseUrl}/data/article/`
-const { data } = await uFetch.useCustomFetch(Aurl, {
-  method: 'get',
-  params: {
-    id: route.params.id
-  },
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-  key: `post-${route.params.id}`
-})
-if (/\bmd[A-Z0-9]+\b/g.test(route.params.id as string)) isMd.value = true
-const res: any = data.value
-ArticleData.article = res.data.article
-// ArticleData.article.lable = res.data.article.lable.split('、')
-const tagcmp = (item: any): string[] => {
-  if (typeof item !== 'string') {
-    return item
-  } else {
-    return item.split(/[、,，]/)
-  }
+});
+interface Permission {
+  allow_comment: number;
+  allow_comhis: number;
+  allow_like: number;
+  allow_share: number;
+  comment_review: number;
+  is_clean_page: number;
+  lastcag_at: string;
 }
+// 权限数据
+const permission: Ref<Permission> = ref({
+  allow_comment: 1,
+  allow_comhis: 1,
+  allow_like: 1,
+  allow_share: 1,
+  comment_review: 0,
+  is_clean_page: 0,
+  lastcag_at: "",
+});
+
+/* ============ SSR 预前准备 ============ */
+const appConfig = useAppConfig()
+const baseUrl = appConfig.site.baseUrl
+
+const Aurl = `${baseUrl}/data/article/`;
+const key = "article-" + route.params.id;
+const { data } = await useAsyncData(
+  key,
+  async () =>
+    await $fetch(Aurl, {
+      method: "get",
+      params: {
+        id: route.params.id,
+      },
+    }),
+);
+if (/\bmd[A-Z0-9]+\b/g.test(route.params.id as string)) isMd.value = true;
+const res: any = data.value;
+
+ArticleData.article = res?.data?.article;
+permission.value = res?.data?.power;
+// ArticleData.article.lable = res.data.article.lable.split('、')
+// 划分标签
+const tagcmp = (item: any): string[] => {
+  if (typeof item !== "string") {
+    return item;
+  } else {
+    return item.split(/[、,，]/);
+  }
+};
+/* ============ END ============ */
 
 // 获取评论等等...
 const getArchives = async (): Promise<void> => {
-  const { data: res } = await getArticleApi.getArchives(
-    route.params.id as string
-  )
-  ArticleData.goodnum = res.data.goodnum
-  ArticleData.collect = res.data.collect
-  ArticleData.commont = res.data.comment
-  ArticleData.accollect = res.data.accollect
-  ArticleData.acgoodnum = res.data.acgoodnum
+  const { data: res } = await getArticleApi.getArchives(route.params.id as string);
+  ArticleData.goodnum = res.data.goodnum;
+  ArticleData.collect = res.data.collect;
+  ArticleData.accollect = res.data.accollect;
+  ArticleData.acgoodnum = res.data.acgoodnum;
   // 判断本人是否点赞
-  btntype.value.goodnum = res.data.acgoodnum ? 'success' : ''
-  btntype.value.collect = res.data.accollect ? 'success' : ''
-}
+  btntype.value.goodnum = res.data.acgoodnum ? "success" : "";
+  btntype.value.collect = res.data.accollect ? "success" : "";
+};
 
 // 点赞
 const goodnum = async (): Promise<any> => {
-  if (localStorage.getItem('Username') === null) {
-    if (await WarningTips('登录后才能操作哦！是否跳转登录？')) {
-      return await router.push('/Login/art')
-    } else return
+  if (localStorage.getItem("Username") === null) {
+    if (await WarningTips("登录后才能操作哦！是否跳转登录？")) {
+      return await router.push("/Login/art");
+    } else return;
   } else {
     const data = {
       articleid: route.params.id as string,
-      type: 'goodnum',
-    }
+      type: "goodnum",
+    };
     await UserAction.UserActive(data).then(() => {
-      ArticleData.acgoodnum = !ArticleData.acgoodnum
-    })
+      ArticleData.acgoodnum = !ArticleData.acgoodnum;
+    });
     if (!ArticleData.acgoodnum) {
-      ArticleData.goodnum -= 1
-      btntype.value.goodnum = ''
+      ArticleData.goodnum -= 1;
+      btntype.value.goodnum = "";
     } else {
-      ArticleData.goodnum += 1
-      btntype.value.goodnum = 'success'
+      ArticleData.goodnum += 1;
+      btntype.value.goodnum = "success";
     }
   }
-}
+};
 // 收藏
 const collect = async (): Promise<void> => {
-  if (localStorage.getItem('Username') === null) {
-    if (await WarningTips('登录后才能操作哦！是否跳转登录？')) {
-      return await router.push('/Login/art')
-    } else return
+  if (localStorage.getItem("Username") === null) {
+    if (await WarningTips("登录后才能操作哦！是否跳转登录？")) {
+      return await router.push("/Login/art");
+    } else return;
   } else {
     const data = {
-      username: localStorage.getItem('Username'),
+      username: localStorage.getItem("Username"),
       articleid: route.params.id as string,
-      type: 'collect',
-    }
+      type: "collect",
+    };
     await UserAction.UserActive(data).then(() => {
-      ArticleData.accollect = !ArticleData.accollect
-    })
+      ArticleData.accollect = !ArticleData.accollect;
+    });
     if (!ArticleData.accollect) {
-      ArticleData.collect -= 1
-      btntype.value.collect = ''
+      ArticleData.collect -= 1;
+      btntype.value.collect = "";
     } else {
-      ArticleData.collect += 1
-      btntype.value.collect = 'success'
+      ArticleData.collect += 1;
+      btntype.value.collect = "success";
     }
   }
-}
-// 评论
-const commont = async (artid: string): Promise<void> => {
-  if (localStorage.getItem('Username') === null) {
-    if (await WarningTips('登录后才能操作哦！是否跳转登录？')) {
-      return router.push('/Login/art')
-    } else return
-  } else {
-    if (artid === undefined) {
-      ElMessage({
-        message: '获取文章id错误，请刷新当前页面',
-        type: 'warning',
-      })
-    } else {
-      if (Active.comTXT === '') {
-        ElMessage({
-          message: '留言输入内容不能为空哦!',
-          type: 'warning',
-        })
-      } else {
-        const comtxt = Active.comTXT
-          .match(
-            /((\p{sc=Han})|([a-zA-Z0-9])|([\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3008|\u3009|\u3010|\u3011|\u300e|\u300f|\u300c|\u300d|\ufe43|\ufe44|\u3014|\u3015|\u2026|\u2014|\uff5e|\ufe4f|\uffe5]))/gu
-          )
-          .join('')
-        const data = {
-          username: localStorage.getItem('Username'),
-          articleid: artid,
-          type: 'comment',
-          comment: comtxt,
-        }
-        const { data: res } = await UserAction.UserActive(data)
-        if (res.status === 200) {
-          // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-          Active.collect = !Active.collect
-          await getArchives()
-          Active.comTXT = ''
-        }
-      }
-    }
-  }
-}
+};
+const ArtUrl = appConfig.site.baseUrl
+// 分享
 const { $copyUrl } = useNuxtApp()
-// 分享 TODO分享统计事件
-const share = (): void => {
-  const copyw = `https://jihau.top/article/${ArticleData.article.article_id}`
-  $copyUrl(copyw)
+const ShareBox = async (id: string) => {
+  const copyw = `${ArtUrl + id}`
+  void $copyUrl(copyw)
 }
 // TODO 分享到动态
 const shareSay = async (): Promise<void> => {
   ElMessage({
-    message: '敬请期待！',
-    type: 'warning',
-  })
-}
+    message: "敬请期待！",
+    type: "warning",
+  });
+};
 // v-html图片点击放大
-const handleImageClick = async (e: MouseEvent): any => {
-  const target = e.target as HTMLElement
-  if (target.tagName === 'IMG') {
-    const src = (target as HTMLImageElement).src
+const handleImageClick = async (e: MouseEvent): Promise<void> => {
+  const target = e.target as HTMLElement;
+  if (target.tagName === "IMG") {
+    const src = (target as HTMLImageElement).src;
     try {
       await ElMessageBox({
-        message: h('img', {
+        message: h("img", {
           src,
-          style:
-            'max-width: 350px; height: 250px;display: block; margin: 0 auto; ',
+          style: "max-width: 100%; height: 100%;display: block; margin: 0 auto; ",
         }),
         showConfirmButton: false,
         showCancelButton: false,
         closeOnClickModal: true,
-      })
+      });
     } catch (error) {
       // 忽略用户取消的错误（特定错误信息为"cancel"）
-      if (error !== 'cancel') {
-        console.error('Unhandled error in ElMessageBox:', error)
+      if (error !== "cancel") {
+        console.error("Unhandled error in ElMessageBox:", error);
       }
     }
   }
-}
+};
+
+const isMobile = ref(false);
 
 onMounted(() => {
-  void getArchives()
+  void getArchives();
+  const check = () => {
+    isMobile.value = window.matchMedia("(max-width: 768px)").matches;
+  };
+  check();
+  window.addEventListener("resize", check);
   setTimeout(() => {
-    store.setArticleAuthor(toRaw(ArticleData.article.username))
-  }, 800)
+    store.setArticleAuthor(toRaw(ArticleData.article.username));
+  }, 800);
   // 5秒后请求增加阅读数
   setTimeout(() => {
     if (route.params.id !== undefined) {
-      void getArticleApi.UpdatedReadNum(route.params.id as string)
+      void getArticleApi.UpdatedReadNum(route.params.id as string);
     }
-  }, 5000)
-})
+  }, 5000);
+});
 </script>
 <template>
   <div id="" class="article">
@@ -230,23 +212,24 @@ onMounted(() => {
       <Meta name="robots" content="all" />
       <Meta name="ogImage" :content="ArticleData.article.cover_img" />
     </Head>
-    <div class="leftContent">
+    <div
+      class="leftContent"
+      :id="permission.is_clean_page === 1 ? 'article-clean' : 'article-normal'"
+    >
       <div class="tabmenu">
         <h1>{{ ArticleData.article.title }}</h1>
         <div class="tabArea">
-          <nuxt-link
-            :to="'/space/' + ArticleData.article.username"
-            target="_blank"
-            >{{ ArticleData.article.username }}</nuxt-link
-          >
+          <nuxt-link :to="'/space/' + ArticleData.article.username" target="_blank">{{
+            ArticleData.article.username
+          }}</nuxt-link>
           <div class="tabItem">
-            <el-icon>
+            <el-icon style="width: 1rem; height: 1rem;">
               <Calendar />
             </el-icon>
             {{ ArticleData.article.pub_date }}
           </div>
           <div class="tabItem">
-            <el-icon>
+            <el-icon style="width: 1rem; height: 1rem;">
               <View />
             </el-icon>
             {{ ArticleData.article.read_num }}
@@ -264,23 +247,33 @@ onMounted(() => {
       </div>
       <!-- md文章 -->
       <div class="content" v-else>
-        <CekditorViewsMd
-          :content="ArticleData.article.content"
-        ></CekditorViewsMd>
+        <CekditorViewsMd :content="ArticleData.article.content"></CekditorViewsMd>
       </div>
       <!-- 操作区域 -->
-      <div class="btn_active">
-        <el-button plain class="acbtn" @click="goodnum" :type="btntype.goodnum">
+      <div class="btn_active" v-if="permission.is_clean_page !== 1">
+        <el-button
+          plain
+          class="acbtn"
+          @click="goodnum"
+          :type="btntype.goodnum"
+          v-if="permission.allow_like === 1"
+        >
           <van-icon name="good-job-o" />
           &nbsp;
           {{ ArticleData.goodnum }}
         </el-button>
-        <el-button class="acbtn" plain @click="collect" :type="btntype.collect">
+        <el-button
+          class="acbtn"
+          plain
+          @click="collect"
+          :type="btntype.collect"
+          v-if="permission.allow_like === 1"
+        >
           <van-icon name="star-o" />
           &nbsp;{{ ArticleData.collect }}
         </el-button>
         <!-- 分享 -->
-        <el-dropdown trigger="click">
+        <el-dropdown trigger="click" v-if="permission.allow_share === 1">
           <el-button plain class="acbtn"
             ><arrow-down />
             <el-icon class="no-inherit">
@@ -290,7 +283,7 @@ onMounted(() => {
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item>
-                <span type="primary" plain class="collect" @click="share"
+                <span type="primary" plain class="collect" @click="ShareBox"
                   >分享
                   <el-icon color="#409EFC" class="no-inherit">
                     <Share />
@@ -318,43 +311,18 @@ onMounted(() => {
           ><nuxt-link :to="'/search/' + tag">{{ tag }}</nuxt-link></el-tag
         >
       </div>
+      <div class="tabLable" v-if="permission.lastcag_at !== 'null'">
+        最后更新于：{{ dayjs(Number(permission.lastcag_at)).format("YYYY-MM-DD HH:mm:ss") }}
+      </div>
       <!-- 评论 -->
-      <client-only>
-        <div class="commentArea">
-          <p>全部评论</p>
-          <div
-            class="comment"
-            v-for="(item, index) in ArticleData.commont"
-            :key="index"
-          >
-            <p class="comment_user">
-              <router-link :to="'/space/' + item.username"
-                >{{ item.username }}：</router-link
-              >{{ item.comment }}
-            </p>
-            <p class="comment_time">时间:{{ item.pub_date }}</p>
-          </div>
-          <div class="textarea">
-            <textarea
-              name=""
-              id="comtext"
-              placeholder="友善发言，留下美好瞬间   (最多输入150个字符)"
-              maxlength="150"
-              @keyup.enter="commont(ArticleData.article.article_id)"
-              v-model="Active.comTXT"
-            ></textarea>
-            <el-button
-              type="primary"
-              plain
-              :disabled="isLogin"
-              @click="commont(ArticleData.article.article_id)"
-              >留言</el-button
-            >
-          </div>
-        </div>
-      </client-only>
+      <div v-if="permission.is_clean_page !== 1 || permission.allow_comhis === 1">
+        <el-affix position="top" :offset="60" v-if="!isMobile">
+          <ArticleComment :article_id="ArticleData.article.article_id"></ArticleComment>
+        </el-affix>
+        <ArticleComment v-else :article_id="ArticleData.article.article_id"></ArticleComment>
+      </div>
     </div>
-    <div class="ArticleRightPanel">
+    <div class="ArticleRightPanel" v-if="permission.is_clean_page === 0">
       <RightMArticle></RightMArticle>
     </div>
   </div>
@@ -371,7 +339,9 @@ onMounted(() => {
   overflow: hidden;
   background-color: #fff;
 }
-
+#article-normal {
+  max-width: 700px;
+}
 .content > p > p > img {
   max-width: 350px;
 }
@@ -390,13 +360,14 @@ onMounted(() => {
     padding: 20px;
     border-radius: 12px;
     width: 50vw;
-    max-width: 700px;
   }
 
   .ArticleRightPanel {
-    width: 25vw;
+    width: calc(30vw - 55px);
     max-width: 480px;
-    margin-left: 20px;
+  }
+  #article-clean {
+    width: 100% !important;
   }
 }
 // 移动窗口
@@ -404,6 +375,10 @@ onMounted(() => {
   .article {
     width: 95vw;
     margin: 0 auto;
+    min-height: 85vh;
+  }
+  #article-clean {
+    width: 95% !important;
   }
 
   .content {
@@ -412,10 +387,6 @@ onMounted(() => {
     /* 兼容性较好的属性 */
     overflow-wrap: break-word;
     /* CSS3 标准属性 */
-  }
-
-  .tabLable {
-    overflow: scroll;
   }
 
   .leftContent {
@@ -442,66 +413,16 @@ onMounted(() => {
   .tabItem,
   .tabLable {
     margin-left: 10px;
-    font-size: 0.5rem;
+    font-size: 0.8rem;
   }
 }
 
+.tabLable {
+  margin: 15px 0;
+}
 .lable-tag {
   margin: 5px;
 }
-
-.commentArea {
-  padding: 10px 0 20px 0;
-  border-radius: 5px;
-
-  p {
-    font-size: 1.5rem;
-    font-weight: bolder;
-    margin: 10px;
-  }
-
-  #comtext {
-    border-radius: 8px;
-    border: 2px rgba(243, 245, 248, 0.8) solid;
-    padding: 5px;
-    height: 80px;
-    resize: none;
-    width: 95%;
-  }
-
-  .comment {
-    background-color: rgba(201, 227, 243, 0.4);
-    border-radius: 4px;
-    padding: 5px;
-    margin-bottom: 10px;
-
-    p {
-      margin: 0;
-      color: rgba(6, 52, 122, 0.8);
-    }
-
-    .comment_user {
-      font-size: 1.2rem;
-    }
-
-    .comment_text {
-      font-size: 1.2rem;
-      margin: 2px;
-    }
-
-    .comment_time {
-      font-size: 0.8rem;
-      text-align: right;
-    }
-  }
-}
-
-.textarea {
-  > button {
-    float: right;
-  }
-}
-
 .btn_active {
   width: 100%;
   display: flex;

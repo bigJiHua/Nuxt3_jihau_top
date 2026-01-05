@@ -1,52 +1,40 @@
 <script setup lang="ts">
-import getArtDataApi from '@/api/CtrlMenu'
+import getArtDataApi from "@/api/CtrlMenu";
 definePageMeta({
-  layout: 'ctrl-view',
-})
-const MyArticleListData: Ref<any[]> = ref([])
-const AllNum: Ref<number> = ref(0)
-const NullData: Ref<boolean> = ref(false)
+  layout: "ctrl-view",
+});
+const MyArticleListData: Ref<any[]> = ref([]);
+const AllNum: Ref<number> = ref(0);
+const NullData: Ref<boolean> = ref(false);
 const getArticle = async (num: number): Promise<void> => {
-  if (num === 0) num = 0
-  MyArticleListData.value = []
-  const { data: res } = await getArtDataApi.UsergetArticle(num, 2)
-  MyArticleListData.value = [...res.data]
-  AllNum.value = res.Num
+  if (num === 0) num = 0;
+  MyArticleListData.value = [];
+  const { data: res } = await getArtDataApi.UsergetArticle(num, 2);
+  MyArticleListData.value = [...res.data];
+  AllNum.value = res.Num;
   if (res.data.length === 0) {
-    NullData.value = true
+    NullData.value = true;
   }
-}
+};
 
 // 上一页
 const prevNum = (num: number): void => {
-  void getArticle((num - 1) * 10)
-}
+  void getArticle((num - 1) * 10);
+};
 // 数字
 const pagerNum = (num: number): void => {
-  void getArticle((num - 1) * 10)
-}
+  void getArticle((num - 1) * 10);
+};
 // 下一页
 const nextNum = (num: number): void => {
-  void getArticle((num - 1) * 10)
-}
+  void getArticle((num - 1) * 10);
+};
 useHead({
-  title: '我的待发布文章',
-  meta: [
-    {
-      name: 'keywords',
-      content:
-        'JiHua,jihua,JiHua的Web和JS开发数据,JiHua的Web和JS开发数据,个人网站,C语言程序,Web语言,个人网站搭建',
-    },
-    {
-      name: 'description',
-      content:
-        'jihua的Web和js开发数据，一个神奇的个人网站，里面展现个人魅力，程序设计语言站点导航，以及软件使用方法和事件处理方法，包括但不限于C语言、C语言程序设计书籍、题型、作品等，网页逐渐搭建，不断更新中。一个神奇的个人网站！里面将有超多的内容知识。',
-    },
-  ],
-})
+  title: "我的待发布文章",
+});
 onMounted(() => {
-  void getArticle(0)
-})
+  void getArticle(0);
+});
 </script>
 
 <template>
@@ -61,9 +49,7 @@ onMounted(() => {
         v-for="(item, index) in MyArticleListData"
         :key="index"
         :data="item"
-        :title="
-          item.state === 1 ? '被驳回' : item.state === 2 ? '待发布' : '已发布'
-        "
+        :title="item.state === 1 ? '被驳回' : item.state === 2 ? '待发布' : '已发布'"
         :type="item.state === 1 ? 'EColor' : 'WColor'"
       />
     </div>

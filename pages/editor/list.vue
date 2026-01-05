@@ -26,19 +26,7 @@ const nextNum = (num: number) => {
   void getArticle((num - 1) * 10)
 }
 useHead({
-  title: '我的文章',
-  meta: [
-    {
-      name: 'keywords',
-      content:
-        'JiHua,jihua,JiHua的Web和JS开发数据,JiHua的Web和JS开发数据,个人网站,C语言程序,Web语言,个人网站搭建',
-    },
-    {
-      name: 'description',
-      content:
-        'jihua的Web和js开发数据，一个神奇的个人网站，里面展现个人魅力，程序设计语言站点导航，以及软件使用方法和事件处理方法，包括但不限于C语言、C语言程序设计书籍、题型、作品等，网页逐渐搭建，不断更新中。一个神奇的个人网站！里面将有超多的内容知识。',
-    },
-  ],
+  title: '我的文章'
 })
 onMounted(() => {
   void getArticle(0)

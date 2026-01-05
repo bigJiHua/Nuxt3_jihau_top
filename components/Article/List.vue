@@ -18,10 +18,12 @@ const ifcov = computed(() => {
   }
   return false
 })
+const appConfig = useAppConfig()
+const ArtUrl = appConfig.site.baseUrl
 // 分享
-const ShareBox = async () => {
-  const copyw = `https://jihau.top/article/${props.data.article_id}`
-  $copyUrl(copyw)
+const ShareBox = async (id: string) => {
+  const copyw = `${ArtUrl + id}`
+  void $copyUrl(copyw)
 }
 onMounted(() => {
   setTimeout(() => {
@@ -48,7 +50,7 @@ onMounted(() => {
           class="article_doc_txt togolink"
           :to="{ path: '/article/' + data.article_id }"
         >
-          {{ data.content }}
+          {{ data.content }}...
         </nuxt-link>
       </div>
     </div>
@@ -216,16 +218,15 @@ onMounted(() => {
   .article_img {
     padding: 0;
     height: 90px;
-    width: 215px;
+    width: 230px;
     overflow: hidden;
     border-radius: 5px;
     margin: 5px;
   }
 
   .article_img_item {
-    width: 150px;
-    height: 80px;
-    background-color: rgba(255, 255, 255, 0.8);
+    width: 100%;
+    height: 100%;
   }
 
   .article_doc {

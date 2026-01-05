@@ -3,15 +3,20 @@
   font-family: Arial, sans-serif;
   line-height: 1.5;
   font-size: 0.9rem;
-  overflow-x: scroll; /* 横向滚动条 */
   word-wrap: break-word; /* 自动换行 */
   letter-spacing: 2px;
+  box-sizing: border-box; /* 统一盒模型 */
+  padding: 0 8px; /* 增加内边距，避免内容贴边 */
 }
+
 @media (max-width: 755px) {
   .html-content {
     font-size: 1rem;
+    padding: 0 4px; /* 移动端减少内边距 */
+    letter-spacing: 1px; /* 移动端缩小字间距，节省空间 */
   }
 }
+
 /* 块级元素结构样式 */
 .html-content article,
 .html-content aside,
@@ -46,41 +51,104 @@
   font-size: 1rem;
   margin: 5px 0;
   color: rgb(0 0 0 / 0.68);
+  box-sizing: border-box; /* 统一盒模型 */
 }
-@media (max-width: 755px) {
-  .html-content pre,
-  .html-content code {
-    display: block; /* 让它成为块级元素 */
-    width: 100%; /* 宽度根据容器自适应 */
-    max-width: 100%; /* 防止溢出容器 */
-    white-space: pre; /* 保留缩进和换行格式 */
-    font-size: 0.9rem; /* 字体大小 */
-    line-height: 1.5; /* 行高设置为1.5倍 */
-    box-sizing: border-box;
-    padding: 10px !important; /* 内边距设置为10px */
-    font-family: Menlo, Monaco, Consolas, Courier New, monospace;
-  }
-}
+
+/* 代码块样式优化（解决原有样式冲突+响应式适配） */
 .html-content pre,
 .html-content code {
-  padding: 5px; /* 内边距设置为10px */
+  padding: 5px;
+  box-sizing: border-box;
+  font-family: Menlo, Monaco, Consolas, Courier New, monospace;
 }
+
 .html-content pre {
   border: 1px solid #eeeeee;
-  background-color: rgb(62 62 62); /* 背景颜色设置为浅灰色 */
-  color: rgb(0, 0, 0); /* 字体颜色设置为黑色 */
+  background-color: #3e3e3e; /* 深色背景适配代码高亮 */
+  color: #e0e0e0; /* 浅色文字提升可读性 */
+  white-space: pre-wrap; /* 兼容换行 */
+  word-wrap: break-word;
+  -moz-tab-size: 4;
+  tab-size: 4;
+  border-radius: 4px; /* 圆角更美观 */
+  position: relative; /* 为伪元素定位 */
 }
+
+/* 修复代码块顶部伪元素样式，适配移动端 */
 .html-content pre:before {
-  content: ' ';
+  content: " ";
   display: block;
   height: 30px;
   width: 100%;
   background: url(data:image/png;base64,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)
     10px 10px no-repeat;
   background-size: 40px;
+  border-radius: 4px 4px 0 0; /* 匹配pre的圆角 */
 }
 
-/* 标题 */
+@media (max-width: 755px) {
+  .html-content pre,
+  .html-content code {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    white-space: pre-wrap; /* 替换pre为pre-wrap，移动端自动换行 */
+    font-size: 0.9rem;
+    line-height: 1.5;
+    padding: 10px !important;
+  }
+
+  /* 移动端隐藏代码块顶部伪元素背景图，节省空间 */
+  .html-content pre:before {
+    height: 20px;
+    background-size: 30px;
+  }
+}
+
+/* 表格样式深度优化（核心响应式适配） */
+.html-content table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #999;
+  margin: 10px 0; /* 增加上下间距 */
+}
+
+.html-content thead {
+  background-color: #eee;
+  font-weight: bold;
+}
+
+.html-content th,
+.html-content td {
+  border: 1px solid #999;
+  text-align: left; /* 统一文本对齐方式 */
+  vertical-align: middle;
+  padding: 4px 2px; /* 减少内边距 */
+}
+/*表格样式*/
+/* 为表格外层增加滚动容器（如果表格没有外层div，自动生成） */
+.html-content table {
+  max-width: 1200px; /* 移动端取消最小宽度 */
+  font-size: 0.9rem; /* 缩小字体 */
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* 移动端弹性滚动，提升体验 */
+}
+/* 表格响应式适配：移动端横向滚动 + 优化交互 */
+@media (max-width: 755px) {
+  .html-content table {
+    min-width: 100%; /* 移动端取消最小宽度 */
+    font-size: 0.9rem; /* 缩小字体 */
+  }
+
+  .html-content th,
+  .html-content td {
+    padding: 4px 2px; /* 减少内边距 */
+  }
+
+}
+
+/* 标题样式优化 */
 .html-content h1 {
   font-size: 2em;
 }
@@ -100,7 +168,7 @@
   font-size: 0.85em;
 }
 
-/* 列表 */
+/* 列表样式 */
 .html-content ul,
 .html-content ol {
   padding-left: 1rem;
@@ -113,21 +181,6 @@
 }
 .html-content ol {
   list-style: decimal;
-}
-
-/* 表格 */
-.html-content table {
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid #999;
-}
-.html-content th,
-.html-content td {
-  border: 1px solid #999;
-  padding: 6px;
-}
-.html-content thead {
-  background-color: #eee;
 }
 
 /* 表单元素 */
@@ -147,31 +200,52 @@
   margin: 4px;
   padding: 6px;
   border: 1px solid #ccc;
+  box-sizing: border-box;
 }
+
 .html-content input,
 .html-content textarea,
 .html-content select {
   width: auto;
 }
+
+@media (max-width: 755px) {
+  .html-content input,
+  .html-content textarea,
+  .html-content select {
+    width: 90%; /* 移动端表单元素占满大部分宽度 */
+  }
+}
+
 .html-content textarea {
   resize: vertical;
 }
+
 .html-content button,
-.html-content input[type='submit'] {
+.html-content input[type="submit"] {
   background: #007bff;
   color: #fff;
   border-radius: 4px;
   cursor: pointer;
+  transition: background 0.2s; /* 增加hover过渡效果 */
 }
+
+.html-content button:hover,
+.html-content input[type="submit"]:hover {
+  background: #0056b3; /* hover加深颜色 */
+}
+
 .html-content button:disabled {
   background-color: #999;
   cursor: not-allowed;
 }
+
 .html-content input:focus,
 .html-content textarea:focus,
 .html-content select:focus {
   border-color: #007bff;
   outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* 增加焦点阴影，提升体验 */
 }
 
 /* 文本/内联语义元素 */
@@ -199,7 +273,7 @@
   display: inline;
 }
 
-/* 媒体元素 */
+/* 媒体元素适配优化 */
 .html-content img,
 .html-content video,
 .html-content audio,
@@ -211,7 +285,9 @@
 .html-content embed {
   max-width: 400px !important;
   max-height: 400px !important;
+  box-sizing: border-box;
 }
+
 @media (max-width: 755px) {
   .html-content img,
   .html-content video,
@@ -222,12 +298,12 @@
   .html-content iframe,
   .html-content object,
   .html-content embed {
-    margin: 0 auto;
-    max-width: 350px !important;
+    max-width: 90vw !important; /* 改用视口宽度，适配不同手机 */
     max-height: 225px !important;
     background-color: #fafafa;
   }
 }
+
 /* 引用与注释 */
 .html-content blockquote {
   padding-left: 1em;
@@ -235,10 +311,13 @@
   background-color: #dcedfe;
   font-size: 1rem;
   padding: 10px;
+  border-radius: 0 4px 4px 0; /* 圆角优化 */
 }
+
 .html-content q {
-  quotes: '“' '”' '‘' '’';
+  quotes: "“" "”" "‘" "’";
 }
+
 .html-content cite {
   font-style: italic;
 }
@@ -253,11 +332,14 @@
 .html-content br {
   display: block;
   margin: 4px 0;
+  content: ""; /* 兼容低版本浏览器 */
 }
+
 .html-content noscript {
   color: red;
   font-weight: bold;
 }
+
 .html-content template {
   display: none;
 }
@@ -276,6 +358,9 @@
   padding: 1em;
   background: #fff;
   color: #000;
+  border-radius: 4px; /* 圆角优化 */
+  max-width: 90vw; /* 响应式宽度 */
+  margin: auto;
 }
 
 /* 交互元素 */
@@ -284,9 +369,12 @@
   border: 1px solid #aaa;
   padding: 8px;
   margin: 4px 0;
+  border-radius: 4px; /* 圆角优化 */
 }
+
 .html-content summary {
   cursor: pointer;
+  font-weight: bold; /* 加粗summary，提升辨识度 */
 }
 
 /* Web 组件结构可视化 */
@@ -296,10 +384,12 @@
   background: #eef;
   border: 1px dashed #88c;
 }
+
 .html-content shadow-root {
   display: block;
   border: 1px dashed #ccc;
   padding: 8px;
+  border-radius: 4px;
 }
 
 /* HTML5 语义边框强化（便于调试结构） */
@@ -312,15 +402,17 @@
 .html-content main {
   border: 1px dashed #aaa;
   background-color: #f0f0f0;
+  padding: 8px; /* 增加内边距，避免内容贴边 */
+  border-radius: 4px;
+  margin: 8px 0; /* 增加间距，区分模块 */
 }
 
-/* contents.css */
-
-pre {
+/* contents.css 补充（解决样式优先级问题） */
+.html-content pre {
   white-space: pre-wrap; /* CSS 2.1 */
   word-wrap: break-word; /* IE7 */
   -moz-tab-size: 4;
   tab-size: 4;
   margin: 10px 0;
-  background: #f3f3f3;
+  background: #080808cd;
 }

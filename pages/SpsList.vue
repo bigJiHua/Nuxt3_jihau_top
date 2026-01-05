@@ -1,35 +1,23 @@
 <script setup lang="ts">
-const UserData: any = ref([])
+const UserData = ref([])
+const appConfig = useAppConfig()
+const baseUrl = appConfig.site.baseUrl
 
-const SUrl = `${reqConfig.baseUrl}/data/Setting`
-useFetch(SUrl, {
-  method: 'get',
-  params: {
-    value: 'Sps',
-  },
-})
-  .then((response) => {
-    const res: any = response.data.value
-    UserData.value = res.data
-  })
-  .catch((error) => {
-    console.error('Request failed:', error)
-  })
-
-useHead({
-  title: '友链---JiHua的好朋友！',
-  meta: [
-    {
-      name: 'keywords',
-      content: '友链、友情链接、JiHua、jihau.top、通知页面、好朋友',
-    },
-    {
-      name: 'description',
-      content:
-        '这是jihau.top网站的友链页面，欢迎您访问此网站！点击即可申请添加友链墙，互换website链接，成为最好的朋友！',
-    },
-  ],
-})
+const SUrl = `${baseUrl}/data/Setting`
+try {
+  const { data: res } = await useAsyncData('sps', () =>
+    $fetch(SUrl, {
+      method: 'get',
+      params: {
+        value: 'Sps'
+      }
+    })
+  )
+  UserData.value = res.value.data || []
+} catch (e) {
+  console.error('友链加载失败：', e)
+}
+usePageHead('spslist')
 </script>
 
 <template>

@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { Search } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router'
-const router = useRouter()
-const key: any = ref('')
+import { Search } from "@element-plus/icons-vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
+const key: any = ref("");
 const SearchFunc = (): void => {
-  void router.push('/Search/' + key.value)
-  key.value = ''
-}
+  void router.push("/Search/" + key.value);
+  key.value = "";
+};
+const appConfig = useAppConfig();
+const MenuItem = appConfig.site.menu;
+const sitename = appConfig.site.sitename;
 </script>
 
 <template>
@@ -19,10 +22,10 @@ const SearchFunc = (): void => {
         style="width: 35px; height: 25px"
       /> -->
       <h1 class="HeaderTitle">
-        <a href="/">JiHua的web和js开发数据</a>
+        <a href="/">{{ sitename }}</a>
       </h1>
       <div class="items">
-        <span v-for="(item, index) in reqConfig.MenuItem" :key="index" class="MenuItem">
+        <span v-for="(item, index) in MenuItem" :key="index" class="MenuItem">
           <NuxtLink :to="item.path" class="text-x2">{{ item.text }}</NuxtLink>
         </span>
       </div>

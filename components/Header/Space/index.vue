@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { Search, Plus } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router'
+import { Search, Plus } from "@element-plus/icons-vue";
+import { useRouter } from "vue-router";
 const props = defineProps({
   user: {
     type: String,
-    default: () => '',
+    default: () => "",
   },
   istop: {
     type: Boolean,
@@ -14,69 +14,73 @@ const props = defineProps({
     type: Boolean,
     default: () => false,
   },
-})
-const router = useRouter()
-const key: any = ref('')
-const isLogin = ref(false)
-const isHerePath: Ref<number> = ref(0)
+});
+const router = useRouter();
+const key: any = ref("");
+const isLogin = ref(false);
+const isHerePath: Ref<number> = ref(0);
 const UserTab = ref([
   // { path: `/space/${props.user}/index`, name: '动态', id : 0 },
-  { path: `/space/${props.user}/article`, name: '文章', id: 1 },
-  { path: `/space/${props.user}/like`, name: '喜欢', id: 2 },
-  { path: `/space/${props.user}/collect`, name: '收藏', id: 3 },
-  { path: `/space/${props.user}/follow`, name: '关注', id: 4 },
-  { path: `/space/${props.user}/fans`, name: '粉丝', id: 5 },
-])
+  { path: `/space/${props.user}/article`, name: "文章", id: 1 },
+  { path: `/space/${props.user}/like`, name: "喜欢", id: 2 },
+  { path: `/space/${props.user}/collect`, name: "收藏", id: 3 },
+  { path: `/space/${props.user}/follow`, name: "关注", id: 4 },
+  { path: `/space/${props.user}/fans`, name: "粉丝", id: 5 },
+]);
+const appConfig = useAppConfig();
+const MenuItem = appConfig.site.menu;
+const sitename = appConfig.site.sitename;
+
 // 手动跳转
 const toTap = (path: string, index: number): void => {
-  const routerPath = path.match(/\/([^/]+)$/)
-  if (routerPath[1] === 'index') {
-    path = path.replace(/\/index$/, '')
+  const routerPath = path.match(/\/([^/]+)$/);
+  if (routerPath[1] === "index") {
+    path = path.replace(/\/index$/, "");
   }
-  isHerePath.value = index
-  void router.replace(path)
+  isHerePath.value = index;
+  void router.replace(path);
   setTimeout(() => {
-    window.moveTo(0, 300)
-  }, 200)
-}
+    window.moveTo(0, 300);
+  }, 200);
+};
 const SearchFunc = (): void => {
-  void router.push('/Search/' + key.value)
-  key.value = ''
-}
+  void router.push("/Search/" + key.value);
+  key.value = "";
+};
 onMounted(() => {
   if (process.client ?? false) {
-    isLogin.value = localStorage.getItem('token') !== null
+    isLogin.value = localStorage.getItem("token") !== null;
   }
   watch(
     () => router.currentRoute.value.path,
     (newPath) => {
-      const path = newPath.match(/\/([^/]+)$/)
+      const path = newPath.match(/\/([^/]+)$/);
       switch (path?.[1]) {
-        case 'index':
-          isHerePath.value = 0
-          break
-        case 'article':
-          isHerePath.value = 1
-          break
-        case 'like':
-          isHerePath.value = 2
-          break
-        case 'collect':
-          isHerePath.value = 3
-          break
-        case 'follow':
-          isHerePath.value = 4
-          break
-        case 'fans':
-          isHerePath.value = 5
-          break
+        case "index":
+          isHerePath.value = 0;
+          break;
+        case "article":
+          isHerePath.value = 1;
+          break;
+        case "like":
+          isHerePath.value = 2;
+          break;
+        case "collect":
+          isHerePath.value = 3;
+          break;
+        case "follow":
+          isHerePath.value = 4;
+          break;
+        case "fans":
+          isHerePath.value = 5;
+          break;
         default:
-          isHerePath.value = 0
+          isHerePath.value = 0;
       }
     },
-    { immediate: true }
-  )
-})
+    { immediate: true },
+  );
+});
 </script>
 
 <template>
@@ -92,17 +96,11 @@ onMounted(() => {
         style="width: 35px; height: 25px"
       /> -->
           <h1 class="HeaderTitle">
-            <a href="/">JiHua的web和js开发数据</a>
+            <a href="/">{{ sitename }}</a>
           </h1>
           <div class="items">
-            <span
-              v-for="(item, index) in reqConfig.MenuItem"
-              :key="index"
-              class="MenuItem"
-            >
-              <NuxtLink :to="item.path" class="text-x2">{{
-                item.text
-              }}</NuxtLink>
+            <span v-for="(item, index) in MenuItem" :key="index" class="MenuItem">
+              <NuxtLink :to="item.path" class="text-x2">{{ item.text }}</NuxtLink>
             </span>
           </div>
         </div>
@@ -122,11 +120,7 @@ onMounted(() => {
       </div>
       <div class="LoginBtn">
         <div class="SearchBox">
-          <el-input
-            v-model="key"
-            placeholder="搜搜搜~"
-            class="input-with-select"
-          >
+          <el-input v-model="key" placeholder="搜搜搜~" class="input-with-select">
             <template #append>
               <el-button :icon="Search" @click="SearchFunc" />
             </template>
